@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {
@@ -6,7 +8,6 @@ class Home extends StatelessWidget {
       onPressed: () {
         Navigator.pushNamed(context, '/login');
       },
-      child: Text('Let’s get started'),
       style: ElevatedButton.styleFrom(
         primary: Color(0xFFF7DC6F),
         onPrimary: Color(0xFF2E4053),
@@ -23,6 +24,7 @@ class Home extends StatelessWidget {
       ), 
       minimumSize: Size(400, 60),
       ),
+      child: Text('Let’s get started'),
     );
   }
     
@@ -66,6 +68,31 @@ class Home extends StatelessWidget {
               padding: EdgeInsets.only(top: 100),
             ),
             buildLoginButton(context),
+            Padding(
+              padding: EdgeInsets.only(top: 20),
+            ),            
+            TextButton(
+              onPressed: () => MessageEvent('Login'),
+              style: TextButton.styleFrom(
+                primary: Color.fromARGB(255, 117, 117, 117),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'I already have an account',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_outlined,                    
+                    color: Color.fromARGB(255, 255, 170, 0), 
+                  ),
+                ],
+              ),
+            ),                      
           ],
         ),
       ),
