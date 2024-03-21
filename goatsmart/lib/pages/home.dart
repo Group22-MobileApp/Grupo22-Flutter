@@ -9,9 +9,10 @@ class Home extends StatelessWidget {
         Navigator.pushNamed(context, '/login');
       },
       style: ElevatedButton.styleFrom(
-        primary: Color(0xFFF7DC6F),
-        onPrimary: Color(0xFF2E4053),
-        onSurface: Color(0xFF2E4053),
+        backgroundColor: Color(0xFFF7DC6F),
+        foregroundColor: Color(0xFF2E4053),
+        disabledBackgroundColor: Color(0xFF2E4053),
+        disabledForegroundColor: Color(0xFF2E4053),
         shadowColor: Color(0xFF2E4053),
         elevation: 4,
         textStyle: TextStyle(
