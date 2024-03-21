@@ -1,52 +1,21 @@
 import 'package:flutter/material.dart';
-import 'login.dart';
+//Import home.dart from pages folder
+import 'package:goatsmart/pages/home.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'GOAT´S MART',
-      home: MyHomePage(),
-    );
-  }
-}
+      title: 'GoatSmart',
+      theme: ThemeData(        
+        // Want to use three colors for my app: 2E4053, F7DC6F, F5B041
+        primaryColor: Color(0xFF2E4053),
+        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Color(0xFFF7DC6F), tertiary: Color(0xFFF5B041)),
 
-class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('GOAT´S MART'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Welcome to GOAT´S MART'),
-            Text('Uniandes store by student to student'),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(247, 220, 111, 1),
-                foregroundColor: Color.fromARGB(18, 49, 45, 45),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text('Let´s go to the second screen!'),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => login()),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+      home: Home(),
     );
   }
 }
