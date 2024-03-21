@@ -31,7 +31,7 @@ class MyHomePage extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(247, 220, 111, 1),
-                foregroundColor: Color.fromARGB(18, 35, 33, 33),
+                foregroundColor: Color.fromARGB(18, 49, 45, 45),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
