@@ -87,10 +87,15 @@ class Home extends StatelessWidget {
                       fontSize: 20,
                       fontFamily: 'Montserrat',
                     ),
+                  ),                  
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20),
                   ),
-                  Icon(
-                    Icons.arrow_forward_outlined,                    
-                    color: Color.fromARGB(255, 255, 170, 0), 
+                  FloatingActionButton(onPressed: null, 
+                  backgroundColor: Color.fromARGB(230, 255, 168, 6), 
+                  foregroundColor: Colors.white,
+                  shape: CircleBorder(),
+                    child: Icon(Icons.arrow_forward_outlined),
                   ),
                 ],
               ),
