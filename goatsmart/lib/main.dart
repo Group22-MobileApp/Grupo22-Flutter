@@ -1,10 +1,22 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 //Import home.dart from pages folder
 import 'package:goatsmart/pages/home.dart';
+//Import Firebase.initializeApp"
+import 'package:firebase_core/firebase_core.dart';
 
-void main() => runApp(MyApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp().then((value) => {
+    runApp(MyApp())
+  });
+  
+}
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,6 +28,7 @@ class MyApp extends StatelessWidget {
 
       ),
       home: Home(),
+      
     );
   }
 }

@@ -1,17 +1,21 @@
 import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:goatsmart/pages/login.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatelessWidget {
+
+  homeState createState() => homeState();
   ElevatedButton buildLoginButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
         Navigator.pushNamed(context, '/login');
       },
       style: ElevatedButton.styleFrom(
-        primary: Color(0xFFF7DC6F),
-        onPrimary: Color(0xFF2E4053),
-        onSurface: Color(0xFF2E4053),
+        foregroundColor: Color(0xFF2E4053), 
+        backgroundColor: Color(0xFFF7DC6F), 
+        disabledForegroundColor: Color(0xFF2E4053).withOpacity(0.38), 
+        disabledBackgroundColor: Color(0xFF2E4053).withOpacity(0.12),
         shadowColor: Color(0xFF2E4053),
         elevation: 4,
         textStyle: TextStyle(
@@ -27,7 +31,8 @@ class Home extends StatelessWidget {
       child: Text('Let’s get started'),
     );
   }
-    
+  
+  
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +77,14 @@ class Home extends StatelessWidget {
               padding: EdgeInsets.only(top: 20),
             ),            
             TextButton(
-              onPressed: () => MessageEvent('Login'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => login()),
+                );
+              },
               style: TextButton.styleFrom(
-                primary: Color.fromARGB(255, 117, 117, 117),
+                foregroundColor: Color.fromARGB(255, 117, 117, 117),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -99,4 +109,39 @@ class Home extends StatelessWidget {
     );
   }
 }
-                            
+
+class homeState extends StatefulWidget {
+  @override
+  _homeStateState createState() => _homeStateState();
+}
+
+class _homeStateState extends State<homeState> {
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+    // Initialize Firebase
+  }
+
+  void getUser () async {
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection('Users');
+    QuerySnapshot querySnapshot = await collectionReference.get();
+    
+    if(querySnapshot.docs.length != 0) {
+      querySnapshot.docs.forEach((doc) {
+      print(doc.data());
+    });
+    }
+   
+  }
+  
+ 
+  
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+
+}
