@@ -1,31 +1,32 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:goatsmart/pages/login.dart';
 
 class Home extends StatelessWidget {
+  const Home({super.key});
+
   ElevatedButton buildLoginButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        Navigator.pushNamed(context, '/login');
-      },
+    onPressed: () {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+    },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFF7DC6F),
-        foregroundColor: Color(0xFF2E4053),
-        disabledBackgroundColor: Color(0xFF2E4053),
-        disabledForegroundColor: Color(0xFF2E4053),
-        shadowColor: Color(0xFF2E4053),
+        backgroundColor: const Color(0xFFF7DC6F),
+        foregroundColor: const Color(0xFF2E4053),
+        disabledBackgroundColor: const Color(0xFF2E4053),
+        disabledForegroundColor: const Color(0xFF2E4053),
+        shadowColor: const Color(0xFF2E4053),
         elevation: 4,
-        textStyle: TextStyle(
+        textStyle: const TextStyle(
           fontSize: 30,          
           fontFamily: 'Montserrat',
         
       ),
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ), 
-      minimumSize: Size(400, 60),
+      minimumSize: const Size(400, 60),
       ),
-      child: Text('Let’s get started'),
+      child: const Text('Let’s get started'),
     );
   }
     
@@ -40,11 +41,11 @@ class Home extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             // Image
-            Image(
+            const Image(
               image: AssetImage('assets/images/logo.png'),
               height: 200,              
             ),
-            Text(
+            const Text(
               'GOAT’S MART',
               style: TextStyle(
                 fontSize: 80,
@@ -54,7 +55,7 @@ class Home extends StatelessWidget {
                 color: Color(0xFF2E4053),                
               ),
             ),
-            Text(
+            const Text(
               'Uniandes store by students for students',
               style: TextStyle(
                 fontSize: 20,
@@ -65,19 +66,19 @@ class Home extends StatelessWidget {
             )
             ),
             // Padding
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(top: 100),
             ),
             buildLoginButton(context),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(top: 20),
             ),            
             TextButton(
-              onPressed: () => MessageEvent('Login'),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage())),
               style: TextButton.styleFrom(
-                primary: Color.fromARGB(255, 117, 117, 117),
+                foregroundColor: const Color.fromARGB(255, 117, 117, 117),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
