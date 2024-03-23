@@ -36,6 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   firebase_core: ^2.27.0
+  intl_phone_number_input: ^0.7.0+2
 
 dev_dependencies:
   flutter_test:
@@ -55,6 +56,8 @@ dev_dependencies:
 flutter:
   assets:
       - assets/images/logo.png
+      - assets/images/login_background.png
+      - assets/images/registration_background.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
