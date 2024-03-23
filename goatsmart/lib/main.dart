@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 //Import home.dart from pages folder
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/login.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
 
 void main() => runApp(const MyApp());
 
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const Home(), // This is your home page
         '/login': (context) => const LoginPage(), // This is your login page
+        '/item': (context) => const ItemGallery(), // This is your item gallery page
       },
     );
   }

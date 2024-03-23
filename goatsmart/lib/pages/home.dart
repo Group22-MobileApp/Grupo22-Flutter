@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/pages/login.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -36,7 +37,7 @@ class Home extends StatelessWidget {
     return Scaffold(      
       // White background
       backgroundColor: Colors.white,
-      body: Center(
+      body: Center(        
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -74,7 +75,7 @@ class Home extends StatelessWidget {
               padding: EdgeInsets.only(top: 20),
             ),            
             TextButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage())),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemGallery())),
               style: TextButton.styleFrom(
                 foregroundColor: const Color.fromARGB(255, 117, 117, 117),
               ),
@@ -105,5 +106,5 @@ class Home extends StatelessWidget {
       ),
     );
   }
-}
+}       
                             
