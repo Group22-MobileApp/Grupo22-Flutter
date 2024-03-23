@@ -1,11 +1,10 @@
 import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/pages/login.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class Home extends StatelessWidget {
 
-  homeState createState() => homeState();
   ElevatedButton buildLoginButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
@@ -30,6 +29,7 @@ class Home extends StatelessWidget {
       ),
       child: Text('Let’s get started'),
     );
+    
   }
   
   
@@ -108,40 +108,7 @@ class Home extends StatelessWidget {
       ),
     );
   }
-}
 
-class homeState extends StatefulWidget {
-  @override
-  _homeStateState createState() => _homeStateState();
-}
-
-class _homeStateState extends State<homeState> {
-
-  @override
-  void initState() {
-    super.initState();
-    getUser();
-    // Initialize Firebase
-  }
-
-  void getUser () async {
-    CollectionReference collectionReference = FirebaseFirestore.instance.collection('Users');
-    QuerySnapshot querySnapshot = await collectionReference.get();
-    
-    if(querySnapshot.docs.length != 0) {
-      querySnapshot.docs.forEach((doc) {
-      print(doc.data());
-    });
-    }
-   
-  }
-  
- 
-  
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
 
 }
+
