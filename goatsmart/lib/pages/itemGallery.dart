@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ItemGallery extends StatefulWidget {
+  static const String routeName = 'ItemGallery';
   const ItemGallery({Key? key}) : super(key: key);
 
   @override
-  _ItemGalleryState createState() => _ItemGalleryState();
+  _ItemGallery createState() => _ItemGallery();
 }
 
-class _ItemGalleryState extends State<ItemGallery> {
+class _ItemGallery extends State<ItemGallery> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
