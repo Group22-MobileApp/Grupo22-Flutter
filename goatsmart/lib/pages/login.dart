@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/registerPage.dart';
 
 class LoginPage extends StatelessWidget {
   static const String routeName = 'Login';
@@ -66,13 +68,13 @@ class LoginPage extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                   ),
                   onPressed: () {
-                    Navigator.popAndPushNamed(context, '/itemGallery');
+                    Navigator.popAndPushNamed(context, ItemGallery.routeName);
                   },
                   child: const Text('Login', style: TextStyle(fontSize: 20),),
                 ),
                 SizedBox(height: size.height*0.1,),
                 GestureDetector(
-                  onTap: () => Navigator.popAndPushNamed(context, '/register'),
+                  onTap: () => Navigator.popAndPushNamed(context, RegisterPage.routename),
                   child: Text('Don\'t have an account?', style: TextStyle(color: Colors.blue.shade100),),
                 )
               ],
