@@ -5,6 +5,7 @@ import 'package:goatsmart/firebase_options.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/registerPage.dart';
 import 'package:goatsmart/preferences/pref_users.dart';
 
 void main() async{
@@ -32,11 +33,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSwatch().copyWith(secondary: const Color(0xFFF7DC6F), tertiary: const Color(0xFFF5B041)),
 
       ),
-      initialRoute: prefs.lastPage,
+      initialRoute: prefs.lastPage,      
       routes: {
         LoginPage.routeName: (context) => const LoginPage(),
         HomePage.routeName: (context) => const HomePage(),
-        ItemGallery.routeName: (context) => const ItemGallery(),              
+        ItemGallery.routeName: (context) => const ItemGallery(), 
+        RegisterPage.routename: (context) => const RegisterPage(),
       },
     );
   }

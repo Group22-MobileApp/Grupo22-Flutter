@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/utils/auth.dart';
 
@@ -49,14 +50,14 @@ class _RegisterPageState extends State<RegisterPage> {
                             Icons.account_circle_outlined,
                             color: Colors.blue.shade100,
                           ),
-                          labelText: 'Usuario',
+                          labelText: 'User',
                           labelStyle: const TextStyle(fontSize: 13),
                           hintText: 'ejemplo@gmail.com'),
                       keyboardType: TextInputType.emailAddress,
                       validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(errorText: 'Usuario requerido'),
+                        FormBuilderValidators.required(errorText: 'User required'),
                         FormBuilderValidators.email(
-                          errorText: 'Debe ingresar un Correo valido')
+                          errorText: 'Must enter valid email')
                       ]),
                   ),
                 ),
@@ -64,7 +65,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: FormBuilderTextField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      name: 'pass',
+                      name: 'password',
                       obscureText: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -75,21 +76,21 @@ class _RegisterPageState extends State<RegisterPage> {
                           Icons.account_circle_outlined,
                           color: Colors.black,
                         ),
-                        labelText: 'Contraseña',
+                        labelText: 'Password',
                         labelStyle: const TextStyle(fontSize: 13)     
                         ),
                     keyboardType: TextInputType.emailAddress,                     
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(
-                        errorText: 'Debe ingresar una contraseña')
+                        errorText: 'Must enter password')
                     ]),
                   ),
                 ),                                 
-                botonLogin(context),
+                botonRegister(context),
                 SizedBox(height: size.height*0.1,),
                 GestureDetector(
                   onTap: () => Navigator.popAndPushNamed(context, LoginPage.routeName),
-                  child: Text('¿Tienes cuenta?', style: TextStyle(color: Colors.blue.
+                  child: Text('Already have an account?', style: TextStyle(color: Colors.blue.
                   shade100),),
                   )                
                 ],
@@ -101,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  ElevatedButton botonLogin (BuildContext context){
+  ElevatedButton botonRegister (BuildContext context){
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         primary: Colors.blue,
@@ -111,10 +112,13 @@ class _RegisterPageState extends State<RegisterPage> {
         padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
       ),
       onPressed: () async {
+        _formKey.currentState?.save();
+
         if (_formKey.currentState?.validate()==true){
+          final v = _formKey.currentState?.value;          
           var result = await _auth.createAccount(
-            _formKey.currentState?.fields['user']?.value,
-            _formKey.currentState?.fields['pass']?.value,
+            v?['user'],
+            v?['password']
           );
 
           if (result == 1){
@@ -127,7 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('El correo no es valido')));
           } else {
-            Navigator.popAndPushNamed(context, LoginPage.routeName);
+            Navigator.popAndPushNamed(context, ItemGallery.routeName); 
           }
 
         } else {
