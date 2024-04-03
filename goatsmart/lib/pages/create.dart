@@ -1,21 +1,49 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:goatsmart/services/firebase_auth_service.dart';
 
-class CreatePage extends StatelessWidget {
-  const CreatePage({super.key});
+class CreatePage extends StatefulWidget {
+  const CreatePage({Key? key}) : super(key: key);
+  @override
+  State<CreatePage> createState() => CreatePageState();
+}
+
+class CreatePageState extends State<CreatePage> {
+
+  final FirebaseAuthService _auth = FirebaseAuthService();
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController carrerController = TextEditingController();
+  TextEditingController idController = TextEditingController();
+  TextEditingController numberPhone = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    nameController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    carrerController.dispose();
+    idController.dispose();
+    numberPhone.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
         title: const Text('Login Page'),
       ),
       body: DecoratedBox(
-        
         decoration: BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
@@ -24,22 +52,23 @@ class CreatePage extends StatelessWidget {
             alignment: Alignment.topCenter,
           ),
         ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,   
-          children: <Widget>[
-            Container(
-              alignment: Alignment.centerLeft,
-              child:Text('Create Account',
-              style: TextStyle(
-                fontSize: 50,
-                fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Create Account',
+                  style: TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
-            ),
-            
-            TextField(
+              TextField(
+                controller: nameController,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 242, 242, 242),
@@ -52,6 +81,7 @@ class CreatePage extends StatelessWidget {
                 ),
               ),
               TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 242, 242, 242),
@@ -63,8 +93,9 @@ class CreatePage extends StatelessWidget {
                   hintText: 'Uniandes email',
                 ),
               ),
-            const SizedBox(height: 10),
-            TextField(
+              const SizedBox(height: 10),
+              TextField(
+                controller: passwordController,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 242, 242, 242),
@@ -76,7 +107,8 @@ class CreatePage extends StatelessWidget {
                   hintText: 'Password',
                 ),
               ),
-            TextField(
+              TextField(
+                controller: confirmPasswordController,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 242, 242, 242),
@@ -94,7 +126,7 @@ class CreatePage extends StatelessWidget {
                 },
                 onInputValidated: (bool value) {
                   print('Valid: $value');
-              },
+                },
                 selectorConfig: SelectorConfig(
                   selectorType: PhoneInputSelectorType.DIALOG,
                 ),
@@ -103,8 +135,8 @@ class CreatePage extends StatelessWidget {
                 selectorTextStyle: const TextStyle(color: Colors.black),
                 initialValue: PhoneNumber(isoCode: 'US'),
               ),
-
-            TextField(
+              TextField(
+                controller: carrerController,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 242, 242, 242),
@@ -116,32 +148,54 @@ class CreatePage extends StatelessWidget {
                   hintText: 'What´s your carrer?',
                 ),
               ),
-
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemGallery())),
-              style: TextButton.styleFrom(
-                    foregroundColor: const Color.fromARGB(255, 117, 117, 117),
-                    backgroundColor: Color(0xffF7DC6F),
-                    minimumSize: Size(150, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  //addUser(emailController.text, nameController.text,passwordController.text, carrerController.text, numberPhone.text);
+                  signUp();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ItemGallery(),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  );
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color.fromARGB(255, 117, 117, 117),
+                  backgroundColor: Color(0xffF7DC6F),
+                  minimumSize: Size(150, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-              child: const Text('Done'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const Home())),
-              style: TextButton.styleFrom(
-                foregroundColor: const Color.fromARGB(255, 117, 117, 117),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                ),
+                child: const Text('Guardar'),
               ),
-              child: const Text('cancel'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Home())),
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color.fromARGB(255, 117, 117, 117),
+                ),
+                child: const Text('Cancelar'),
+              ),
+            ],
+          ),
         ),
       ),
-      )
     );
+  }
+
+  void signUp() async {
+    User? user = await _auth.signUpWithEmailAndPassword(
+        emailController.text, passwordController.text);
+
+    if (user != null) {
+      print("User created successfully");
+      Navigator.push( context, MaterialPageRoute(builder: (context) => const CreatePage()));
+    } else {
+      print("User not created");
+    }
+
   }
 }

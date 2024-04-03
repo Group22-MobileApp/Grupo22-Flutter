@@ -1,10 +1,28 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:goatsmart/pages/create.dart';
 import 'package:goatsmart/pages/home.dart';
+import 'package:goatsmart/services/firebase_auth_service.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+  @override
+  State<LoginPage> createState() => LoginPageState();
+}
+
+class LoginPageState extends State<LoginPage> {
+  final FirebaseAuthService _auth = FirebaseAuthService();
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,11 +89,21 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () => Navigator.push(
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const CreatePage())),
+                        builder: (context) => const CreatePage(),
+                      ),
+                    );
+                  },
+                  child: const Text('Go to CreatePage'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    signIn();
+                  },
                   style: TextButton.styleFrom(
                     foregroundColor: const Color.fromARGB(255, 117, 117, 117),
                     backgroundColor: Color(0xffF7DC6F),
@@ -91,14 +119,25 @@ class LoginPage extends StatelessWidget {
                   onPressed: () => Navigator.push(context,
                       MaterialPageRoute(builder: (context) => const Home())),
                   style: TextButton.styleFrom(
-                    foregroundColor: const Color.fromARGB(255, 117, 117, 117),
-                    backgroundColor: Color(0xffffffff)
-                  ),
+                      foregroundColor: const Color.fromARGB(255, 117, 117, 117),
+                      backgroundColor: Color(0xffffffff)),
                   child: const Text('cancel'),
                 ),
               ],
             ),
           ),
         ));
+  }
+
+  void signIn() async {
+    User? user = await _auth.signInWithEmailAndPassword(
+        emailController.text, passwordController.text);
+    if (user != null) {
+      print("User logged in successfully");
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const CreatePage()));
+    } else {
+      print("User not found");
+    }
   }
 }
