@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:goatsmart/pages/create.dart';
 import 'package:goatsmart/pages/home.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -64,6 +65,7 @@ class LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 TextField(
+                  controller: emailController,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Color.fromARGB(255, 242, 242, 242),
@@ -77,6 +79,7 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 10),
                 TextField(
+                  controller: passwordController,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Color.fromARGB(255, 242, 242, 242),
@@ -130,12 +133,16 @@ class LoginPageState extends State<LoginPage> {
   }
 
   void signIn() async {
+    String email = emailController.text;
+    String password = passwordController.text;
+    print("Correo ingresado es: $email");
+    print("Contraseña ingresada es: $password");
     User? user = await _auth.signInWithEmailAndPassword(
         emailController.text, passwordController.text);
     if (user != null) {
       print("User logged in successfully");
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const CreatePage()));
+          context, MaterialPageRoute(builder: (context) => const ItemGallery()));
     } else {
       print("User not found");
     }
