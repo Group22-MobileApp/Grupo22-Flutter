@@ -103,7 +103,25 @@ class _ItemGallery extends State<ItemGallery> {
             ],
           ),
           Expanded(
-            child: const Grid(),
+            child: const Grid(),            
+          ),
+          Padding( 
+            padding: const EdgeInsets.all(8.0), 
+            child: Text(
+              'New Items',
+              style: TextStyle(fontSize: 44),                                    
+            ),
+          ),
+          Expanded(
+            child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: <Widget>[
+              Image.asset('assets/images/11.jpg'), 
+              Image.asset('assets/images/12.jpg'),
+              Image.asset('assets/images/13.jpg'),
+              Image.asset('assets/images/14.jpg'),           
+              ],
+            )            
           ),
         ],
       ),
