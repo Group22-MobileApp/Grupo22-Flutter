@@ -5,13 +5,13 @@ import 'package:goatsmart/firebase_options.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
-import 'package:goatsmart/pages/registerPage.dart';
-import 'package:goatsmart/preferences/pref_users.dart';
 
-void main() async{
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await UserPreferences.init();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
