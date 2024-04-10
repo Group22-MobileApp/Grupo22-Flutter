@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/pages/login.dart';
-import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/registerPage.dart';
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class HomePage extends StatelessWidget {
+  static const String routeName = 'HomePage';
+  const HomePage({super.key});
 
   ElevatedButton buildLoginButton(BuildContext context) {
     return ElevatedButton(
     onPressed: () {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterPage()));
     },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFFF7DC6F),
@@ -75,7 +76,7 @@ class Home extends StatelessWidget {
               padding: EdgeInsets.only(top: 20),
             ),            
             TextButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemGallery())),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage())),
               style: TextButton.styleFrom(
                 foregroundColor: const Color.fromARGB(255, 117, 117, 117),
               ),

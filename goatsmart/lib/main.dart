@@ -1,13 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-//Import home.dart from pages folder
+import 'package:goatsmart/firebase_options.dart';
+//Import HomePage.dart from pages folder
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -15,7 +19,9 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final prefs = UserPreferences();
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +33,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSwatch().copyWith(secondary: const Color(0xFFF7DC6F), tertiary: const Color(0xFFF5B041)),
 
       ),
-      initialRoute: '/', // This is the route that the app will start on
+      initialRoute: prefs.lastPage,      
       routes: {
-        '/': (context) => const Home(), // This is your home page
-        '/login': (context) => const LoginPage(), // This is your login page
-        '/item': (context) => const ItemGallery(), // This is your item gallery page
+        LoginPage.routeName: (context) => const LoginPage(),
+        HomePage.routeName: (context) => const HomePage(),
+        ItemGallery.routeName: (context) => const ItemGallery(), 
+        RegisterPage.routename: (context) => const RegisterPage(),
       },
     );
   }
