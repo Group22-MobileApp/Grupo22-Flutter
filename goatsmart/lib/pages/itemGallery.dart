@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goatsmart/pages/allItems.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
 
@@ -91,7 +92,9 @@ class _ItemGallery extends State<ItemGallery> {
                           padding: EdgeInsets.only(left: screenWidth * 0.03),
                         ),
                         FloatingActionButton(
-                          onPressed: null,
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => SeeAllItemsView()));
+                          },
                           backgroundColor: Color.fromARGB(230, 255, 168, 6),
                           child: Icon(Icons.arrow_forward_outlined),
                         ),

@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       routes: {
         LoginPage.routeName: (context) => const LoginPage(),
         HomePage.routeName: (context) => const HomePage(),
-        ItemGallery.routeName: (context) => const ItemGallery(), 
+        ItemGallery.routeName: (context) => ItemGallery(), 
         RegisterPage.routename: (context) => const RegisterPage(),        
       },
     );
