@@ -1,4 +1,5 @@
 import "package:cloud_firestore/cloud_firestore.dart";
+import "package:image_picker/image_picker.dart";
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -16,7 +17,7 @@ Future <void> addUser(String email, String name, String password, String carrer,
 }
 
 // Crear un nuevo post
-Future <void> addPost(String category, String description, String image, String title) async {
+Future <void> addPost(String category, String description, PickedFile image, String title) async {
   CollectionReference collectionPosts = db.collection("Posts");
   await collectionPosts.add({
     'category': category,
@@ -38,4 +39,5 @@ Future<List<dynamic>> getPosts() async {
   }
   return Posts;
 } 
+
 

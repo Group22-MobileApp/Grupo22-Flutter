@@ -37,6 +37,22 @@ class CreatePageState extends State<CreatePage> {
     super.dispose();
   }
 
+  void signUp() async {
+    User? user = await _auth.signUpWithEmailAndPassword(
+        emailController.text, passwordController.text);
+
+    if (user != null) {
+      print("User created successfully");
+      Navigator.push( context, MaterialPageRoute(builder: (context) => const CreatePage()));
+    } else {
+      print("User not created");
+    }
+
+  }
+
+  
+  // View Model ------------------------------------------------------------
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,16 +202,4 @@ class CreatePageState extends State<CreatePage> {
     );
   }
 
-  void signUp() async {
-    User? user = await _auth.signUpWithEmailAndPassword(
-        emailController.text, passwordController.text);
-
-    if (user != null) {
-      print("User created successfully");
-      Navigator.push( context, MaterialPageRoute(builder: (context) => const CreatePage()));
-    } else {
-      print("User not created");
-    }
-
-  }
 }
