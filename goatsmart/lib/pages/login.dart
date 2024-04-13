@@ -7,6 +7,7 @@ import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 
 class LoginPage extends StatefulWidget {
+  static const String routeName = 'login';
   const LoginPage({Key? key}) : super(key: key);
   @override
   State<LoginPage> createState() => LoginPageState();
@@ -120,7 +121,7 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Home())),
+                      MaterialPageRoute(builder: (context) => const HomePage())),
                   style: TextButton.styleFrom(
                       foregroundColor: const Color.fromARGB(255, 117, 117, 117),
                       backgroundColor: Color(0xffffffff)),
