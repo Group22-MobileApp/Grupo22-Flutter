@@ -17,15 +17,24 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,17 +52,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCJzlq5O16E0-tWKznpf1inxIqcf3LYAzQ',
-    appId: '1:720688272523:web:d2ea193c7f077347b0f08e',
-    messagingSenderId: '720688272523',
-    projectId: 'goatmart-95c34',
-    authDomain: 'goatmart-95c34.firebaseapp.com',
-    databaseURL: 'https://goatmart-95c34-default-rtdb.firebaseio.com',
-    storageBucket: 'goatmart-95c34.appspot.com',
-    measurementId: 'G-SW0R7MCNHQ',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBc_-xuxDjYDnQXd2klz1hQvQKXOFIzRAI',
     appId: '1:720688272523:android:de2f55a37a7115a4b0f08e',
@@ -61,25 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'goatmart-95c34',
     databaseURL: 'https://goatmart-95c34-default-rtdb.firebaseio.com',
     storageBucket: 'goatmart-95c34.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDejrh5ozat369FJlwrtThZPgC0icdG64w',
-    appId: '1:720688272523:ios:c82db9f3f9ce8ed5b0f08e',
-    messagingSenderId: '720688272523',
-    projectId: 'goatmart-95c34',
-    databaseURL: 'https://goatmart-95c34-default-rtdb.firebaseio.com',
-    storageBucket: 'goatmart-95c34.appspot.com',
-    iosBundleId: 'com.example.goatsmart',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDejrh5ozat369FJlwrtThZPgC0icdG64w',
-    appId: '1:720688272523:ios:de2d8d59651e0931b0f08e',
-    messagingSenderId: '720688272523',
-    projectId: 'goatmart-95c34',
-    databaseURL: 'https://goatmart-95c34-default-rtdb.firebaseio.com',
-    storageBucket: 'goatmart-95c34.appspot.com',
-    iosBundleId: 'com.example.goatsmart.RunnerTests',
   );
 }
