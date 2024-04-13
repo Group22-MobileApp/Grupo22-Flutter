@@ -4,13 +4,15 @@ import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/pages/create.dart';
 
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class HomePage extends StatelessWidget {
+  static const String routeName = 'HomePage';
+  const HomePage({super.key});
 
   ElevatedButton buildLoginButton(BuildContext context) {
     return ElevatedButton(
     onPressed: () {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const CreatePage()));
+
     },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFFF7DC6F),
