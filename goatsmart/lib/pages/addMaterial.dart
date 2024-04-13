@@ -1,12 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/services/firebaseService.dart';
 
-class AddMaterialItemView extends StatelessWidget {
+class AddMaterialItemView extends StatefulWidget {
+  @override
+  _AddMaterialItemViewState createState() => _AddMaterialItemViewState();
+}
+
+class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final FirebaseService _firebaseService = FirebaseService();
+  File? _image;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +44,18 @@ class AddMaterialItemView extends StatelessWidget {
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 16),
+            _image == null
+                ? ElevatedButton(
+                    onPressed: () {
+                      _showImagePicker(context);
+                    },
+                    child: Text('Add Picture'),
+                  )
+                : SizedBox(
+                    height: 200,
+                    child: Image.file(_image!),
+                  ),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _addMaterialItem(context),
               child: Text('Add Material Item'),
@@ -43,6 +64,17 @@ class AddMaterialItemView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showImagePicker(BuildContext context) async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _image = File(image.path);
+      });
+    }
   }
 
   void _addMaterialItem(BuildContext context) {
@@ -56,17 +88,20 @@ class AddMaterialItemView extends StatelessWidget {
         title: title,
         description: description,
         price: price,
-        images: [], 
+        images: _image != null ? [_image!.path] : [],
         owner: 'current_user_id',
       );
 
       _firebaseService.createMaterialItem(newItem).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Material item added successfully')),
-        );        
+        );
         _titleController.clear();
         _descriptionController.clear();
         _priceController.clear();
+        setState(() {
+          _image = null;
+        });
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add material item: $error')),

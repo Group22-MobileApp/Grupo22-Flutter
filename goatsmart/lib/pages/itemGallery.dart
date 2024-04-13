@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/pages/home.dart';
+import 'package:goatsmart/pages/addMaterial.dart';
 
 class ItemGallery extends StatefulWidget {
   static const String routeName = 'ItemGallery';
@@ -35,10 +36,18 @@ class _ItemGallery extends State<ItemGallery> {
             hintText: "Search",
             prefixIcon: Icon(Icons.search),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)), // Adjust the border radius based on screen width
+              borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              // Navigate to a screen to create an item
+            },
+            icon: Icon(Icons.add),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -93,9 +102,9 @@ class _ItemGallery extends State<ItemGallery> {
               ],
             ),
             SizedBox(
-              height: screenHeight * 0.4, // Adjust the height based on screen height
+              height: screenHeight * 0.4,
               child: GridView.count(
-                crossAxisCount: screenWidth > 600 ? 4 : 2, // Adjust the cross axis count based on screen width
+                crossAxisCount: screenWidth > 600 ? 4 : 2,
                 padding: const EdgeInsets.all(10),
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
@@ -120,7 +129,7 @@ class _ItemGallery extends State<ItemGallery> {
               ),
             ),
             SizedBox(
-              height: screenHeight * 0.2, // Adjust the height based on screen height
+              height: screenHeight * 0.2,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: List.generate(
@@ -136,6 +145,12 @@ class _ItemGallery extends State<ItemGallery> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddMaterialItemView()));
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

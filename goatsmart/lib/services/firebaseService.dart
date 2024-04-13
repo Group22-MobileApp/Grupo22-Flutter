@@ -5,14 +5,6 @@ import 'package:goatsmart/models/materialItem.dart';
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> createMaterialItem(MaterialItem item) async {
-    try {
-      await _firestore.collection('materials').doc(item.id).set(item.toMap());
-    } catch (e) {
-      print('Error creating material item: $e');
-    }
-  }
-
   Future<List<MaterialItem>> getMaterialItems() async {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('materials').get();
@@ -22,4 +14,18 @@ class FirebaseService {
       return [];
     }
   }
+
+  Future<void> createMaterialItem(MaterialItem item) async {
+    try {
+      await _firestore.collection('material_items').doc(item.id).set({
+        'title': item.title,
+        'description': item.description,
+        'price': item.price,
+        'images': item.images,
+        'owner': item.owner,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }  
 }

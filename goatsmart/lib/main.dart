@@ -1,14 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:goatsmart/controllers/itemController.dart';
 import 'package:goatsmart/firebase_options.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/registerPage.dart';
 import 'package:goatsmart/preferences/pref_users.dart';
-import 'package:goatsmart/services/firebaseStorageService.dart';
 
 void main() async{  
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,10 +22,7 @@ class MyApp extends StatelessWidget {
   final prefs = UserPreferences();
 
   @override
-  Widget build(BuildContext context) {
-    Get.put(ItemController());
-    //Firebase storage service
-    Get.put(FirebaseStorageService());
+  Widget build(BuildContext context) {    
     return MaterialApp(
       title: 'GoatSmart',
       theme: ThemeData(                
@@ -41,7 +35,7 @@ class MyApp extends StatelessWidget {
         LoginPage.routeName: (context) => const LoginPage(),
         HomePage.routeName: (context) => const HomePage(),
         ItemGallery.routeName: (context) => const ItemGallery(), 
-        RegisterPage.routename: (context) => const RegisterPage(),
+        RegisterPage.routename: (context) => const RegisterPage(),        
       },
     );
   }
