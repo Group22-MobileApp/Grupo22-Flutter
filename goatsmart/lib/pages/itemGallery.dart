@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:goatsmart/pages/home.dart';
 
 class ItemGallery extends StatefulWidget {
-  static const String routeName = 'ItemGallery';
+  static const String routeName = 'itemGallery';
   const ItemGallery({Key? key}) : super(key: key);
 
   @override
-  _ItemGallery createState() => _ItemGallery();
+  _ItemGalleryState createState() => _ItemGalleryState();
 }
 
-class _ItemGallery extends State<ItemGallery> {
+class _ItemGalleryState extends State<ItemGallery> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;

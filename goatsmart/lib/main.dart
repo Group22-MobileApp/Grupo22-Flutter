@@ -12,7 +12,7 @@ import 'package:goatsmart/services/firebaseStorageService.dart';
 
 void main() async{  
   WidgetsFlutterBinding.ensureInitialized();
-  await UserPreferences.init();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
