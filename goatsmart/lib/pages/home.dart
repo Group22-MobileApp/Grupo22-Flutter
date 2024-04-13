@@ -47,14 +47,17 @@ class HomePage extends StatelessWidget {
               image: AssetImage('assets/images/logo.png'),
               height: 200,              
             ),
-            const Text(
-              'GOAT’S MART',
-              style: TextStyle(
-                fontSize: 80,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Raleway',
-                // fontColor: Color(0xFF2E4053)
-                color: Color(0xFF2E4053),                
+            Container(
+              width: double.infinity,
+              child: const Text(
+                'GOAT’S MART',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 60,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Raleway',
+                  color: Color(0xFF2E4053),                
+                ),
               ),
             ),
             const Text(

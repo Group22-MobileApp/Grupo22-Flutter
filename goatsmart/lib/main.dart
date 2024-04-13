@@ -1,15 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:goatsmart/controllers/itemController.dart';
 import 'package:goatsmart/firebase_options.dart';
-//Import HomePage.dart from pages folder
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/registerPage.dart';
 import 'package:goatsmart/preferences/pref_users.dart';
+import 'package:goatsmart/services/firebaseStorageService.dart';
 
-void main() async{
-
+void main() async{  
   WidgetsFlutterBinding.ensureInitialized();
   await UserPreferences.init();
   await Firebase.initializeApp(
@@ -25,10 +26,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(ItemController());
+    //Firebase storage service
+    Get.put(FirebaseStorageService());
     return MaterialApp(
       title: 'GoatSmart',
-      theme: ThemeData(        
-        // Want to use three colors for my app: 2E4053, F7DC6F, F5B041
+      theme: ThemeData(                
         primaryColor: const Color(0xFF2E4053),
         colorScheme: ColorScheme.fromSwatch().copyWith(secondary: const Color(0xFFF7DC6F), tertiary: const Color(0xFFF5B041)),
 
