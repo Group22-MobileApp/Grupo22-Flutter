@@ -51,9 +51,20 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                     },
                     child: Text('Add Picture'),
                   )
-                : SizedBox(
-                    height: 200,
-                    child: Image.file(_image!),
+                : Column(
+                    children: [
+                      SizedBox(
+                        height: 200,
+                        child: Image.file(_image!),
+                      ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          _showImagePicker(context);
+                        },
+                        child: Text('Change Picture'),
+                      ),
+                    ],
                   ),
             SizedBox(height: 16),
             ElevatedButton(
@@ -68,7 +79,32 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
 
   void _showImagePicker(BuildContext context) async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await showModalBottomSheet<XFile>(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.camera),
+                title: Text('Take a photo'),
+                onTap: () async {
+                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Choose from gallery'),
+                onTap: () async {
+                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
 
     if (image != null) {
       setState(() {
