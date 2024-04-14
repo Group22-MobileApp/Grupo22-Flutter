@@ -6,8 +6,11 @@ import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/registerPage.dart';
 import 'package:goatsmart/preferences/pref_users.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:goatsmart/utils/auth.dart';
 
-void main() async{  
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await UserPreferences.init();
   await Firebase.initializeApp(
@@ -19,23 +22,43 @@ void main() async{
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
+  final AuthService _authService = AuthService(); // Instance of AuthService
   final prefs = UserPreferences();
 
   @override
-  Widget build(BuildContext context) {    
-    return MaterialApp(
-      title: 'GoatSmart',
-      theme: ThemeData(                
-        primaryColor: const Color(0xFF2E4053),
-        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: const Color(0xFFF7DC6F), tertiary: const Color(0xFFF5B041)),
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: _authService.user, // Listen to the auth state changes
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          User? user = snapshot.data;          
 
-      ),
-      initialRoute: prefs.lastPage,      
-      routes: {
-        LoginPage.routeName: (context) => const LoginPage(),
-        HomePage.routeName: (context) => const HomePage(),
-        ItemGallery.routeName: (context) => ItemGallery(), 
-        RegisterPage.routename: (context) => const RegisterPage(),        
+          return MaterialApp(
+            title: 'GoatSmart',
+            theme: ThemeData(
+              primaryColor: const Color(0xFF2E4053),
+              colorScheme: ColorScheme.fromSwatch().copyWith(
+                secondary: const Color(0xFFF7DC6F),
+                tertiary: const Color(0xFFF5B041),
+              ),
+            ),
+            home: HomePage(),
+            routes: {
+              LoginPage.routeName: (context) => LoginPage(),
+              HomePage.routeName: (context) => const HomePage(),
+              ItemGallery.routeName: (context) => ItemGallery(),
+              RegisterPage.routeName: (context) => const RegisterPage(),
+            },
+          );
+        } else {          
+          return MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        }
       },
     );
   }

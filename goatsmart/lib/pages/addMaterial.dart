@@ -112,23 +112,24 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
       });
     }
   }
-
-  void _addMaterialItem(BuildContext context) {
+  
+  void _addMaterialItem(BuildContext context) async {
     String title = _titleController.text;
     String description = _descriptionController.text;
     double price = double.tryParse(_priceController.text) ?? 0.0;
 
-    if (title.isNotEmpty && description.isNotEmpty && price > 0) {
+    if (title.isNotEmpty && description.isNotEmpty && price > 0 && _image != null) {
       MaterialItem newItem = MaterialItem(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
         description: description,
         price: price,
-        images: _image != null ? [_image!.path] : [],
+        images: [_image!.path],
         owner: 'current_user_id',
       );
 
-      _firebaseService.createMaterialItem(newItem).then((_) {
+      try {
+        await _firebaseService.createMaterialItem(newItem);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Material item added successfully')),
         );
@@ -138,14 +139,14 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         setState(() {
           _image = null;
         });
-      }).catchError((error) {
+      } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add material item: $error')),
         );
-      });
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields')),
+        SnackBar(content: Text('Please fill all fields and select an image')),
       );
     }
   }

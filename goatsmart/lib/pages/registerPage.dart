@@ -6,7 +6,7 @@ import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/utils/auth.dart';
 
 class RegisterPage extends StatefulWidget{
-  static const String routename = 'register';
+  static const String routeName = 'register';
   const RegisterPage({super.key});
   @override
   State<RegisterPage> createState()=> _RegisterPageState();

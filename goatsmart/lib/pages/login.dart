@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/registerPage.dart';
+import 'package:goatsmart/utils/auth.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   static const String routeName = 'Login';
-  const LoginPage({super.key});
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {  
+  final AuthService _auth = AuthService();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -67,14 +76,20 @@ class LoginPage extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                   ),
-                  onPressed: () {
-                    Navigator.popAndPushNamed(context, ItemGallery.routeName);
+                  onPressed: () async {
+                    dynamic result = await _auth.signInWithEmailAndPassword(_emailController.text, _passwordController.text);
+                    if (result != null) {
+                      print('Logged in');
+                      Navigator.popAndPushNamed(context, ItemGallery.routeName);
+                    } else {
+                      print('Error logging in');
+                    }
                   },
                   child: const Text('Login', style: TextStyle(fontSize: 20),),
                 ),
                 SizedBox(height: size.height*0.1,),
                 GestureDetector(
-                  onTap: () => Navigator.popAndPushNamed(context, RegisterPage.routename),
+                  onTap: () => Navigator.popAndPushNamed(context, RegisterPage.routeName),
                   child: Text('Don\'t have an account?', style: TextStyle(color: Colors.blue.shade100),),
                 )
               ],

@@ -39,6 +39,14 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                 return ListTile(
                   title: Text(item.title),
                   subtitle: Text(item.description),
+                  leading: item.images.isNotEmpty
+                      ? Image.network(
+                          item.images.first, // Displaying the first image only for simplicity
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(), // Placeholder if no image
                 );
               },
             );
