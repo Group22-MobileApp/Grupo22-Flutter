@@ -40,15 +40,7 @@ class _ItemGallery extends State<ItemGallery> {
               borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
             ),
           ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              // Navigate to a screen to create an item
-            },
-            icon: Icon(Icons.add),
-          ),
-        ],
+        ),        
       ),
       body: SingleChildScrollView(
         child: Column(

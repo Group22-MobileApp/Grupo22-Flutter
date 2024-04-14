@@ -22,13 +22,13 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final AuthService _authService = AuthService(); // Instance of AuthService
+  final AuthService _authService = AuthService(); 
   final prefs = UserPreferences();
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: _authService.user, // Listen to the auth state changes
+      stream: _authService.userStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           User? user = snapshot.data;          

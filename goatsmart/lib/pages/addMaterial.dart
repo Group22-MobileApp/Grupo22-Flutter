@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:goatsmart/utils/auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/services/firebaseService.dart';
@@ -15,6 +16,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final FirebaseService _firebaseService = FirebaseService();
+  final AuthService _auth = AuthService();
   File? _image;
 
   @override
@@ -113,23 +115,24 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
     }
   }
   
-  void _addMaterialItem(BuildContext context) async {
+  void _addMaterialItem(BuildContext context) {
     String title = _titleController.text;
     String description = _descriptionController.text;
     double price = double.tryParse(_priceController.text) ?? 0.0;
+        
+    String currentUserId = _auth.getCurrentUserId();
 
-    if (title.isNotEmpty && description.isNotEmpty && price > 0 && _image != null) {
+    if (title.isNotEmpty && description.isNotEmpty && price > 0) {
       MaterialItem newItem = MaterialItem(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
         description: description,
         price: price,
-        images: [_image!.path],
-        owner: 'current_user_id',
+        images: _image != null ? [_image!.path] : [],
+        owner: currentUserId, 
       );
 
-      try {
-        await _firebaseService.createMaterialItem(newItem);
+      _firebaseService.createMaterialItem(newItem).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Material item added successfully')),
         );
@@ -139,14 +142,14 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         setState(() {
           _image = null;
         });
-      } catch (error) {
+      }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add material item: $error')),
         );
-      }
+      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields and select an image')),
+        SnackBar(content: Text('Please fill all fields')),
       );
     }
   }
