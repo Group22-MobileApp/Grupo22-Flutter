@@ -5,14 +5,12 @@ import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/create.dart';
-import 'package:goatsmart/preferences/pref_users.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await UserPreferences.init();
+  WidgetsFlutterBinding.ensureInitialized();  
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -22,8 +20,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
-  final AuthService _authService = AuthService(); 
-  final prefs = UserPreferences();
+  final AuthService _authService = AuthService();   
 
   @override
   Widget build(BuildContext context) {
