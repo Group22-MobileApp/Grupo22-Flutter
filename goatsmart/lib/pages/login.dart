@@ -101,11 +101,11 @@ class LoginPageState extends State<LoginPage> {
                       ),
                     );
                   },
-                  child: const Text('Go to CreatePage'),
+                  child: const Text('I already have an account'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    signIn();
+                    signIn(emailController.text, passwordController.text);
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: const Color.fromARGB(255, 117, 117, 117),
@@ -116,7 +116,7 @@ class LoginPageState extends State<LoginPage> {
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
-                  child: const Text('Next'),
+                  child: const Text('Log In'),
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.push(context,
@@ -132,17 +132,19 @@ class LoginPageState extends State<LoginPage> {
         ));
   }
 
-  void signIn() async {
-    String email = emailController.text;
-    String password = passwordController.text;
+  void signIn(String email, String password) async {
     print("Correo ingresado es: $email");
     print("Contraseña ingresada es: $password");
     String? user = await _auth.signInWithEmailAndPassword(
-        emailController.text, passwordController.text);
+      email,
+      password,
+    );
     if (user != null) {
       print("User logged in successfully");
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+        context,
+        MaterialPageRoute(builder: (context) => const ItemGallery()),
+      );
     } else {
       print("User not found");
     }
