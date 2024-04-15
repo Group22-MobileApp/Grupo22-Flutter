@@ -59,4 +59,6 @@ flutter:
     - assets/images/13.jpg
     - assets/images/14.jpg
     - assets/images/prof.jpg
+    - assets/images/login_background.png
+    - assets/images/registration_background.png
   uses-material-design: true
