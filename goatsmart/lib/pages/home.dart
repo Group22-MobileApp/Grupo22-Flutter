@@ -5,7 +5,7 @@ import 'package:goatsmart/pages/create.dart';
 class HomePage extends StatelessWidget {
   static const String routeName = 'HomePage';
 
-  const HomePage({Key? key});
+  const HomePage({Key? key}) : super(key: key);
 
   ElevatedButton buildLoginButton(BuildContext context) {
     return ElevatedButton(
@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
               padding: EdgeInsets.only(top: 20),
             ),
             TextButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage())),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage())),
               style: TextButton.styleFrom(
                 foregroundColor: const Color.fromARGB(255, 117, 117, 117),
               ),
@@ -84,15 +84,15 @@ class HomePage extends StatelessWidget {
                       fontFamily: 'Montserrat',
                     ),
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 20),
                   ),
                   FloatingActionButton(
                     onPressed: null,
                     backgroundColor: Color.fromARGB(230, 255, 168, 6),
                     foregroundColor: Colors.white,
-                    shape: const CircleBorder(),
-                    child: const Icon(Icons.arrow_forward_outlined),
+                    shape: CircleBorder(),
+                    child: Icon(Icons.arrow_forward_outlined),
                   ),
                 ],
               ),

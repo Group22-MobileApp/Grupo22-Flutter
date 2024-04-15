@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:goatsmart/pages/allItems.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
-import 'package:goatsmart/services/firebaseService.dart';
+import 'package:goatsmart/services/firebase_service.dart';
 
 class ItemGallery extends StatefulWidget {
   static const String routeName = 'ItemGallery';
@@ -50,16 +50,16 @@ class _ItemGallery extends State<ItemGallery> {
           padding: const EdgeInsets.only(left: 15.0),
           child: CircleAvatar(
             radius: screenWidth * 0.12,
-            backgroundImage: AssetImage('assets/images/prof.jpg'),
+            backgroundImage: const AssetImage('assets/images/prof.jpg'),
           ),
         ),
         title: TextField(
           decoration: InputDecoration(
-            fillColor: Color.fromARGB(255, 211, 210, 210),
+            fillColor: const Color.fromARGB(255, 211, 210, 210),
             filled: true,
             labelText: "Search",
             hintText: "Search",
-            prefixIcon: Icon(Icons.search),
+            prefixIcon: const Icon(Icons.search),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
             ),
@@ -92,7 +92,7 @@ class _ItemGallery extends State<ItemGallery> {
                   child: TextButton(
                     onPressed: () => Navigator.popAndPushNamed(context, HomePage.routeName),
                     style: TextButton.styleFrom(
-                      foregroundColor: Color.fromARGB(255, 0, 0, 0),
+                      foregroundColor: const Color.fromARGB(255, 0, 0, 0),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -109,10 +109,10 @@ class _ItemGallery extends State<ItemGallery> {
                         ),
                         FloatingActionButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => SeeAllItemsView()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const SeeAllItemsView()));
                           },
-                          backgroundColor: Color.fromARGB(230, 255, 168, 6),
-                          child: Icon(Icons.arrow_forward_outlined),
+                          backgroundColor: const Color.fromARGB(230, 255, 168, 6),
+                          child: const Icon(Icons.arrow_forward_outlined),
                         ),
                       ],
                     ),
@@ -173,9 +173,9 @@ class _ItemGallery extends State<ItemGallery> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddMaterialItemView()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddMaterialItemView()));
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

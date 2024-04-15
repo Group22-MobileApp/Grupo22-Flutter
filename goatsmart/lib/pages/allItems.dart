@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/materialItem.dart';
-import 'package:goatsmart/services/firebaseService.dart';
+import 'package:goatsmart/services/firebase_service.dart';
 
 class SeeAllItemsView extends StatefulWidget {
+  const SeeAllItemsView({Key? key}) : super(key: key);
+
   @override
   _SeeAllItemsViewState createState() => _SeeAllItemsViewState();
 }
@@ -21,13 +23,13 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('All Items'),
+        title: const Text('All Items'),
       ),
       body: FutureBuilder<List<MaterialItem>>(
         future: _materialItemsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
@@ -51,7 +53,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
               },
             );
           } else {
-            return Center(child: Text('No items found'));
+            return const Center(child: Text('No items found'));
           }
         },
       ),

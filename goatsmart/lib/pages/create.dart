@@ -1,7 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -14,8 +11,9 @@ class CreatePage extends StatefulWidget {
 }
 
 class CreatePageState extends State<CreatePage> {
+  static const routeName = 'registerPage';
 
-  final FirebaseAuthService _auth = FirebaseAuthService();
+  final AuthService _auth = AuthService();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -38,7 +36,7 @@ class CreatePageState extends State<CreatePage> {
   }
 
   void signUp() async {
-    User? user = await _auth.signUpWithEmailAndPassword(
+    String? user = await _auth.signUpWithEmailAndPassword(
         emailController.text, passwordController.text);
 
     if (user != null) {
@@ -60,7 +58,7 @@ class CreatePageState extends State<CreatePage> {
         title: const Text('Login Page'),
       ),
       body: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
             image: AssetImage('assets/images/registration_background.png'),
@@ -75,7 +73,7 @@ class CreatePageState extends State<CreatePage> {
             children: <Widget>[
               Container(
                 alignment: Alignment.centerLeft,
-                child: Text(
+                child: const Text(
                   'Create Account',
                   style: TextStyle(
                     fontSize: 50,
@@ -87,7 +85,7 @@ class CreatePageState extends State<CreatePage> {
                 controller: nameController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Color.fromARGB(255, 242, 242, 242),
+                  fillColor: const Color.fromARGB(255, 242, 242, 242),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50.0),
                     borderSide: BorderSide.none,
@@ -100,7 +98,7 @@ class CreatePageState extends State<CreatePage> {
                 controller: emailController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Color.fromARGB(255, 242, 242, 242),
+                  fillColor: const Color.fromARGB(255, 242, 242, 242),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50.0),
                     borderSide: BorderSide.none,
@@ -114,7 +112,7 @@ class CreatePageState extends State<CreatePage> {
                 controller: passwordController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Color.fromARGB(255, 242, 242, 242),
+                  fillColor: const Color.fromARGB(255, 242, 242, 242),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50.0),
                     borderSide: BorderSide.none,
@@ -127,7 +125,7 @@ class CreatePageState extends State<CreatePage> {
                 controller: confirmPasswordController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Color.fromARGB(255, 242, 242, 242),
+                  fillColor: const Color.fromARGB(255, 242, 242, 242),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50.0),
                     borderSide: BorderSide.none,
@@ -155,7 +153,7 @@ class CreatePageState extends State<CreatePage> {
                 controller: carrerController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Color.fromARGB(255, 242, 242, 242),
+                  fillColor: const Color.fromARGB(255, 242, 242, 242),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50.0),
                     borderSide: BorderSide.none,
@@ -178,18 +176,18 @@ class CreatePageState extends State<CreatePage> {
                 },
                 style: TextButton.styleFrom(
                   foregroundColor: const Color.fromARGB(255, 117, 117, 117),
-                  backgroundColor: Color(0xffF7DC6F),
-                  minimumSize: Size(150, 50),
+                  backgroundColor: const Color(0xffF7DC6F),
+                  minimumSize: const Size(150, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
                 child: const Text('Guardar'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Home())),
+                    MaterialPageRoute(builder: (context) => const HomePage())),
                 style: TextButton.styleFrom(
                   foregroundColor: const Color.fromARGB(255, 117, 117, 117),
                 ),

@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:goatsmart/utils/auth.dart';
+import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goatsmart/models/materialItem.dart';
-import 'package:goatsmart/services/firebaseService.dart';
+import 'package:goatsmart/services/firebase_service.dart';
 
 class AddMaterialItemView extends StatefulWidget {
+  const AddMaterialItemView({Key? key}) : super(key: key);
+
   @override
   _AddMaterialItemViewState createState() => _AddMaterialItemViewState();
 }
@@ -23,7 +25,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Material Item'),
+        title: const Text('Add New Material Item'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -32,26 +34,26 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
           children: [
             TextFormField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+              decoration: const InputDecoration(labelText: 'Title'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
+              decoration: const InputDecoration(labelText: 'Description'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _priceController,
-              decoration: InputDecoration(labelText: 'Price'),
+              decoration: const InputDecoration(labelText: 'Price'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _image == null
                 ? ElevatedButton(
                     onPressed: () {
                       _showImagePicker(context);
                     },
-                    child: Text('Add Picture'),
+                    child: const Text('Add Picture'),
                   )
                 : Column(
                     children: [
@@ -59,19 +61,19 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                         height: 200,
                         child: Image.file(_image!),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
                           _showImagePicker(context);
                         },
-                        child: Text('Change Picture'),
+                        child: const Text('Change Picture'),
                       ),
                     ],
                   ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _addMaterialItem(context),
-              child: Text('Add Material Item'),
+              child: const Text('Add Material Item'),
             ),
           ],
         ),
@@ -80,7 +82,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   }
 
   void _showImagePicker(BuildContext context) async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     final XFile? image = await showModalBottomSheet<XFile>(
       context: context,
       builder: (BuildContext context) {
@@ -89,17 +91,17 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.camera),
-                title: Text('Take a photo'),
+                leading: const Icon(Icons.camera),
+                title: const Text('Take a photo'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(context, await picker.pickImage(source: ImageSource.camera));
                 },
               ),
               ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text('Choose from gallery'),
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from gallery'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(context, await picker.pickImage(source: ImageSource.gallery));
                 },
               ),
             ],
@@ -134,7 +136,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
 
       _firebaseService.createMaterialItem(newItem).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Material item added successfully')),
+          const SnackBar(content: Text('Material item added successfully')),
         );
         _titleController.clear();
         _descriptionController.clear();
@@ -149,7 +151,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields')),
+        const SnackBar(content: Text('Please fill all fields')),
       );
     }
   }

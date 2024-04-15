@@ -1,6 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:goatsmart/pages/create.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
@@ -8,12 +6,14 @@ import 'package:goatsmart/services/firebase_auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
+  static const routeName = 'LoginPage';
+
   @override
   State<LoginPage> createState() => LoginPageState();
 }
 
 class LoginPageState extends State<LoginPage> {
-  final FirebaseAuthService _auth = FirebaseAuthService();
+  final AuthService _auth = AuthService();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -32,7 +32,7 @@ class LoginPageState extends State<LoginPage> {
           title: const Text('Login Page'),
         ),
         body: DecoratedBox(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.white,
             image: DecorationImage(
               image: AssetImage('assets/images/login_background.png'),
@@ -47,7 +47,7 @@ class LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 Container(
                   alignment: Alignment.centerLeft,
-                  child: Text(
+                  child: const Text(
                     'Login',
                     style: TextStyle(
                       fontSize: 50,
@@ -57,7 +57,7 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  child: Text(
+                  child: const Text(
                     'Good to see you back!',
                     style: TextStyle(
                       fontSize: 18,
@@ -68,7 +68,7 @@ class LoginPageState extends State<LoginPage> {
                   controller: emailController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Color.fromARGB(255, 242, 242, 242),
+                    fillColor: const Color.fromARGB(255, 242, 242, 242),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(50.0),
                       borderSide: BorderSide.none,
@@ -82,7 +82,7 @@ class LoginPageState extends State<LoginPage> {
                   controller: passwordController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Color.fromARGB(255, 242, 242, 242),
+                    fillColor: const Color.fromARGB(255, 242, 242, 242),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(50.0),
                       borderSide: BorderSide.none,
@@ -109,21 +109,21 @@ class LoginPageState extends State<LoginPage> {
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: const Color.fromARGB(255, 117, 117, 117),
-                    backgroundColor: Color(0xffF7DC6F),
-                    minimumSize: Size(150, 50),
+                    backgroundColor: const Color(0xffF7DC6F),
+                    minimumSize: const Size(150, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
                   child: const Text('Next'),
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Home())),
+                      MaterialPageRoute(builder: (context) => const HomePage())),
                   style: TextButton.styleFrom(
                       foregroundColor: const Color.fromARGB(255, 117, 117, 117),
-                      backgroundColor: Color(0xffffffff)),
+                      backgroundColor: const Color(0xffffffff)),
                   child: const Text('cancel'),
                 ),
               ],
@@ -137,7 +137,7 @@ class LoginPageState extends State<LoginPage> {
     String password = passwordController.text;
     print("Correo ingresado es: $email");
     print("Contraseña ingresada es: $password");
-    User? user = await _auth.signInWithEmailAndPassword(
+    String? user = await _auth.signInWithEmailAndPassword(
         emailController.text, passwordController.text);
     if (user != null) {
       print("User logged in successfully");

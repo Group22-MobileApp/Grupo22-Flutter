@@ -13,7 +13,7 @@ class AuthService {
   }
 
   // Method to create a new user account
-  Future<String?> createAccount(String email, String password) async {
+  Future<String?> signUpWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -35,7 +35,13 @@ class AuthService {
       );
       return userCredential.user?.uid;
     } on FirebaseAuthException catch (e) {
-      print('Error signing in: ${e.message}');
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      } else {
+        print('Error signing in: ${e.message}');
+      }
       return null;
     }
   }

@@ -4,10 +4,10 @@ import 'package:goatsmart/firebase_options.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/login.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
-import 'package:goatsmart/pages/registerPage.dart';
+import 'package:goatsmart/pages/create.dart';
 import 'package:goatsmart/preferences/pref_users.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:goatsmart/utils/auth.dart';
+import 'package:goatsmart/services/firebase_auth_service.dart';
 
 
 void main() async {
@@ -20,7 +20,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  MyApp({Key? key}) : super(key: key);
 
   final AuthService _authService = AuthService(); 
   final prefs = UserPreferences();
@@ -31,7 +31,6 @@ class MyApp extends StatelessWidget {
       stream: _authService.userStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          User? user = snapshot.data;          
 
           return MaterialApp(
             title: 'GoatSmart',
@@ -42,16 +41,16 @@ class MyApp extends StatelessWidget {
                 tertiary: const Color(0xFFF5B041),
               ),
             ),
-            home: HomePage(),
+            home: const HomePage(),
             routes: {
-              LoginPage.routeName: (context) => LoginPage(),
+              LoginPage.routeName: (context) => const LoginPage(),
               HomePage.routeName: (context) => const HomePage(),
-              ItemGallery.routeName: (context) => ItemGallery(),
-              RegisterPage.routeName: (context) => const RegisterPage(),
+              ItemGallery.routeName: (context) => const ItemGallery(),
+              CreatePageState.routeName: (context) => const CreatePage(),
             },
           );
         } else {          
-          return MaterialApp(
+          return const MaterialApp(
             home: Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
