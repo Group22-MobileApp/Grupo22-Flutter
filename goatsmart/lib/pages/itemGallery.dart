@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:goatsmart/pages/allItems.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/services/firebaseService.dart';
 
 class ItemGallery extends StatefulWidget {
   static const String routeName = 'ItemGallery';
@@ -12,6 +13,29 @@ class ItemGallery extends StatefulWidget {
 }
 
 class _ItemGallery extends State<ItemGallery> {
+  final FirebaseService _firebaseService = FirebaseService();
+  List<dynamic> itemImages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLastItemsImages();
+  }
+
+  Future<void> _fetchLastItemsImages() async {
+    var images = await _firebaseService.fetchLastItemsImages();
+    print(images);
+    if (images.isNotEmpty) {
+      setState(() {
+        itemImages = images;
+      });
+    } else {      
+      setState(() {
+        itemImages = List.generate(4, (index) => 'assets/images/${index + 11}.jpg');
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -125,17 +149,23 @@ class _ItemGallery extends State<ItemGallery> {
             ),
             SizedBox(
               height: screenHeight * 0.2,
-              child: ListView(
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                children: List.generate(
-                  4,
-                  (index) => Padding(
+                itemCount: itemImages.length,
+                itemBuilder: (context, index) {
+                  var imageList = itemImages[index];  
+                  var imagePath = imageList.isNotEmpty ? imageList[0] : 'assets/images/default.jpg'; 
+                  return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Image.asset(
-                      'assets/images/${index + 11}.jpg',
+                    child: Image.network(
+                      imagePath,
+                      errorBuilder: (context, error, stackTrace) {                        
+                        return Image.asset('assets/images/default.jpg');
+                      },
+                      fit: BoxFit.cover,
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ],

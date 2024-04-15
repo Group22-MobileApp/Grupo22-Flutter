@@ -22,6 +22,7 @@ class FirebaseService {
         'price': item.price,
         'images': imageUrls,
         'owner': item.owner,
+        'created_at': FieldValue.serverTimestamp(),
       });
     } catch (error) {
       throw error;
@@ -57,6 +58,41 @@ class FirebaseService {
     TaskSnapshot snapshot = await task;
     String downloadUrl = await snapshot.ref.getDownloadURL();
     return downloadUrl;
-}
+  }
+
+  // Fetch last 10 material items
+  Future<List<MaterialItem>> fetchLastItems() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').orderBy('created_at', descending: true).limit(10).get();
+      return querySnapshot.docs.map((doc) {
+        final title = doc['title'] ?? '';
+        final description = doc['description'] ?? '';
+        return MaterialItem(
+          id: doc.id,
+          title: title,
+          description: description,
+          price: doc['price'] ?? 0.0,
+          images: List<String>.from(doc['images'] ?? []),
+          owner: doc['owner'] ?? '',
+        );
+      }).toList();
+    } catch (e) {
+      print('Error getting material items: $e');
+      return [];
+    }
+  }
+
+  // Fetch last items images
+  Future<List> fetchLastItemsImages() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').orderBy('created_at', descending: true).limit(10).get();
+      return querySnapshot.docs.map((doc) {
+        return doc['images'];
+      }).toList();
+    } catch (e) {
+      print('Error getting material items: $e');
+      return [];
+    }
+  }  
 
 }
