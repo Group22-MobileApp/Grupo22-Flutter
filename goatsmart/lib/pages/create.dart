@@ -6,6 +6,7 @@ import 'package:goatsmart/services/firebase_auth_service.dart';
 
 class CreatePage extends StatefulWidget {
   const CreatePage({Key? key}) : super(key: key);
+
   @override
   State<CreatePage> createState() => CreatePageState();
 }
@@ -20,7 +21,6 @@ class CreatePageState extends State<CreatePage> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController carrerController = TextEditingController();
-  TextEditingController idController = TextEditingController();
   TextEditingController numberPhone = TextEditingController();
 
   @override
@@ -30,32 +30,15 @@ class CreatePageState extends State<CreatePage> {
     passwordController.dispose();
     confirmPasswordController.dispose();
     carrerController.dispose();
-    idController.dispose();
     numberPhone.dispose();
     super.dispose();
   }
 
-  void signUp() async {
-    String? user = await _auth.signUpWithEmailAndPassword(
-        emailController.text, passwordController.text);
-
-    if (user != null) {
-      print("User created successfully");
-      Navigator.push( context, MaterialPageRoute(builder: (context) => const CreatePage()));
-    } else {
-      print("User not created");
-    }
-
-  }
-
-  
-  // View Model ------------------------------------------------------------
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page'),
+        title: const Text('Create Account'),
       ),
       body: DecoratedBox(
         decoration: const BoxDecoration(
@@ -136,12 +119,13 @@ class CreatePageState extends State<CreatePage> {
               ),
               InternationalPhoneNumberInput(
                 onInputChanged: (PhoneNumber number) {
-                  print('Phone number: ${number.phoneNumber}');
+                  // Update the phone number controller
+                  numberPhone.text = number.phoneNumber ?? '';
                 },
                 onInputValidated: (bool value) {
                   print('Valid: $value');
                 },
-                selectorConfig: SelectorConfig(
+                selectorConfig: const SelectorConfig(
                   selectorType: PhoneInputSelectorType.DIALOG,
                 ),
                 ignoreBlank: false,
@@ -164,16 +148,7 @@ class CreatePageState extends State<CreatePage> {
               ),
               const SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () {
-                  //addUser(emailController.text, nameController.text,passwordController.text, carrerController.text, numberPhone.text);
-                  signUp();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ItemGallery(),
-                    ),
-                  );
-                },
+                onPressed: signUp,
                 style: TextButton.styleFrom(
                   foregroundColor: const Color.fromARGB(255, 117, 117, 117),
                   backgroundColor: const Color(0xffF7DC6F),
@@ -183,15 +158,17 @@ class CreatePageState extends State<CreatePage> {
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
-                child: const Text('Guardar'),
+                child: const Text('Save'),
               ),
               ElevatedButton(
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const HomePage())),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                ),
                 style: TextButton.styleFrom(
                   foregroundColor: const Color.fromARGB(255, 117, 117, 117),
                 ),
-                child: const Text('Cancelar'),
+                child: const Text('Cancel'),
               ),
             ],
           ),
@@ -200,4 +177,67 @@ class CreatePageState extends State<CreatePage> {
     );
   }
 
+  void signUp() async {
+    String email = emailController.text;
+    String password = passwordController.text;
+    String confirmPassword = confirmPasswordController.text;
+    String name = nameController.text;
+    String carrer = carrerController.text;
+    String phoneNumber = numberPhone.text;
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    if (email.isEmpty || password.isEmpty || name.isEmpty || carrer.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in at least all fields except phone number')),
+      );
+      return;
+    }
+
+    // More validations
+    if (!email.contains('@uniandes.edu.co')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please use a Uniandes email')),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password must be at least 6 characters')),
+      );
+      return;
+    }
+
+    if (phoneNumber.length < 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid phone number')),
+      );
+      return;
+    }
+
+    if (carrer.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Carrer must be at least 3 characters')),
+      );
+      return;
+    }    
+
+    String? user = await _auth.signUpWithEmailAndPassword(email, password);
+
+    if (user != null) {
+      print("User created successfully");
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ItemGallery()),
+      );
+    } else {
+      print("User not created");
+    }
+  }
 }
