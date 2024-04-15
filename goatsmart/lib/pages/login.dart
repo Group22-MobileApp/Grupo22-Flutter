@@ -1,119 +1,150 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:goatsmart/pages/create.dart';
+import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
-import 'package:goatsmart/pages/registerPage.dart';
-import 'package:goatsmart/utils/auth.dart';
+import 'package:goatsmart/services/firebase_auth_service.dart';
 
 class LoginPage extends StatefulWidget {
-  static const String routeName = 'Login';
-
+  const LoginPage({Key? key}) : super(key: key);
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final AuthService _auth = AuthService();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+class LoginPageState extends State<LoginPage> {
+  final FirebaseAuthService _auth = FirebaseAuthService();
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 63, 85, 173),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            height: size.height,
-            color: Color.fromARGB(255, 63, 85, 173),
+        appBar: AppBar(
+          title: const Text('Login Page'),
+        ),
+        body: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            image: DecorationImage(
+              image: AssetImage('assets/images/login_background.png'),
+              fit: BoxFit.fitWidth,
+              alignment: Alignment.topCenter,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset('assets/images/logo.png', scale: 4),
-                const Center(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     'Login',
-                    style: TextStyle(color: Colors.white, fontSize: 30),
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue.shade100),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      prefixIcon: Icon(
-                        Icons.account_circle_outlined,
-                        color: Colors.blue.shade100,
-                      ),
-                      labelText: 'User',
-                      labelStyle: const TextStyle(fontSize: 13),
-                      hintText: 'ejemplo@gmail.com',
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Good to see you back!',
+                    style: TextStyle(
+                      fontSize: 18,
                     ),
-                    keyboardType: TextInputType.emailAddress,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue.shade100),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      prefixIcon: Icon(
-                        Icons.account_circle_outlined,
-                        color: Colors.black,
-                      ),
-                      labelText: 'Password',
-                      labelStyle: const TextStyle(fontSize: 13),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 242, 242, 242),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: BorderSide.none,
                     ),
-                    keyboardType: TextInputType.emailAddress,
+                    prefixIcon: const Icon(Icons.email),
+                    hintText: 'Uniandes email',
                   ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 242, 242, 242),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    prefixIcon: const Icon(Icons.password),
+                    hintText: 'password',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CreatePage(),
+                      ),
+                    );
+                  },
+                  child: const Text('Go to CreatePage'),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                  ),
-                  onPressed: () async {
-                    String email = _emailController.text;
-                    String password = _passwordController.text;
-                    if (email.isNotEmpty && password.isNotEmpty) {
-                      dynamic result = await _auth.signInWithEmailAndPassword(email, password);
-                      if (result != null) {
-                        print('Logged in');
-                        Navigator.popAndPushNamed(context, ItemGallery.routeName);
-                      } else {
-                        print('Error logging in');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Error logging in')));
-                      }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please enter email and password')));
-                    }
+                  onPressed: () {
+                    signIn();
                   },
-                  child: const Text('Login', style: TextStyle(fontSize: 20)),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color.fromARGB(255, 117, 117, 117),
+                    backgroundColor: Color(0xffF7DC6F),
+                    minimumSize: Size(150, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  ),
+                  child: const Text('Next'),
                 ),
-                SizedBox(height: size.height * 0.1),
-                GestureDetector(
-                  onTap: () => Navigator.popAndPushNamed(context, RegisterPage.routeName),
-                  child: Text('Don\'t have an account?', style: TextStyle(color: Colors.blue.shade100)),
-                )
+                ElevatedButton(
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const Home())),
+                  style: TextButton.styleFrom(
+                      foregroundColor: const Color.fromARGB(255, 117, 117, 117),
+                      backgroundColor: Color(0xffffffff)),
+                  child: const Text('cancel'),
+                ),
               ],
             ),
           ),
-        ),
-      ),
-    );
+        ));
+  }
+
+  void signIn() async {
+    String email = emailController.text;
+    String password = passwordController.text;
+    print("Correo ingresado es: $email");
+    print("Contraseña ingresada es: $password");
+    User? user = await _auth.signInWithEmailAndPassword(
+        emailController.text, passwordController.text);
+    if (user != null) {
+      print("User logged in successfully");
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+    } else {
+      print("User not found");
+    }
   }
 }
