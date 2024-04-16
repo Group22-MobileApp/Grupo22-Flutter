@@ -3,6 +3,7 @@ import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 
@@ -45,18 +46,18 @@ class _ItemGallery extends State<ItemGallery> {
   }
 
   Future<void> _fetchUserImageUrl() async {
-    String? userId = _auth.getCurrentUserId(); // Get the current user's ID
-    User? user = await _firebaseService.getUser(userId); // Get the user object from Firebase
+    String? userId = _auth.getCurrentUserId(); 
+    User? user = await _firebaseService.getUser(userId); 
     if (user != null) {
       setState(() {
-        userImageUrl = user.imageUrl; // Set the user's image URL
+        userImageUrl = user.imageUrl; 
       });
     }
   }
 
   Future<void> _fetchUserLoggedIn() async {
-    String? userId = _auth.getCurrentUserId(); // Get the current user's ID
-    User? user = await _firebaseService.getUser(userId); // Get the user object from Firebase
+    String? userId = _auth.getCurrentUserId(); 
+    User? user = await _firebaseService.getUser(userId);
     if (user != null) {
       setState(() {
         userLoggedIn = user; 
@@ -75,15 +76,30 @@ class _ItemGallery extends State<ItemGallery> {
       appBar: AppBar(
       toolbarHeight: screenHeight * 0.15,
       leadingWidth: screenWidth * 0.3,
-      leading: userImageUrl != null
-          ? Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: CircleAvatar(
-                radius: screenWidth * 0.12,
-                backgroundImage: NetworkImage(userImageUrl!),
+      leading: GestureDetector(
+        onTap: () {
+          if (userLoggedIn != null && userImageUrl != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserProfile(user: userLoggedIn!),
               ),
-            )
-          : null,
+            );
+          } else {
+            // Handle case when user or userImageUrl is null
+          }
+        },
+        child: userImageUrl != null
+            ? CircleAvatar(
+                radius: screenWidth * 0.08,
+                backgroundImage: NetworkImage(userImageUrl!),
+              )
+            : const CircleAvatar(
+                radius: 30,
+                child: Icon(Icons.person),
+              ),
+      ),
+
       title: TextField(
         decoration: InputDecoration(
           fillColor: const Color.fromARGB(255, 211, 210, 210),
@@ -106,8 +122,10 @@ class _ItemGallery extends State<ItemGallery> {
               child: Text(
                 // 'Hello, Adriana!',
                 // userImageUrl ?? _auth.getCurrentUserId(),
-                'Hello, $username!',
-                style: TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold),
+                username != null ? 'Hello $username!' : 'Loading...',
+                style: userImageUrl != null
+                    ? TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold)
+                    : TextStyle(fontSize: screenWidth * 0.1, color: Color.fromARGB(255, 29, 208, 26), fontWeight: FontWeight.bold),
               ),
             ),
             Row(
