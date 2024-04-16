@@ -145,5 +145,27 @@ class FirebaseService {
     }
   }
 
-
+  Future<User?> getUser(String userId) async {
+    try {
+      // Look for 'id' parameter in the Users collection. Not id of firestore document
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        return User(
+          carrer: doc['carrer'],
+          email: doc['email'],
+          username: doc['username'],
+          password: doc['password'],
+          id: doc['id'],
+          number: doc['number'],
+          imageUrl: doc['imageUrl'],
+          name: doc['name'],
+        );
+      }
+      return null;
+    } catch (error) {
+      print('Error getting user: $error');
+      return null;
+    }
+  }
 }

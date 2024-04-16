@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 
 class ItemGallery extends StatefulWidget {
@@ -14,12 +16,18 @@ class ItemGallery extends StatefulWidget {
 
 class _ItemGallery extends State<ItemGallery> {
   final FirebaseService _firebaseService = FirebaseService();
+  final AuthService _auth = AuthService();
   List<dynamic> itemImages = [];
+  String? userImageUrl;
+  User? userLoggedIn;
+  String? username;
 
   @override
   void initState() {
     super.initState();
     _fetchLastItemsImages();
+    _fetchUserImageUrl();
+    _fetchUserLoggedIn();
   }
 
   Future<void> _fetchLastItemsImages() async {
@@ -36,6 +44,27 @@ class _ItemGallery extends State<ItemGallery> {
     }
   }
 
+  Future<void> _fetchUserImageUrl() async {
+    String? userId = _auth.getCurrentUserId(); // Get the current user's ID
+    User? user = await _firebaseService.getUser(userId); // Get the user object from Firebase
+    if (user != null) {
+      setState(() {
+        userImageUrl = user.imageUrl; // Set the user's image URL
+      });
+    }
+  }
+
+  Future<void> _fetchUserLoggedIn() async {
+    String? userId = _auth.getCurrentUserId(); // Get the current user's ID
+    User? user = await _firebaseService.getUser(userId); // Get the user object from Firebase
+    if (user != null) {
+      setState(() {
+        userLoggedIn = user; 
+        username = user.username;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -44,28 +73,30 @@ class _ItemGallery extends State<ItemGallery> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        toolbarHeight: screenHeight * 0.15,
-        leadingWidth: screenWidth * 0.3,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 15.0),
-          child: CircleAvatar(
-            radius: screenWidth * 0.12,
-            backgroundImage: const AssetImage('assets/images/prof.jpg'),
+      toolbarHeight: screenHeight * 0.15,
+      leadingWidth: screenWidth * 0.3,
+      leading: userImageUrl != null
+          ? Padding(
+              padding: const EdgeInsets.only(left: 15.0),
+              child: CircleAvatar(
+                radius: screenWidth * 0.12,
+                backgroundImage: NetworkImage(userImageUrl!),
+              ),
+            )
+          : null,
+      title: TextField(
+        decoration: InputDecoration(
+          fillColor: const Color.fromARGB(255, 211, 210, 210),
+          filled: true,
+          labelText: "Search",
+          hintText: "Search",
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
           ),
         ),
-        title: TextField(
-          decoration: InputDecoration(
-            fillColor: const Color.fromARGB(255, 211, 210, 210),
-            filled: true,
-            labelText: "Search",
-            hintText: "Search",
-            prefixIcon: const Icon(Icons.search),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
-            ),
-          ),
-        ),        
-      ),
+      ),        
+    ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +104,9 @@ class _ItemGallery extends State<ItemGallery> {
             Padding(
               padding: EdgeInsets.all(screenWidth * 0.02),
               child: Text(
-                'Hello, Adriana!',
+                // 'Hello, Adriana!',
+                // userImageUrl ?? _auth.getCurrentUserId(),
+                'Hello, $username!',
                 style: TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold),
               ),
             ),
