@@ -125,7 +125,7 @@ class _ItemGallery extends State<ItemGallery> {
                 username != null ? 'Hello $username!' : 'Loading...',
                 style: userImageUrl != null
                     ? TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold)
-                    : TextStyle(fontSize: screenWidth * 0.1, color: Color.fromARGB(255, 29, 208, 26), fontWeight: FontWeight.bold),
+                    : TextStyle(fontSize: screenWidth * 0.1, color: const Color.fromARGB(230, 255, 168, 6), fontWeight: FontWeight.bold),
               ),
             ),
             Row(
