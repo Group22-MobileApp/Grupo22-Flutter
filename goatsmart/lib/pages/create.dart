@@ -325,6 +325,19 @@ void signUp() async {
       name: name,
     ));
     
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green, 
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 10),
+            Text('Registration Successful', style: TextStyle(color: Colors.white)), 
+          ],
+        ),
+      ),
+    );
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const ItemGallery()),
@@ -333,6 +346,7 @@ void signUp() async {
     print("User not created");
   }
 }
+
 
 
 void _pickImage() async {
@@ -362,8 +376,7 @@ void _pickImage() async {
         setState(() {
           _userImage = File(pickedImage.path);
         });
-
-        // Display a message
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Image picked successfully')),
         );
