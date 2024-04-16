@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:goatsmart/models/user.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goatsmart/models/materialItem.dart';
 
@@ -112,16 +113,18 @@ class FirebaseService {
     }
   }
 
-  Future<void> addUser(String email, String name, String password, String carrer, String number) async {
+  Future<void> addUser(User user) async {
     try {
       CollectionReference collectionUsers = _firestore.collection("Users");
       await collectionUsers.add({
-        'carrer': carrer,
-        'email': email,
-        'username': name,
-        'password': password,
-        'id': 5000,
-        "number" : 3000000000,
+        'carrer': user.carrer,
+        'email': user.email,
+        'username': user.username,
+        'password': user.password,
+        'id': user.id,
+        'number': user.number,
+        'imageUrl': user.imageUrl,
+        'name': user.name,
       });
     } catch (error) {
       rethrow;
