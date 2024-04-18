@@ -17,6 +17,7 @@ class LoginPageState extends State<LoginPage> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool obscureText = false;
 
   @override
   void dispose() {
@@ -80,6 +81,7 @@ class LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
                 TextField(
                   controller: passwordController,
+                  obscureText: obscureText,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color.fromARGB(255, 242, 242, 242),
@@ -89,6 +91,16 @@ class LoginPageState extends State<LoginPage> {
                     ),
                     prefixIcon: const Icon(Icons.password),
                     hintText: 'password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscureText ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          obscureText = !obscureText;
+                        });
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -114,13 +126,16 @@ class LoginPageState extends State<LoginPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
                   child: const Text('Log In'),
                 ),
                 ElevatedButton(
-                  onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const HomePage())),
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomePage())),
                   style: TextButton.styleFrom(
                       foregroundColor: const Color.fromARGB(255, 117, 117, 117),
                       backgroundColor: const Color(0xffffffff)),

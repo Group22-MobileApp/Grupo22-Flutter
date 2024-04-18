@@ -35,6 +35,8 @@ dependencies:
   cloud_firestore: ^4.15.8 # Update to the latest version
   intl_phone_number_input: ^0.7.4
   image_picker: ^1.0.8
+  stream_chat_flutter: ^6.0.0
+
 
 dev_dependencies:
   flutter_test:
