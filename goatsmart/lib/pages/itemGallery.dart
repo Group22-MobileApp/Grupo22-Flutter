@@ -22,11 +22,12 @@ class _ItemGallery extends State<ItemGallery> {
   String? userImageUrl;
   User? userLoggedIn;
   String? username;
+  Future<List<dynamic>>? _future;
 
   @override
   void initState() {
     super.initState();
-    _fetchLastItemsImages();
+    _future = _fetchLastItemsImages() as Future<List>?;
     _fetchUserImageUrl();
     _fetchUserLoggedIn();
   }
@@ -114,7 +115,7 @@ class _ItemGallery extends State<ItemGallery> {
       ),        
     ),
       body: FutureBuilder(
-        future: _fetchLastItemsImages(),
+        future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -123,6 +124,7 @@ class _ItemGallery extends State<ItemGallery> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
+            // Use snapshot.data here
             return SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
