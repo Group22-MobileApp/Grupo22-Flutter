@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
 import 'package:goatsmart/pages/home.dart';
@@ -6,6 +7,7 @@ import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
+import 'package:intl/intl.dart'; 
 
 class ItemGallery extends StatefulWidget {
   static const String routeName = 'ItemGallery';
@@ -22,18 +24,43 @@ class _ItemGallery extends State<ItemGallery> {
   String? userImageUrl;
   User? userLoggedIn;
   String? username;
+  List<MaterialItem> itemsForYou = [];
+  List<dynamic> itemsForYouImages = [];
 
   @override
   void initState() {
-    super.initState();
+    super.initState();    
+    _fetch_itemsForYou();
     _fetchLastItemsImages();
     _fetchUserImageUrl();
     _fetchUserLoggedIn();
   }
 
+  Future<void> _fetch_itemsForYou() async {
+    String career = userLoggedIn!.carrer;
+    print("Career: $career");
+    List<MaterialItem> items = (await _firebaseService.fetchItemsByUserCareer(career)).cast<MaterialItem>();
+    print("Items: $items");
+    if (items.isNotEmpty) {
+      setState(() {
+        itemsForYou = items;
+        itemsForYouImages = items.map((item) => item.images.first).toList();
+      });
+    } else {      
+      itemsForYou = List.generate(10, (index) => MaterialItem(
+        id: index.toString(),
+        title: 'Example Item $index',
+        description: 'Example Description $index',
+        price: 0.0,
+        images: ['assets/images/${index + 1}.jpg'],
+        owner: 'Example Owner $index',
+      ));
+      itemsForYouImages = List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
+    }
+  }
+
   Future<void> _fetchLastItemsImages() async {
-    var images = await _firebaseService.fetchLastItemsImages();
-    print(images);
+    var images = await _firebaseService.fetchLastItemsImages();    
     if (images.isNotEmpty) {
       setState(() {
         itemImages = images;
@@ -62,7 +89,8 @@ class _ItemGallery extends State<ItemGallery> {
       setState(() {
         userLoggedIn = user; 
         username = user.username;
-      });
+      });      
+      _fetch_itemsForYou();
     }
   }
 
@@ -85,8 +113,24 @@ class _ItemGallery extends State<ItemGallery> {
                   builder: (context) => UserProfile(user: userLoggedIn!),
                 ),
               );
-            } else {
-              // Handle case when user or userImageUrl is null
+            } else {              
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Error'),
+                    content: const Text('User not found. Please try again later.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  );
+                },
+              );                            
             }
           },
           child: userImageUrl != null
@@ -178,13 +222,16 @@ class _ItemGallery extends State<ItemGallery> {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 children: List.generate(
-                  10,
-                  (index) => Container(
-                    padding: const EdgeInsets.all(8),
-                    color: const Color(0xFFE0F7FA),
-                    child: Image.asset(
-                      'assets/images/${index + 1}.jpg',
-                      fit: BoxFit.fill,
+                  itemsForYou.length,
+                  (index) => GestureDetector(
+                    onTap: () => _showItemDialog(context, itemsForYou[index]), // Add onTap functionality
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      color: const Color(0xFFE0F7FA),
+                      child: Image.network(
+                        itemsForYouImages[index],
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
                 ),
@@ -238,4 +285,60 @@ class _ItemGallery extends State<ItemGallery> {
       ),
     );
   }
+
+  
+    String _formatPrice(double price) {
+      String formattedPrice = price.toStringAsFixed(2);
+      return NumberFormat.currency(locale: 'en_US', symbol: '').format(double.parse(formattedPrice));
+    }
+
+
+    Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {
+    User? user = await _firebaseService.getUser(item.owner);
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(item.title),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (item.images.isNotEmpty)
+                  Image.network(
+                    item.images.first,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                SizedBox(height: 8.0),
+                Text('Description: ${item.description}'),
+                SizedBox(height: 8.0),
+                Text('Price: \$${_formatPrice(item.price)}', style: TextStyle(fontWeight: FontWeight.bold)),
+                if (user != null) ...[
+                  SizedBox(height: 8.0),                  
+                  Text('Owner username: ${user.username}'),
+                  Text('Owner name: ${user.name}'),
+                  Text('Email: ${user.email}'),                  
+                  Text('Career: ${user.carrer}'),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }  
 }
+

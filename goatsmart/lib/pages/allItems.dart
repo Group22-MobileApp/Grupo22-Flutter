@@ -118,8 +118,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
     return NumberFormat.currency(locale: 'en_US', symbol: '').format(double.parse(formattedPrice));
   }
 
-  Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {        
-    print("ITEM OWNER:"+ item.owner);
+  Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {            
     User? user = await _firebaseService.getUser(item.owner);
 
     return showDialog(
