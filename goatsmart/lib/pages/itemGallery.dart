@@ -74,45 +74,44 @@ class _ItemGallery extends State<ItemGallery> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-      toolbarHeight: screenHeight * 0.15,
-      leadingWidth: screenWidth * 0.3,
-      leading: GestureDetector(
-        onTap: () {
-          if (userLoggedIn != null && userImageUrl != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserProfile(user: userLoggedIn!),
-              ),
-            );
-          } else {
-            // Handle case when user or userImageUrl is null
-          }
-        },
-        child: userImageUrl != null
-            ? CircleAvatar(
-                radius: screenWidth * 0.08,
-                backgroundImage: NetworkImage(userImageUrl!),
-              )
-            : const CircleAvatar(
-                radius: 30,
-                child: Icon(Icons.person),
-              ),
-      ),
-
-      title: TextField(
-        decoration: InputDecoration(
-          fillColor: const Color.fromARGB(255, 211, 210, 210),
-          filled: true,
-          labelText: "Search",
-          hintText: "Search",
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
-          ),
+        toolbarHeight: screenHeight * 0.15,
+        leadingWidth: screenWidth * 0.3,
+        leading: GestureDetector(
+          onTap: () {
+            if (userLoggedIn != null && userImageUrl != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserProfile(user: userLoggedIn!),
+                ),
+              );
+            } else {
+              // Handle case when user or userImageUrl is null
+            }
+          },
+          child: userImageUrl != null
+              ? CircleAvatar(
+                  radius: screenWidth * 0.08,
+                  backgroundImage: NetworkImage(userImageUrl!),
+                )
+              : const CircleAvatar(
+                  radius: 30,
+                  child: Icon(Icons.person),
+                ),
         ),
-      ),        
-    ),
+        title: TextField(
+          decoration: InputDecoration(
+            fillColor: const Color.fromARGB(255, 211, 210, 210),
+            filled: true,
+            labelText: "Search",
+            hintText: "Search",
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
+            ),
+          ),
+        ),        
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,9 +192,18 @@ class _ItemGallery extends State<ItemGallery> {
             ),
             Padding(
               padding: EdgeInsets.all(screenWidth * 0.02),
-              child: Text(
-                'New Items',
-                style: TextStyle(fontSize: screenWidth * 0.06),
+              child: Row(
+                children: [
+                  Text(
+                    'New Items',
+                    style: TextStyle(fontSize: screenWidth * 0.06),
+                  ),
+                  Spacer(),
+                  IconButton(
+                    onPressed: _fetchLastItemsImages,
+                    icon: Icon(Icons.refresh),
+                  ),
+                ],
               ),
             ),
             SizedBox(
