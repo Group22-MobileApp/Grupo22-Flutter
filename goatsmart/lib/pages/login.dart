@@ -162,6 +162,9 @@ class LoginPageState extends State<LoginPage> {
       );
     } else {
       print("User not found");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Email or password is incorrect')),
+      );
     }
   }
 }

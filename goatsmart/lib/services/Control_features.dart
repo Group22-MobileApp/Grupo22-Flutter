@@ -32,4 +32,13 @@ class ConnectionManager {
     }
     return batteryLevel;
   }
+
+  //methos to call garbage collector
+  Future<void> callGarbageCollector() async {
+    try {
+      await platform.invokeMethod('callGarbageCollector');
+    } on PlatformException catch (e) {
+      print('Error calling garbage collector: ${e.message}');
+    }
+  }
 }

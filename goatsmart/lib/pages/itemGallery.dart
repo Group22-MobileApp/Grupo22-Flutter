@@ -22,12 +22,11 @@ class _ItemGallery extends State<ItemGallery> {
   String? userImageUrl;
   User? userLoggedIn;
   String? username;
-  Future<List<dynamic>>? _future;
 
   @override
   void initState() {
     super.initState();
-    _future = _fetchLastItemsImages() as Future<List>?;
+    _fetchLastItemsImages();
     _fetchUserImageUrl();
     _fetchUserLoggedIn();
   }
@@ -114,24 +113,15 @@ class _ItemGallery extends State<ItemGallery> {
         ),
       ),        
     ),
-      body: FutureBuilder(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            // Use snapshot.data here
-            return SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: EdgeInsets.all(screenWidth * 0.02),
               child: Text(
+                // 'Hello, Adriana!',
+                // userImageUrl ?? _auth.getCurrentUserId(),
                 username != null ? 'Hello $username!' : 'Loading...',
                 style: userImageUrl != null
                     ? TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold)
@@ -231,9 +221,6 @@ class _ItemGallery extends State<ItemGallery> {
             ),
           ],
         ),
-        );
-          }
-        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
