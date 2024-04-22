@@ -24,58 +24,82 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Add New Material Item'),
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: _titleController,
-              decoration: const InputDecoration(labelText: 'Title'),
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/login_background.png'),
+              fit: BoxFit.cover,
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(labelText: 'Description'),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _priceController,
-              decoration: const InputDecoration(labelText: 'Price'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 16),
-            _image == null
-                ? ElevatedButton(
-                    onPressed: () {
-                      _showImagePicker(context);
-                    },
-                    child: const Text('Add Picture'),
-                  )
-                : Column(
-                    children: [
-                      SizedBox(
-                        height: 200,
-                        child: Image.file(_image!),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _priceController,
+                  decoration: InputDecoration(
+                    labelText: 'Price',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                _image == null
+                    ? ElevatedButton.icon(
                         onPressed: () {
                           _showImagePicker(context);
                         },
-                        child: const Text('Change Picture'),
+                        icon: const Icon(Icons.add_a_photo),
+                        label: const Text('Add Picture'),
+                      )
+                    : Column(
+                        children: [
+                          SizedBox(
+                            height: 200,
+                            child: Image.file(_image!),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              _showImagePicker(context);
+                            },
+                            icon: const Icon(Icons.add_photo_alternate),
+                            label: const Text('Change Picture'),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => _addMaterialItem(context),
-              child: const Text('Add Material Item'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => _addMaterialItem(context),
+                  child: const Text('Add Material Item'),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -29,7 +29,7 @@ class FirebaseService {
     }
   }
 
-  Future<List<MaterialItem>> getMaterialItemsNameDescription() async {
+  Future<List<MaterialItem>> getMaterialItems() async {
       try {
       QuerySnapshot querySnapshot = await _firestore.collection('material_items').get();
       return querySnapshot.docs.map((doc) {
@@ -41,7 +41,7 @@ class FirebaseService {
           description: description,
           price: doc['price'] ?? 0.0,
           images: List<String>.from(doc['images'] ?? []),
-          owner: doc['owner'] ?? '',
+          owner: doc['owner'] ?? '',      
         );
       }).toList();
     } catch (e) {
