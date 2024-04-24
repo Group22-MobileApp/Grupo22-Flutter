@@ -3,6 +3,7 @@ import 'package:goatsmart/pages/create.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
+import 'package:goatsmart/services/control_features.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   final AuthService _auth = AuthService();
+  final ConnectionManager _controlFeatures = ConnectionManager();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -161,10 +163,47 @@ class LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => const ItemGallery()),
       );
     } else {
-      print("User not found");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Email or password is incorrect')),
-      );
+      if (email.isEmpty || password.isEmpty) {
+        print("Email or password is empty");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email or password is empty')),
+        );
+        return;
+      }
+      if (email.contains('@') == false) {
+        print("Email is not valid");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email is not valid')),
+        );
+        return;
+      }
+      if ( !await _controlFeatures.checkInternetConnection()) {
+        print("Internet is not connected");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('No Network Connection! '),
+              backgroundColor: Colors.white,
+              content: Text('No hay conexion a internet, por favor revisa tu red e intenta nuevamente.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+      else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error en la Autenticación, comprueba tus credenciales e intenta nuevamente')),
+        );
+      }
     }
   }
 }

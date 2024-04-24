@@ -6,10 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c397f5fe-62ce-492c-a1a6-6a999565b523" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/itemGallery.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/itemGallery.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/login.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/goatsmart/lib/services/Control_features.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/services/Control_features.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/lib/services/dictionary.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goatsmart/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/pubspec.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

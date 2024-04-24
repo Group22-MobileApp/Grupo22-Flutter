@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 class ConnectionManager {
   static const platform = const MethodChannel('connection_manager');
@@ -13,15 +14,23 @@ class ConnectionManager {
     return connectionType;
   }
 
-  Future<bool> isInternetConnected() async {
-    bool isConnected = false;
-    try {
-      isConnected = await platform.invokeMethod('isInternetConnected');
-    } on PlatformException catch (e) {
-      isConnected = false;
+
+
+Future<bool> checkInternetConnection() async {
+  try {
+    var response = await http.get(Uri.parse('https://www.google.com'));
+    if (response.statusCode == 200) {
+      return true; // Hay conexión a Internet
+    } else {
+      print("Error de conexion a la red de internet");
+      return false; // No hay conexión a Internet
     }
-    return isConnected;
+  } catch (e) {
+    print("Error al verificar la conexión a Internet: $e");
+    return false;
   }
+}
+
 
   Future<int> getBatteryLevel() async {
     int batteryLevel = 0;
