@@ -3,6 +3,7 @@ import 'package:goatsmart/pages/create.dart';
 import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
+import 'package:goatsmart/services/control_features.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,9 +15,11 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   final AuthService _auth = AuthService();
+  final ConnectionManager _controlFeatures = ConnectionManager();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool obscureText = false;
 
   @override
   void dispose() {
@@ -80,6 +83,7 @@ class LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
                 TextField(
                   controller: passwordController,
+                  obscureText: obscureText,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color.fromARGB(255, 242, 242, 242),
@@ -89,6 +93,16 @@ class LoginPageState extends State<LoginPage> {
                     ),
                     prefixIcon: const Icon(Icons.password),
                     hintText: 'password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscureText ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          obscureText = !obscureText;
+                        });
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -114,13 +128,16 @@ class LoginPageState extends State<LoginPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
                   child: const Text('Log In'),
                 ),
                 ElevatedButton(
-                  onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const HomePage())),
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomePage())),
                   style: TextButton.styleFrom(
                       foregroundColor: const Color.fromARGB(255, 117, 117, 117),
                       backgroundColor: const Color(0xffffffff)),
@@ -146,7 +163,47 @@ class LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => const ItemGallery()),
       );
     } else {
-      print("User not found");
+      if (email.isEmpty || password.isEmpty) {
+        print("Email or password is empty");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email or password is empty')),
+        );
+        return;
+      }
+      if (email.contains('@') == false) {
+        print("Email is not valid");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email is not valid')),
+        );
+        return;
+      }
+      if ( !await _controlFeatures.checkInternetConnection()) {
+        print("Internet is not connected");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('No Network Connection! '),
+              backgroundColor: Colors.white,
+              content: Text('No hay conexion a internet, por favor revisa tu red e intenta nuevamente.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+      else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error en la Autenticación, comprueba tus credenciales e intenta nuevamente')),
+        );
+      }
     }
   }
 }
