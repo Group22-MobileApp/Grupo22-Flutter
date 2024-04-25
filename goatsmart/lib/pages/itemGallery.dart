@@ -179,15 +179,23 @@ Widget build(BuildContext context) {
                 ? TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold)
                 : TextStyle(fontSize: screenWidth * 0.1, color: const Color.fromARGB(230, 255, 168, 6), fontWeight: FontWeight.bold),
           ),
-        ),
-        Row(
+        ),Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
               padding: EdgeInsets.only(left: screenWidth * 0.02),
-              child: Text(
-                'Just For You',
-                style: TextStyle(fontSize: screenWidth * 0.06),
+              child: Row(
+                children: [
+                  Text(
+                    'Just For You',
+                    style: TextStyle(fontSize: screenWidth * 0.06),
+                  ),
+                  SizedBox(width: screenWidth * 0.02), // Add spacing between text and star
+                  Icon(
+                    Icons.star,
+                    color: const Color.fromARGB(230, 255, 168, 6),
+                  ),
+                ],
               ),
             ),
             Padding(
@@ -203,15 +211,24 @@ Widget build(BuildContext context) {
                       color: Color.fromARGB(255, 0, 0, 0),
                     ),
                   ),
+                  SizedBox(width: screenWidth * 0.03),
                   Padding(
-                    padding: EdgeInsets.only(left: screenWidth * 0.03),
-                  ),
-                  FloatingActionButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SeeAllItemsView()));
-                    },
-                    backgroundColor: const Color.fromARGB(230, 255, 168, 6),
-                    child: const Icon(Icons.arrow_forward_outlined),
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: ClipOval(
+                      child: Material(
+                        color: const Color.fromARGB(230, 255, 168, 6),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const SeeAllItemsView()));
+                          },
+                          child: SizedBox(
+                            width: 46, 
+                            height: 46,
+                            child: Icon(Icons.arrow_forward_outlined, color: Colors.white),       
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
