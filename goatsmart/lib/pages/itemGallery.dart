@@ -222,32 +222,38 @@ Widget build(BuildContext context) {
                 height: screenHeight * 0.35,                
                 child: GridView.count(
                   crossAxisCount: screenWidth > 600 ? 4 : 2,
-                  padding: const EdgeInsets.all(0),
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 0,                  
+                  padding: const EdgeInsets.all(10),
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 30,                  
                   children: List.generate(
                     itemsForYou.length,
                     (index) => GestureDetector(
-                      onTap: () => _showItemDialog(context, itemsForYou[index]), // Add onTap functionality
+                      onTap: () => _showItemDialog(context, itemsForYou[index]), 
                       child: Container(
                         height: double.infinity, 
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10), 
+                          border: Border.all(color: Colors.grey, width: 1), 
+                        ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start, 
                           children: [
                             Expanded(
-                              child: Image.network(
-                                itemsForYouImages[index],
-                                fit: BoxFit.cover,
-                                height: screenHeight * 0.5, // Adjust the height of the image
-                                width: screenWidth * 0.5, 
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10), 
+                                child: Image.network(
+                                  itemsForYouImages[index],
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
                               ),
                             ),
-                            SizedBox(height: screenHeight * 0.02), // Add space between image and price
+                            SizedBox(height: screenHeight * 0.02), 
                             Text(
                               '\$${_formatPrice(itemsForYou[index].price)}',
-                              style: TextStyle(fontSize: screenWidth * 0.05, color: const Color.fromARGB(255, 138, 136, 136)), // Adjust the font size
+                              style: TextStyle(fontSize: screenWidth * 0.05, color: const Color.fromARGB(255, 138, 136, 136)), 
                             ),
-                            SizedBox(height: screenHeight * 0.02), // Add space between price and title
+                            SizedBox(height: screenHeight * 0.02), 
                           ],
                         ),
                       ),
@@ -255,6 +261,7 @@ Widget build(BuildContext context) {
                   ),
                 ),
               ),
+
               Padding(
                 padding: EdgeInsets.all(screenWidth * 0.02),
                 child: Row(
@@ -279,9 +286,9 @@ Widget build(BuildContext context) {
                   scrollDirection: Axis.horizontal,
                   itemCount: lastItems.length,
                   itemBuilder: (context, index) {
-                    var item = lastItems[index]; // Get the item
-                    return GestureDetector( // Wrap with GestureDetector
-                      onTap: () => _showItemDialog(context, item), // Show dialog on tap
+                    var item = lastItems[index]; 
+                    return GestureDetector( 
+                      onTap: () => _showItemDialog(context, item), 
                       child: Padding(
                         padding: const EdgeInsets.all(1),
                         child: Image.network(
@@ -324,7 +331,7 @@ Widget build(BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: Text(item.title),
-          content: SingleChildScrollView( // Wrap content with SingleChildScrollView
+          content: SingleChildScrollView( 
             child: SizedBox(
               width: double.maxFinite,
               child: Column(
