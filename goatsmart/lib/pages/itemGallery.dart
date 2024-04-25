@@ -215,22 +215,22 @@ class _ItemGallery extends State<ItemGallery> {
               ],
             ),
             SizedBox(
-              height: screenHeight * 0.4,
+              height: screenHeight * 0.35,
               child: GridView.count(
                 crossAxisCount: screenWidth > 600 ? 4 : 2,
                 padding: const EdgeInsets.all(10),
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 1,
                 children: List.generate(
                   itemsForYou.length,
                   (index) => GestureDetector(
                     onTap: () => _showItemDialog(context, itemsForYou[index]), // Add onTap functionality
                     child: Container(
-                      padding: const EdgeInsets.all(8),
-                      color: const Color(0xFFE0F7FA),
+                      padding: const EdgeInsets.all(2),
+                      color:const Color(0xFFF7DC6F),
                       child: Image.network(
                         itemsForYouImages[index],
-                        fit: BoxFit.fill,
+                        fit: BoxFit.fitWidth,
                       ),
                     ),
                   ),
@@ -292,8 +292,7 @@ class _ItemGallery extends State<ItemGallery> {
       return NumberFormat.currency(locale: 'en_US', symbol: '').format(double.parse(formattedPrice));
     }
 
-
-    Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {
+  Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {
     User? user = await _firebaseService.getUser(item.owner);
 
     return showDialog(
@@ -302,30 +301,32 @@ class _ItemGallery extends State<ItemGallery> {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: Text(item.title),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (item.images.isNotEmpty)
-                  Image.network(
-                    item.images.first,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                SizedBox(height: 8.0),
-                Text('Description: ${item.description}'),
-                SizedBox(height: 8.0),
-                Text('Price: \$${_formatPrice(item.price)}', style: TextStyle(fontWeight: FontWeight.bold)),
-                if (user != null) ...[
-                  SizedBox(height: 8.0),                  
-                  Text('Owner username: ${user.username}'),
-                  Text('Owner name: ${user.name}'),
-                  Text('Email: ${user.email}'),                  
-                  Text('Career: ${user.carrer}'),
+          content: SingleChildScrollView( // Wrap content with SingleChildScrollView
+            child: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (item.images.isNotEmpty)
+                    Image.network(
+                      item.images.first,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  SizedBox(height: 8.0),
+                  Text('Description: ${item.description}'),
+                  SizedBox(height: 8.0),
+                  Text('Price: \$${_formatPrice(item.price)}', style: TextStyle(fontWeight: FontWeight.bold)),
+                  if (user != null) ...[
+                    SizedBox(height: 8.0),                  
+                    Text('Owner username: ${user.username}'),
+                    Text('Owner name: ${user.name}'),
+                    Text('Email: ${user.email}'),                  
+                    Text('Career: ${user.carrer}'),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           actions: [
@@ -339,6 +340,5 @@ class _ItemGallery extends State<ItemGallery> {
         );
       },
     );
-  }  
+  }
 }
-
