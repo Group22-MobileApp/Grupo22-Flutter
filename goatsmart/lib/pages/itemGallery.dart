@@ -19,8 +19,9 @@ class ItemGallery extends StatefulWidget {
 
 class _ItemGallery extends State<ItemGallery> {
   final FirebaseService _firebaseService = FirebaseService();
-  final AuthService _auth = AuthService();
-  List<dynamic> itemImages = [];
+  final AuthService _auth = AuthService();  
+  List<MaterialItem> lastItems = [];
+  List<dynamic> lastItemsImages = [];
   String? userImageUrl;
   User? userLoggedIn;
   String? username;
@@ -30,8 +31,8 @@ class _ItemGallery extends State<ItemGallery> {
   @override
   void initState() {
     super.initState();    
-    _fetch_itemsForYou();
-    _fetchLastItemsImages();
+    _fetch_itemsForYou();    
+    _fetchLastItems();
     _fetchUserImageUrl();
     _fetchUserLoggedIn();
   }
@@ -57,18 +58,25 @@ class _ItemGallery extends State<ItemGallery> {
       ));
       itemsForYouImages = List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
     }
-  }
+  }  
 
-  Future<void> _fetchLastItemsImages() async {
-    var images = await _firebaseService.fetchLastItemsImages();    
-    if (images.isNotEmpty) {
+  Future<void> _fetchLastItems() async {
+    List<MaterialItem> items = (await _firebaseService.fetchLastItems()).cast<MaterialItem>();
+    if (items.isNotEmpty) {
       setState(() {
-        itemImages = images;
+        lastItems = items;
+        lastItemsImages = items.map((item) => item.images.first).toList();
       });
     } else {      
-      setState(() {
-        itemImages = List.generate(4, (index) => 'assets/images/${index + 11}.jpg');
-      });
+      itemsForYou = List.generate(10, (index) => MaterialItem(
+        id: index.toString(),
+        title: 'Example Item $index',
+        description: 'Example Description $index',
+        price: 0.0,
+        images: ['assets/images/${index + 1}.jpg'],
+        owner: 'Example Owner $index',
+      ));
+      itemsForYouImages = List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
     }
   }
 
@@ -247,7 +255,9 @@ class _ItemGallery extends State<ItemGallery> {
                   ),
                   Spacer(),
                   IconButton(
-                    onPressed: _fetchLastItemsImages,
+                    onPressed: () {
+                      _fetchLastItems();
+                    },
                     icon: Icon(Icons.refresh),
                   ),
                 ],
@@ -257,18 +267,20 @@ class _ItemGallery extends State<ItemGallery> {
               height: screenHeight * 0.2,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: itemImages.length,
+                itemCount: lastItems.length,
                 itemBuilder: (context, index) {
-                  var imageList = itemImages[index];  
-                  var imagePath = imageList.isNotEmpty ? imageList[0] : 'assets/images/default.jpg'; 
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.network(
-                      imagePath,
-                      errorBuilder: (context, error, stackTrace) {                        
-                        return Image.asset('assets/images/default.jpg');
-                      },
-                      fit: BoxFit.cover,
+                  var item = lastItems[index]; // Get the item
+                  return GestureDetector( // Wrap with GestureDetector
+                    onTap: () => _showItemDialog(context, item), // Show dialog on tap
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.network(
+                        lastItemsImages[index],
+                        errorBuilder: (context, error, stackTrace) {                        
+                          return Image.asset('assets/images/default.jpg');
+                        },
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   );
                 },
