@@ -38,6 +38,7 @@ Future<bool> checkInternetConnection() async {
       batteryLevel = await platform.invokeMethod('getBatteryLevel');
     } on PlatformException catch (e) {
       batteryLevel = -1;
+      print('Error getting battery level: ${e.message}');
     }
     return batteryLevel;
   }
