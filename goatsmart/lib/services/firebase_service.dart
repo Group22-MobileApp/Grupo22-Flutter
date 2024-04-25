@@ -201,5 +201,57 @@ class FirebaseService {
       print('Error getting users: $error');
       return [];
     }
+  }    
+  //Metod to get the user by the email
+  Future<User?> getUserByEmail(String email) async {
+    try {
+      // Look for 'email' parameter in the Users collection. Not id of firestore document
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('email', isEqualTo: email).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        return User(
+          carrer: doc['carrer'],
+          email: doc['email'],
+          username: doc['username'],
+          password: doc['password'],
+          id: doc['id'],
+          number: doc['number'],
+          imageUrl: doc['imageUrl'],
+          name: doc['name'],
+        );
+      }
+      return null;
+    } catch (error) {
+      print('Error getting user: $error');
+      return null;
+    }
   }
-}      
+
+  // method to get the most popular carrer of the users profile
+  Future<String> getMostPopularCarrer() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').get();
+      Map<String, int> carrers = {};
+      querySnapshot.docs.forEach((doc) {
+        String carrer = doc['carrer'];
+        if (carrers.containsKey(carrer)) {
+          carrers[carrer] = carrers[carrer]! + 1;
+        } else {
+          carrers[carrer] = 1;
+        }
+      });
+      String mostPopularCarrer = '';
+      int max = 0;
+      carrers.forEach((key, value) {
+        if (value > max) {
+          max = value;
+          mostPopularCarrer = key;
+        }
+      });
+      return mostPopularCarrer;
+    } catch (error) {
+      print('Error getting most popular carrer: $error');
+      return '';
+    }
+  }
+}
