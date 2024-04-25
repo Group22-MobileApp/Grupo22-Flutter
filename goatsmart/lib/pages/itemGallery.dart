@@ -218,51 +218,65 @@ Widget build(BuildContext context) {
           child: ListView(
             padding: EdgeInsets.all(screenWidth * 0.02),
             children:[
-              SizedBox(
-                height: screenHeight * 0.35,                
-                child: GridView.count(
-                  crossAxisCount: screenWidth > 600 ? 4 : 2,
-                  padding: const EdgeInsets.all(10),
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 30,                  
-                  children: List.generate(
-                    itemsForYou.length,
-                    (index) => GestureDetector(
-                      onTap: () => _showItemDialog(context, itemsForYou[index]), 
-                      child: Container(
-                        height: double.infinity, 
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10), 
-                          border: Border.all(color: Colors.grey, width: 1), 
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start, 
-                          children: [
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10), 
-                                child: Image.network(
-                                  itemsForYouImages[index],
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
+                SizedBox(
+                  height: screenHeight * 0.35, // Increase the height of the container to accommodate two rows
+                  child: GridView.count(
+                    crossAxisCount: screenWidth > 600 ? 4 : 2,
+                    padding: const EdgeInsets.all(2),
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.7, // Adjust the aspect ratio to fit two rows
+                    children: List.generate(
+                      itemsForYou.length,
+                      (index) => GestureDetector(
+                        onTap: () => _showItemDialog(context, itemsForYou[index]), 
+                        child: Container(
+                          height: double.infinity, 
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Color.fromARGB(60, 46, 64, 83), width: 1), 
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start, 
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5), 
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10), 
+                                    child: Image.network(
+                                      itemsForYouImages[index],
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: screenHeight * 0.02), 
-                            Text(
-                              '\$${_formatPrice(itemsForYou[index].price)}',
-                              style: TextStyle(fontSize: screenWidth * 0.05, color: const Color.fromARGB(255, 138, 136, 136)), 
-                            ),
-                            SizedBox(height: screenHeight * 0.02), 
-                          ],
+                              SizedBox(height: screenHeight * 0.0001), 
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text(                                
+                                  itemsForYou[index].title,
+                                  style: TextStyle(fontSize: screenWidth * 0.04, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              SizedBox(height: screenHeight * 0.01), 
+                              Padding(                                
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text(
+                                  '\$${_formatPrice(itemsForYou[index].price)}',
+                                  style: TextStyle(fontSize: screenWidth * 0.05, color: const Color.fromARGB(255, 138, 136, 136)), 
+                                ),
+                              ),
+                              SizedBox(height: screenHeight * 0.02), 
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-
-              Padding(
+                Padding(
                 padding: EdgeInsets.all(screenWidth * 0.02),
                 child: Row(
                   children: [
