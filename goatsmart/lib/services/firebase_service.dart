@@ -96,6 +96,28 @@ class FirebaseService {
       return [];
     }
   }  
+
+  Future<List> fetchItemsByUserCareer(String career) async {
+    try {      
+      List usersId = await fetchUsersIdCareer(career);      
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('owner', whereIn: usersId).get();
+      return querySnapshot.docs.map((doc) {
+        final title = doc['title'] ?? '';
+        final description = doc['description'] ?? '';
+        return MaterialItem(
+          id: doc.id,
+          title: title,
+          description: description,
+          price: doc['price'] ?? 0.0,
+          images: List<String>.from(doc['images'] ?? []),
+          owner: doc['owner'] ?? '',
+        );
+      }).toList();
+    } catch (error) {
+      print('Error getting material items: $error');
+      return [];
+    }
+  }
   
   Future<List<dynamic>> getPosts() async {
     try {
@@ -169,6 +191,17 @@ class FirebaseService {
     }
   }
 
+  Future<List> fetchUsersIdCareer(String career) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('carrer', isEqualTo: career).get();
+      return querySnapshot.docs.map((doc) {
+        return doc['id'];
+      }).toList();
+    } catch (error) {
+      print('Error getting users: $error');
+      return [];
+    }
+  }    
   //Metod to get the user by the email
   Future<User?> getUserByEmail(String email) async {
     try {
@@ -199,14 +232,14 @@ class FirebaseService {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('Users').get();
       Map<String, int> carrers = {};
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         String carrer = doc['carrer'];
         if (carrers.containsKey(carrer)) {
           carrers[carrer] = carrers[carrer]! + 1;
         } else {
           carrers[carrer] = 1;
         }
-      });
+      }
       String mostPopularCarrer = '';
       int max = 0;
       carrers.forEach((key, value) {

@@ -35,7 +35,7 @@ class _UserProfileState extends State<UserProfile> {
     return Scaffold(
       backgroundColor: Colors.white, // Cambiar el color de fondo a blanco
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
         actions: _buildEditButtons(), // Mostrar botones de edición
       ),
       body: Padding(
@@ -43,7 +43,7 @@ class _UserProfileState extends State<UserProfile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start, // Alinear elementos hacia arriba a la izquierda
           children: [
-            SizedBox(height: 20), // Espacio antes de la palabra "Profile"
+            const SizedBox(height: 20), // Espacio antes de la palabra "Profile"
             Text(
               'Profile',
               style: TextStyle(
@@ -56,7 +56,7 @@ class _UserProfileState extends State<UserProfile> {
             Row(
               children: [
                 // Contenedor para la imagen del usuario
-                Container(
+                SizedBox(
                   width: 120, // Ajustar el tamaño del contenedor
                   height: 120, // Ajustar el tamaño del contenedor
                   child: CircleAvatar(
@@ -64,7 +64,7 @@ class _UserProfileState extends State<UserProfile> {
                     backgroundImage: NetworkImage(widget.user.imageUrl),
                   ),
                 ),
-                Spacer(), // Espaciador para ocupar el espacio restante
+                const Spacer(), // Espaciador para ocupar el espacio restante
                 // Columna para la calificación y sistema de estrellas
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -72,7 +72,7 @@ class _UserProfileState extends State<UserProfile> {
                     // Calificación
                     Text(
                       rating.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 32, // Aumentar el tamaño de la fuente
                         fontWeight: FontWeight.bold,
                       ),
@@ -93,7 +93,7 @@ class _UserProfileState extends State<UserProfile> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildEditableTextFormField(
               controller: _usernameController,
               labelText: 'Username',
@@ -118,7 +118,7 @@ class _UserProfileState extends State<UserProfile> {
                 color: Colors.blue[900], // Cambiar el color a azul oscuro
               ),
             ),
-            SizedBox(height: 10), // Espacio entre el título y las reviews
+            const SizedBox(height: 10), // Espacio entre el título y las reviews
             // Ejemplo estático de una review
             _buildReview(
               'https://via.placeholder.com/150', // URL de la imagen del revisor (ficticio)
@@ -150,7 +150,7 @@ class _UserProfileState extends State<UserProfile> {
             radius: 50,
             backgroundImage: NetworkImage(imageUrl),
           ),
-          SizedBox(width: 10), // Espacio entre la imagen y el nombre
+          const SizedBox(width: 10), // Espacio entre la imagen y el nombre
           // Columna para el nombre del revisor y la cantidad de estrellas
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +158,7 @@ class _UserProfileState extends State<UserProfile> {
               // Nombre del revisor
               Text(
                 reviewerName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
@@ -175,10 +175,10 @@ class _UserProfileState extends State<UserProfile> {
                 ),
               ),
               // Comentario
-              SizedBox(height: 5), // Espacio entre las estrellas y el comentario
+              const SizedBox(height: 5), // Espacio entre las estrellas y el comentario
               Text(
                 comment,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             ],
           ),
@@ -196,20 +196,20 @@ class _UserProfileState extends State<UserProfile> {
               _isEditing = false;
             });
           },
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () {
             // Guardar cambios
             _saveChanges();
           },
-          child: Text('Save'),
+          child: const Text('Save'),
         ),
       ];
     } else {
       return [
         IconButton(
-          icon: Icon(Icons.edit),
+          icon: const Icon(Icons.edit),
           onPressed: () {
             setState(() {
               _isEditing = true;
@@ -237,14 +237,14 @@ Widget _buildEditableTextFormField({
     decoration: InputDecoration(
       labelText: isEditing ? labelText : null, // Ocultar la etiqueta cuando no está en modo de edición
       floatingLabelBehavior: isEditing ? FloatingLabelBehavior.always : FloatingLabelBehavior.never, // Ocultar la etiqueta cuando no está en modo de edición
-      border: isEditing ? OutlineInputBorder() : InputBorder.none, // Añadir un borde alrededor del campo de texto solo cuando está en modo de edición
+      border: isEditing ? const OutlineInputBorder() : InputBorder.none, // Añadir un borde alrededor del campo de texto solo cuando está en modo de edición
       filled: true, // Rellenar el campo de texto con un color
       fillColor: isEditing ? Colors.white : Colors.transparent, // Cambiar el color de fondo del campo de texto a transparente cuando no está en modo de edición
       labelStyle: TextStyle(
         color: Colors.blue[900], // Cambiar el color del texto de la etiqueta
       ),
     ),
-    style: TextStyle(
+    style: const TextStyle(
       color: Colors.black, // Cambiar el color del texto del campo de texto
       fontSize: 16, // Ajustar el tamaño de la letra
     ),

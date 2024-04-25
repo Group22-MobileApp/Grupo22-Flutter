@@ -32,7 +32,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/images/login_background.png'),
               fit: BoxFit.cover,
@@ -45,7 +45,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
               children: [
                 TextField(
                   controller: _titleController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Title',
                     border: OutlineInputBorder(),
                   ),
@@ -53,7 +53,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _descriptionController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Description',
                     border: OutlineInputBorder(),
                   ),
@@ -61,7 +61,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _priceController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Price',
                     border: OutlineInputBorder(),
                   ),

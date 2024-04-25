@@ -340,12 +340,12 @@ class CreatePageState extends State<CreatePage> {
       ));
       
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.green, 
           content: Row(
             children: [
-              const Icon(Icons.check_circle, color: Colors.white),
-              const SizedBox(width: 10),
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 10),
               Text('Registration Successful', style: TextStyle(color: Colors.white)), 
             ],
           ),

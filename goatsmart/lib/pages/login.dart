@@ -166,14 +166,14 @@ class LoginPageState extends State<LoginPage> {
       if (email.isEmpty || password.isEmpty) {
         print("Email or password is empty");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Email or password is empty')),
+          const SnackBar(content: Text('Email or password is empty')),
         );
         return;
       }
       if (email.contains('@') == false) {
         print("Email is not valid");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Email is not valid')),
+          const SnackBar(content: Text('Email is not valid')),
         );
         return;
       }
@@ -183,12 +183,12 @@ class LoginPageState extends State<LoginPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('No Network Connection! '),
+              title: const Text('No Network Connection! '),
               backgroundColor: Colors.white,
-              content: Text('No hay conexion a internet, por favor revisa tu red e intenta nuevamente.'),
+              content: const Text('No hay conexion a internet, por favor revisa tu red e intenta nuevamente.'),
               actions: <Widget>[
                 TextButton(
-                  child: Text('OK'),
+                  child: const Text('OK'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -201,7 +201,7 @@ class LoginPageState extends State<LoginPage> {
       }
       else{
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error en la Autenticación, comprueba tus credenciales e intenta nuevamente')),
+          const SnackBar(content: Text('Error en la Autenticación, comprueba tus credenciales e intenta nuevamente')),
         );
       }
     }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/services/firebase_service.dart';
@@ -38,7 +37,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
           } else if (snapshot.hasData) {
             List<MaterialItem> materialItems = snapshot.data!;
             return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
@@ -58,7 +57,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                       children: [
                         Expanded(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(8.0)),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(8.0)),
                             child: item.images.isNotEmpty
                                 ? Image.network(
                                     item.images.first,
@@ -75,21 +74,21 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                             children: [
                               Text(
                                 item.title,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16.0,
                                 ),
                               ),
                               Text(
                                 item.description,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14.0,
                                 ),
                               ),
-                              SizedBox(height: 8.0),
+                              const SizedBox(height: 8.0),
                               Text(
                                 'Price: \$${_formatPrice(item.price)}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,
@@ -118,8 +117,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
     return NumberFormat.currency(locale: 'en_US', symbol: '').format(double.parse(formattedPrice));
   }
 
-  Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {        
-    print("ITEM OWNER:"+ item.owner);
+  Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {            
     User? user = await _firebaseService.getUser(item.owner);
 
     return showDialog(
@@ -140,12 +138,12 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Text('Description: ${item.description}'),
-                SizedBox(height: 8.0),
-                Text('Price: \$${_formatPrice(item.price)}', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8.0),
+                Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                 if (user != null) ...[
-                  SizedBox(height: 8.0),                  
+                  const SizedBox(height: 8.0),                  
                   Text('Owner username: ${user.username}'),
                   Text('Owner name: ${user.name}'),
                   Text('Email: ${user.email}'),                  
@@ -159,7 +157,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );

@@ -57,7 +57,7 @@ class AuthService {
     DateTime last30Days = now.subtract(const Duration(days: 30));
     int count = 0;
     try {
-      await _auth.authStateChanges().listen((User? user) {
+      _auth.authStateChanges().listen((User? user) {
         if (user != null && user.metadata.creationTime!.isAfter(last30Days)) {
           count++;
         }
