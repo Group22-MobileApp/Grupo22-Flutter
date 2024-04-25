@@ -103,194 +103,212 @@ class _ItemGallery extends State<ItemGallery> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+Widget build(BuildContext context) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  double screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        toolbarHeight: screenHeight * 0.15,
-        leadingWidth: screenWidth * 0.3,
-        leading: GestureDetector(
-          onTap: () {
-            if (userLoggedIn != null && userImageUrl != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserProfile(user: userLoggedIn!),
-                ),
-              );
-            } else {              
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Error'),
-                    content: const Text('User not found. Please try again later.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Close'),
-                      ),
-                    ],
-                  );
-                },
-              );                            
-            }
-          },
-          child: userImageUrl != null
-              ? CircleAvatar(
-                  radius: screenWidth * 0.08,
-                  backgroundImage: NetworkImage(userImageUrl!),
-                )
-              : const CircleAvatar(
-                  radius: 30,
-                  child: Icon(Icons.person),
-                ),
-        ),
-        title: TextField(
-          decoration: InputDecoration(
-            fillColor: const Color.fromARGB(255, 211, 210, 210),
-            filled: true,
-            labelText: "Search",
-            hintText: "Search",
-            prefixIcon: const Icon(Icons.search),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
-            ),
-          ),
-        ),        
+  return Scaffold(
+    backgroundColor: Colors.white,
+    appBar: AppBar(
+      toolbarHeight: screenHeight * 0.15,
+      leadingWidth: screenWidth * 0.3,
+      leading: GestureDetector(
+        onTap: () {
+          if (userLoggedIn != null && userImageUrl != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserProfile(user: userLoggedIn!),
+              ),
+            );
+          } else {              
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Error'),
+                  content: const Text('User not found. Please try again later.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Close'),
+                    ),
+                  ],
+                );
+              },
+            );                            
+          }
+        },
+        child: userImageUrl != null
+            ? CircleAvatar(
+                radius: screenWidth * 0.08,
+                backgroundImage: NetworkImage(userImageUrl!),
+              )
+            : const CircleAvatar(
+                radius: 30,
+                child: Icon(Icons.person),
+              ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(screenWidth * 0.02),
-            child: Text(
-              username != null ? 'Hello $username!' : 'Loading...',
-              style: userImageUrl != null
-                  ? TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold)
-                  : TextStyle(fontSize: screenWidth * 0.1, color: const Color.fromARGB(230, 255, 168, 6), fontWeight: FontWeight.bold),
-            ),
+      title: TextField(
+        decoration: InputDecoration(
+          fillColor: const Color.fromARGB(255, 211, 210, 210),
+          filled: true,
+          labelText: "Search",
+          hintText: "Search",
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: screenWidth * 0.02),
-                child: Text(
-                  'Just For You',
-                  style: TextStyle(fontSize: screenWidth * 0.06),
+        ),
+      ),        
+    ),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(screenWidth * 0.02),
+          child: Text(
+            username != null ? 'Hello $username!' : 'Loading...',
+            style: userImageUrl != null
+                ? TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold)
+                : TextStyle(fontSize: screenWidth * 0.1, color: const Color.fromARGB(230, 255, 168, 6), fontWeight: FontWeight.bold),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: screenWidth * 0.02),
+              child: Text(
+                'Just For You',
+                style: TextStyle(fontSize: screenWidth * 0.06),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(screenWidth * 0.02),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'See All',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.05,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: screenWidth * 0.03),
+                  ),
+                  FloatingActionButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SeeAllItemsView()));
+                    },
+                    backgroundColor: const Color.fromARGB(230, 255, 168, 6),
+                    child: const Icon(Icons.arrow_forward_outlined),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.all(screenWidth * 0.02),
+            children:[
+              SizedBox(
+                height: screenHeight * 0.35,                
+                child: GridView.count(
+                  crossAxisCount: screenWidth > 600 ? 4 : 2,
+                  padding: const EdgeInsets.all(0),
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 0,                  
+                  children: List.generate(
+                    itemsForYou.length,
+                    (index) => GestureDetector(
+                      onTap: () => _showItemDialog(context, itemsForYou[index]), // Add onTap functionality
+                      child: Container(
+                        height: double.infinity, 
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Image.network(
+                                itemsForYouImages[index],
+                                fit: BoxFit.cover,
+                                height: screenHeight * 0.5, // Adjust the height of the image
+                                width: screenWidth * 0.5, 
+                              ),
+                            ),
+                            SizedBox(height: screenHeight * 0.02), // Add space between image and price
+                            Text(
+                              '\$${_formatPrice(itemsForYou[index].price)}',
+                              style: TextStyle(fontSize: screenWidth * 0.05, color: const Color.fromARGB(255, 138, 136, 136)), // Adjust the font size
+                            ),
+                            SizedBox(height: screenHeight * 0.02), // Add space between price and title
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.all(screenWidth * 0.02),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'See All',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.05,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 0, 0, 0),
-                      ),
+                      'New Items',
+                      style: TextStyle(fontSize: screenWidth * 0.06),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(left: screenWidth * 0.03),
-                    ),
-                    FloatingActionButton(
+                    Spacer(),
+                    IconButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SeeAllItemsView()));
+                        _fetchLastItems();
                       },
-                      backgroundColor: const Color.fromARGB(230, 255, 168, 6),
-                      child: const Icon(Icons.arrow_forward_outlined),
+                      icon: Icon(Icons.refresh),
                     ),
                   ],
                 ),
               ),
+              SizedBox(
+                height: screenHeight * 0.15,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: lastItems.length,
+                  itemBuilder: (context, index) {
+                    var item = lastItems[index]; // Get the item
+                    return GestureDetector( // Wrap with GestureDetector
+                      onTap: () => _showItemDialog(context, item), // Show dialog on tap
+                      child: Padding(
+                        padding: const EdgeInsets.all(1),
+                        child: Image.network(
+                          lastItemsImages[index],
+                          errorBuilder: (context, error, stackTrace) {                        
+                            return Image.asset('assets/images/default.jpg');
+                          },
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children:[
-                SizedBox(
-                  height: screenHeight * 0.35,
-                  child: GridView.count(
-                    crossAxisCount: screenWidth > 600 ? 4 : 2,
-                    padding: const EdgeInsets.all(0),
-                    crossAxisSpacing: 2,
-                    mainAxisSpacing: 2,
-                    children: List.generate(
-                      itemsForYou.length,
-                      (index) => GestureDetector(
-                        onTap: () => _showItemDialog(context, itemsForYou[index]), // Add onTap functionality
-                        child: Image.network(
-                          itemsForYouImages[index],
-                          fit: BoxFit.fitWidth,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.02),
-                  child: Row(
-                    children: [
-                      Text(
-                        'New Items',
-                        style: TextStyle(fontSize: screenWidth * 0.06),
-                      ),
-                      Spacer(),
-                      IconButton(
-                        onPressed: () {
-                          _fetchLastItems();
-                        },
-                        icon: Icon(Icons.refresh),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: screenHeight * 0.2,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: lastItems.length,
-                    itemBuilder: (context, index) {
-                      var item = lastItems[index]; // Get the item
-                      return GestureDetector( // Wrap with GestureDetector
-                        onTap: () => _showItemDialog(context, item), // Show dialog on tap
-                        child: Padding(
-                          padding: const EdgeInsets.all(1),
-                          child: Image.network(
-                            lastItemsImages[index],
-                            errorBuilder: (context, error, stackTrace) {                        
-                              return Image.asset('assets/images/default.jpg');
-                            },
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddMaterialItemView()));
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const AddMaterialItemView()));
+      },
+      child: const Icon(Icons.add),
+    ),
+  );
+}
 
   String _formatPrice(double price) {
     String formattedPrice = price.toStringAsFixed(2);
