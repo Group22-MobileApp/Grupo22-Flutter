@@ -113,44 +113,48 @@ Widget build(BuildContext context) {
       toolbarHeight: screenHeight * 0.15,
       leadingWidth: screenWidth * 0.3,
       leading: GestureDetector(
-        onTap: () {
-          if (userLoggedIn != null && userImageUrl != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserProfile(user: userLoggedIn!),
-              ),
-            );
-          } else {              
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Error'),
-                  content: const Text('User not found. Please try again later.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Close'),
-                    ),
-                  ],
-                );
-              },
-            );                            
-          }
-        },
-        child: userImageUrl != null
-            ? CircleAvatar(
-                radius: screenWidth * 0.08,
+      onTap: () {
+        if (userLoggedIn != null && userImageUrl != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserProfile(user: userLoggedIn!),
+            ),
+          );
+        } else {              
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Error'),
+                content: const Text('User not found. Please try again later.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Close'),
+                  ),
+                ],
+              );
+            },
+          );                            
+        }
+      },
+      child: userImageUrl != null
+          ? Padding(
+              padding: EdgeInsets.all(screenWidth * 0.03), 
+              child: CircleAvatar(
+                radius: screenWidth * 0.06, 
                 backgroundImage: NetworkImage(userImageUrl!),
-              )
-            : const CircleAvatar(
-                radius: 30,
-                child: Icon(Icons.person),
               ),
+            )
+          : const CircleAvatar(
+              radius: 30,
+              child: Icon(Icons.person),
+            ),
       ),
+
       title: TextField(
         decoration: InputDecoration(
           fillColor: const Color.fromARGB(255, 211, 210, 210),
