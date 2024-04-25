@@ -232,14 +232,14 @@ class FirebaseService {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('Users').get();
       Map<String, int> carrers = {};
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         String carrer = doc['carrer'];
         if (carrers.containsKey(carrer)) {
           carrers[carrer] = carrers[carrer]! + 1;
         } else {
           carrers[carrer] = 1;
         }
-      });
+      }
       String mostPopularCarrer = '';
       int max = 0;
       carrers.forEach((key, value) {

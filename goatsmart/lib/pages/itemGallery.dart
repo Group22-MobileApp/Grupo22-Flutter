@@ -191,9 +191,9 @@ Widget build(BuildContext context) {
                     style: TextStyle(fontSize: screenWidth * 0.06),
                   ),
                   SizedBox(width: screenWidth * 0.02), // Add spacing between text and star
-                  Icon(
+                  const Icon(
                     Icons.star,
-                    color: const Color.fromARGB(230, 255, 168, 6),
+                    color: Color.fromARGB(230, 255, 168, 6),
                   ),
                 ],
               ),
@@ -208,7 +208,7 @@ Widget build(BuildContext context) {
                     style: TextStyle(
                       fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 0, 0, 0),
+                      color: const Color.fromARGB(255, 0, 0, 0),
                     ),
                   ),
                   SizedBox(width: screenWidth * 0.03),
@@ -221,7 +221,7 @@ Widget build(BuildContext context) {
                           onTap: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const SeeAllItemsView()));
                           },
-                          child: SizedBox(
+                          child: const SizedBox(
                             width: 46, 
                             height: 46,
                             child: Icon(Icons.arrow_forward_outlined, color: Colors.white),       
@@ -255,7 +255,7 @@ Widget build(BuildContext context) {
                           height: double.infinity, 
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Color.fromARGB(60, 46, 64, 83), width: 1), 
+                            border: Border.all(color: const Color.fromARGB(60, 46, 64, 83), width: 1), 
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start, 
@@ -305,12 +305,12 @@ Widget build(BuildContext context) {
                       'New Items',
                       style: TextStyle(fontSize: screenWidth * 0.06),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
                       onPressed: () {
                         _fetchLastItems();
                       },
-                      icon: Icon(Icons.refresh),
+                      icon: const Icon(Icons.refresh),
                     ),
                   ],
                 ),
@@ -379,12 +379,12 @@ Widget build(BuildContext context) {
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   Text('Description: ${item.description}'),
-                  SizedBox(height: 8.0),
-                  Text('Price: \$${_formatPrice(item.price)}', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8.0),
+                  Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                   if (user != null) ...[
-                    SizedBox(height: 8.0),                  
+                    const SizedBox(height: 8.0),                  
                     Text('Owner username: ${user.username}'),
                     Text('Owner name: ${user.name}'),
                     Text('Email: ${user.email}'),                  
@@ -399,7 +399,7 @@ Widget build(BuildContext context) {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );

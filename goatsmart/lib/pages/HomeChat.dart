@@ -4,7 +4,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 class ChatComponent extends StatefulWidget {
   final String firebaseUserId;
 
-  ChatComponent({required this.firebaseUserId});
+  const ChatComponent({Key? key, required this.firebaseUserId}) : super(key: key);
 
   @override
   _ChatComponentState createState() => _ChatComponentState();
@@ -40,7 +40,7 @@ class _ChatComponentState extends State<ChatComponent> {
           title: const Text('Chats'),
         ),
         body: Container(
-          child: Text('Chat'),
+          child: const Text('Chat'),
         ),
       ),
     );
