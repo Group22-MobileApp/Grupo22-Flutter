@@ -297,6 +297,10 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         price: price,
         images: _image != null ? [_image!.path] : [],
         owner: currentUserId, 
+        isNew: _isNew,
+        isUsed: _isUsed,
+        isInterchangeable: _isInterchangeable,
+        isNonInterchangeable: _isNonInterchangeable,                
       );
 
       _firebaseService.createMaterialItem(newItem).then((_) {
