@@ -5,6 +5,7 @@ import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
 // import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
@@ -28,6 +29,25 @@ class _ItemGallery extends State<ItemGallery> {
   String? username;
   List<MaterialItem> itemsForYou = [];
   List<dynamic> itemsForYouImages = [];
+
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+      } else if (index == 1) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+      } else if (index == 2) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const AddMaterialItemView()));
+      } else if (index == 3) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+      } else if (index == 4) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(user: userLoggedIn!)));
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -362,7 +382,39 @@ Widget build(BuildContext context) {
       },
       child: const Icon(Icons.add),
     ),
-  );
+    bottomNavigationBar: BottomNavigationBar(
+        //BackgroundColor white and selected item color orange and black font
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
+
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Liked Items',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
 }
 
   String _formatPrice(double price) {
