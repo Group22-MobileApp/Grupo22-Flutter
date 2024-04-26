@@ -69,4 +69,12 @@ class AuthService {
     return count;
   }
 
+  //method to get the number of days since the last log-in
+  Future<int> daysLastConnection() async{
+    return 0;
+  } 
+
+  //Method to get the number of posts created since the last login
+  
+
 }

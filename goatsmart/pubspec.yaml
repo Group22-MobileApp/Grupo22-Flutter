@@ -38,6 +38,7 @@ dependencies:
   geolocator: ^9.0.2
   stream_chat_flutter: ^7.2.0
   dotted_border: ^2.0.0+1
+  flutter_local_notifications: ^9.1.5
 
 
 dev_dependencies:
