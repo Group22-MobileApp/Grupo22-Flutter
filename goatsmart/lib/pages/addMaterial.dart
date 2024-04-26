@@ -1,19 +1,25 @@
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:goatsmart/models/user.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 
 class AddMaterialItemView extends StatefulWidget {
-  const AddMaterialItemView({Key? key}) : super(key: key);
-
+  final User userLoggedIn;
+  const AddMaterialItemView({Key? key, required this.userLoggedIn}) : super(key: key);  
   @override
-  _AddMaterialItemViewState createState() => _AddMaterialItemViewState();
+  _AddMaterialItemViewState createState() => _AddMaterialItemViewState(userLoggedIn);
 }
 
 class _AddMaterialItemViewState extends State<AddMaterialItemView> {
+  User userLoggedIn;
+  _AddMaterialItemViewState(this.userLoggedIn);
+
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -25,6 +31,32 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   bool _isNonInterchangeable = true;
   
   File? _image;
+
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+      } else if (index == 1) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+      } else if (index == 2) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn)));
+      } else if (index == 3) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+      } else if (index == 4) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => UserProfile(user: userLoggedIn)));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -243,9 +275,40 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        //BackgroundColor white and selected item color orange and black font
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
+
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Liked Items',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
     );
-  }
-  
+  }  
     void _showImagePicker(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await showModalBottomSheet<XFile>(

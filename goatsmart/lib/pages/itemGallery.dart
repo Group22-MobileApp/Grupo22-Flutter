@@ -5,7 +5,6 @@ import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
 // import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
-import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/searchPage.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
@@ -38,14 +37,14 @@ class _ItemGallery extends State<ItemGallery> {
       _selectedIndex = index;
       if (index == 0) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const HomePage()));
+            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
       } else if (index == 2) {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => const AddMaterialItemView()));
+                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));                            
       } else if (index == 3) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
       } else if (index == 4) {
@@ -324,8 +323,7 @@ class _ItemGallery extends State<ItemGallery> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SeeAllItemsView()));
+                                      builder: (context) => SeeAllItemsView(userLoggedIn: userLoggedIn!)));
                             },
                             child: const SizedBox(
                               width: 46,
@@ -477,7 +475,7 @@ class _ItemGallery extends State<ItemGallery> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const AddMaterialItemView()));
+                  builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));    
         },
         child: const Icon(Icons.add),
       ),
