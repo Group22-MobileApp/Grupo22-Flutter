@@ -40,7 +40,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
             return SizedBox(
               height: MediaQuery.of(context).size.height ,
               child: GridView.count(
-                crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
+                crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 1,
                 padding: const EdgeInsets.all(2),
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
@@ -70,16 +70,16 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                                       materialItems[index].images.first as String,
                                       fit: BoxFit.cover,
                                       width: double.infinity,
-                                      cacheHeight: 200,
-                                      cacheWidth: 200,
+                                      cacheHeight: 1000,
+                                      cacheWidth: 600,
                                     )
                                   : Image.asset(
                                       materialItems[index].images.first as String,
                                       fit: BoxFit.cover,
                                       width: double.infinity,
                                       // Good cache height and width for images
-                                      cacheHeight: 500,
-                                      cacheWidth: 200,
+                                      cacheHeight: 1000,
+                                      cacheWidth: 600,
                                     ),
                               ),
                             ),
@@ -142,6 +142,8 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                       item.images.first,
                       width: double.infinity,
                       fit: BoxFit.cover,
+                      cacheHeight: 1000,
+                      cacheWidth: 600,
                     ),
                   const SizedBox(height: 8.0),
                   Text('Description: ${item.description}'),
