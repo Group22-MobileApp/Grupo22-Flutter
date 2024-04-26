@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,7 +18,12 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final FirebaseService _firebaseService = FirebaseService();
-  final AuthService _auth = AuthService();
+  final AuthService _auth = AuthService();  
+  bool _isNew = true;
+  bool _isUsed = false;
+  bool _isInterchangeable = false ;
+  bool _isNonInterchangeable = true;
+  
   File? _image;
 
   @override
@@ -26,86 +31,222 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Add New Material Item'),
+        title: const Text('Create a post'),
         backgroundColor: Colors.white,
         elevation: 0,
+        // Bold and bigger
+        titleTextStyle: const TextStyle(
+          color: Color.fromARGB(220, 0, 0, 0),
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/login_background.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Title',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _priceController,
-                  decoration: const InputDecoration(
-                    labelText: 'Price',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 16),
-                _image == null
-                    ? ElevatedButton.icon(
-                        onPressed: () {
-                          _showImagePicker(context);
-                        },
-                        icon: const Icon(Icons.add_a_photo),
-                        label: const Text('Add Picture'),
-                      )
-                    : Column(
-                        children: [
-                          SizedBox(
-                            height: 200,
-                            child: Image.file(_image!),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton.icon(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+              height: MediaQuery.of(context).size.height / 4,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(21, 133, 133, 133),
+                borderRadius: BorderRadius.circular(90),
+              ),
+              child: _image == null
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Take or add a photo",              
+                        style: TextStyle(color: Color.fromARGB(210, 158, 158, 158), fontSize: 16, fontWeight: FontWeight.bold),              
+                      ),
+                      const SizedBox(width: 10),
+                      DottedBorder(
+                        color: const Color.fromARGB(255, 67, 93, 122),
+                        strokeWidth: 2,
+                        borderType: BorderType.Circle,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: IconButton(
+                            icon: const Icon(Icons.add_a_photo, color: Color.fromARGB(255, 67, 93, 122), size: 60),
                             onPressed: () {
                               _showImagePicker(context);
                             },
-                            icon: const Icon(Icons.add_photo_alternate),
-                            label: const Text('Change Picture'),
                           ),
-                        ],
+                        ),
                       ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => _addMaterialItem(context),
-                  child: const Text('Add Material Item'),
+                    ],
+                  )
+                    : Image.file(_image!, fit: BoxFit.cover),
                 ),
-              ],
-            ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(                
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: const Color.fromARGB(21, 133, 133, 133),
+                  ),
+                  child: TextField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(),
+                    ),                  
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: const Color.fromARGB(21, 133, 133, 133),
+                  ),
+                  child: TextField(
+                    controller: _priceController,
+                    decoration: const InputDecoration(
+                      labelText: 'Price',
+                      border: OutlineInputBorder(),                      
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: const Color.fromARGB(21, 133, 133, 133),
+                  ),
+                  child: TextField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),                
+              ),   
+
+              const SizedBox(height: 16),
+                Row(
+                  children: [                  
+                    SizedBox(        
+                      width: MediaQuery.of(context).size.width / 2 -16, 
+                      child: Expanded(                                                                                    
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Condition', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              ),
+                              CheckboxListTile(
+                                title: const Text('New'),
+                                value: _isNew,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isNew = value!;
+                                    _isUsed = !value;
+                                  });
+                                },
+                              ),
+                              CheckboxListTile(
+                                title: const Text('Used'),
+                                value: _isUsed,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isUsed = value!;
+                                    _isNew = !value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(        
+                      width: MediaQuery.of(context).size.width / 2 -16,                 
+                      child: Expanded(                                                                                    
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Interchangeable', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              ),
+                              CheckboxListTile(
+                                title: const Text('Yes'),
+                                value: _isInterchangeable,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isInterchangeable = value!;
+                                    _isNonInterchangeable = !value;
+                                  });
+                                },
+                              ),
+                              CheckboxListTile(
+                                title: const Text('No'),
+                                value: _isNonInterchangeable,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isNonInterchangeable = value!;
+                                    _isInterchangeable = !value;                                    
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),          
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),                                        
+                    color: const Color(0xFFF7DC6F),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () => _addMaterialItem(context),
+                    style: ElevatedButton.styleFrom(                      
+                      backgroundColor: const Color(0xFFF7DC6F),
+                      padding: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text('Post'
+                    , style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                      color: const Color(0xFF2E4053),
+                    ),),
+                  ),
+                ),
+              ),              
+            ],                        
           ),
         ),
       ),
     );
   }
-
-  void _showImagePicker(BuildContext context) async {
+  
+    void _showImagePicker(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await showModalBottomSheet<XFile>(
       context: context,

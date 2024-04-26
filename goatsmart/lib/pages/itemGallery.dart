@@ -215,7 +215,7 @@ class _ItemGallery extends State<ItemGallery> {
                     padding: EdgeInsets.all(screenWidth * 0.03),
                     child: CircleAvatar(
                       radius: screenWidth * 0.06,
-                      backgroundImage: NetworkImage(userImageUrl!),
+                      backgroundImage: NetworkImage(userImageUrl!),                  
                     ),
                   )
                 : const CircleAvatar(
@@ -223,30 +223,46 @@ class _ItemGallery extends State<ItemGallery> {
                     child: Icon(Icons.person),
                   ),
           ),
-          title: TextButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => SearchPage()));
+          title: InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
             },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Expanded(
                     child: TextField(
                       decoration: InputDecoration(
+                        fillColor: const Color.fromARGB(255, 211, 210, 210),
+                        filled: true,
                         labelText: "Search",
                         hintText: "Search",
-                        border: InputBorder.none,
+                        prefixIcon: GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+                          },
+                          child: const Icon(Icons.search),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
+                        ),                       
                       ),
+                      onChanged: (value) {
+                        // Handle text change                        
+                      },
+                      onSubmitted: (value) {
+                        // Handle submission
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+                      },
                     ),
-                  ),
-                  Icon(Icons.search),
+                  ),                  
                 ],
               ),
             ),
           )),
+
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -367,6 +383,8 @@ class _ItemGallery extends State<ItemGallery> {
                                             itemsForYouImages[index] as String,
                                             fit: BoxFit.cover,
                                             width: double.infinity,
+                                            cacheHeight: 300,
+                                            cacheWidth: 220,
                                           )
                                         : Image.asset(
                                             itemsForYouImages[index] as String,
@@ -440,6 +458,8 @@ class _ItemGallery extends State<ItemGallery> {
                               return Image.asset('assets/images/default.jpg');
                             },
                             fit: BoxFit.cover,
+                            cacheHeight: 300,
+                            cacheWidth: 220,
                           ),
                         ),
                       );
@@ -523,6 +543,8 @@ class _ItemGallery extends State<ItemGallery> {
                       item.images.first,
                       width: double.infinity,
                       fit: BoxFit.cover,
+                      cacheHeight: 800,
+                      cacheWidth: 600,
                     )
                   else
                     Image.asset(

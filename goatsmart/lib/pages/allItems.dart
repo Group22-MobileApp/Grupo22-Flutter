@@ -65,16 +65,16 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                               padding: const EdgeInsets.all(5),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
-                                child: (materialItems[index].images.first as String).startsWith('http')
+                                child: (materialItems[index].images.first).startsWith('http')
                                   ? Image.network(
-                                      materialItems[index].images.first as String,
+                                      materialItems[index].images.first,
                                       fit: BoxFit.cover,
                                       width: double.infinity,
                                       cacheHeight: 1000,
                                       cacheWidth: 600,
                                     )
                                   : Image.asset(
-                                      materialItems[index].images.first as String,
+                                      materialItems[index].images.first,
                                       fit: BoxFit.cover,
                                       width: double.infinity,
                                       // Good cache height and width for images
