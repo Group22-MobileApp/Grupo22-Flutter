@@ -70,11 +70,16 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                                       materialItems[index].images.first as String,
                                       fit: BoxFit.cover,
                                       width: double.infinity,
+                                      cacheHeight: 200,
+                                      cacheWidth: 200,
                                     )
                                   : Image.asset(
                                       materialItems[index].images.first as String,
                                       fit: BoxFit.cover,
                                       width: double.infinity,
+                                      // Good cache height and width for images
+                                      cacheHeight: 500,
+                                      cacheWidth: 200,
                                     ),
                               ),
                             ),
@@ -127,28 +132,30 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
           title: Text(item.title),
           content: SizedBox(
             width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (item.images.isNotEmpty)
-                  Image.network(
-                    item.images.first,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                const SizedBox(height: 8.0),
-                Text('Description: ${item.description}'),
-                const SizedBox(height: 8.0),
-                Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                if (user != null) ...[
-                  const SizedBox(height: 8.0),                  
-                  Text('Owner username: ${user.username}'),
-                  Text('Owner name: ${user.name}'),
-                  Text('Email: ${user.email}'),                  
-                  Text('Career: ${user.carrer}'),
+            child: SingleChildScrollView( // Add this
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (item.images.isNotEmpty)
+                    Image.network(
+                      item.images.first,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  const SizedBox(height: 8.0),
+                  Text('Description: ${item.description}'),
+                  const SizedBox(height: 8.0),
+                  Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  if (user != null) ...[
+                    const SizedBox(height: 8.0),                  
+                    Text('Owner username: ${user.username}'),
+                    Text('Owner name: ${user.name}'),
+                    Text('Email: ${user.email}'),                  
+                    Text('Career: ${user.carrer}'),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           actions: [
@@ -163,5 +170,4 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
       },
     );
   }
-
 }
