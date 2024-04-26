@@ -29,7 +29,7 @@ class FirebaseService {
     }
   }
 
-  Future<List<MaterialItem>> getMaterialItemsNameDescription() async {
+  Future<List<MaterialItem>> getMaterialItems() async {
       try {
       QuerySnapshot querySnapshot = await _firestore.collection('material_items').get();
       return querySnapshot.docs.map((doc) {
@@ -41,7 +41,7 @@ class FirebaseService {
           description: description,
           price: doc['price'] ?? 0.0,
           images: List<String>.from(doc['images'] ?? []),
-          owner: doc['owner'] ?? '',
+          owner: doc['owner'] ?? '',      
         );
       }).toList();
     } catch (e) {
@@ -96,6 +96,18 @@ class FirebaseService {
       return [];
     }
   }  
+
+    Future<List> fetchLastItemsTittle() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').orderBy('created_at', descending: true).limit(5).get();
+      return querySnapshot.docs.map((doc) {
+        return doc['title'];
+      }).toList();
+    } catch (e) {
+      print('Error getting material items: $e');
+      return [];
+    }
+  }  
   
   Future<List<dynamic>> getPosts() async {
     try {
@@ -113,6 +125,27 @@ class FirebaseService {
     }
   }
 
+  Future<List> fetchItemsByUserCareer(String career) async {
+    try {      
+      List usersId = await fetchUsersIdCareer(career);      
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('owner', whereIn: usersId).get();
+      return querySnapshot.docs.map((doc) {
+        final title = doc['title'] ?? '';
+        final description = doc['description'] ?? '';
+        return MaterialItem(
+          id: doc.id,
+          title: title,
+          description: description,
+          price: doc['price'] ?? 0.0,
+          images: List<String>.from(doc['images'] ?? []),
+          owner: doc['owner'] ?? '',
+        );
+      }).toList();
+    } catch (error) {
+      print('Error getting material items: $error');
+      return [];
+    }
+  }
   Future<void> addUser(User user) async {
     try {
       CollectionReference collectionUsers = _firestore.collection("Users");
@@ -187,6 +220,83 @@ class FirebaseService {
     } catch (error) {
       print('Error getting user: $error');
       return null;
+    }
+  }
+
+  Future<List> fetchUsersIdCareer(String career) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('carrer', isEqualTo: career).get();
+      return querySnapshot.docs.map((doc) {
+        return doc['id'];
+      }).toList();
+    } catch (error) {
+      print('Error getting users: $error');
+      return [];
+    }
+  }    
+  //Metod to get the user by the email
+  Future<User?> getUserByEmail(String email) async {
+    try {
+      // Look for 'email' parameter in the Users collection. Not id of firestore document
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('email', isEqualTo: email).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        return User(
+          carrer: doc['carrer'],
+          email: doc['email'],
+          username: doc['username'],
+          password: doc['password'],
+          id: doc['id'],
+          number: doc['number'],
+          imageUrl: doc['imageUrl'],
+          name: doc['name'],
+        );
+      }
+      return null;
+    } catch (error) {
+      print('Error getting user: $error');
+      return null;
+    }
+  }
+
+  // method to get the most popular carrer of the users profile
+  Future<String> getMostPopularCarrer() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').get();
+      Map<String, int> carrers = {};
+      for (var doc in querySnapshot.docs) {
+        String carrer = doc['carrer'];
+        if (carrers.containsKey(carrer)) {
+          carrers[carrer] = carrers[carrer]! + 1;
+        } else {
+          carrers[carrer] = 1;
+        }
+      }
+      String mostPopularCarrer = '';
+      int max = 0;
+      carrers.forEach((key, value) {
+        if (value > max) {
+          max = value;
+          mostPopularCarrer = key;
+        }
+      });
+      return mostPopularCarrer;
+    } catch (error) {
+      print('Error getting most popular carrer: $error');
+      return '';
+    }
+  }
+
+  //method to get the posts with the same title
+  Future<List> getPostByTitle(String title) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('title', isEqualTo: title).get();
+      return querySnapshot.docs.map((doc) {
+        return doc.data();
+      }).toList();
+    } catch (error) {
+      print('Error getting post by title: $error');
+      return [];
     }
   }
 }

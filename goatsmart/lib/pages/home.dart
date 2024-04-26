@@ -47,9 +47,9 @@ class HomePage extends StatelessWidget {
               image: AssetImage('assets/images/logo.png'),
               height: 200,              
             ),
-            Container(
+            const SizedBox(
               width: double.infinity,
-              child: const Text(
+              child: Text(
                 'GOAT’S MART',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -79,7 +79,7 @@ class HomePage extends StatelessWidget {
               padding: EdgeInsets.only(top: 20),
             ),            
             TextButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage())),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage())),
               style: TextButton.styleFrom(
                 foregroundColor: const Color.fromARGB(255, 117, 117, 117),
               ),
@@ -93,7 +93,7 @@ class HomePage extends StatelessWidget {
                       fontFamily: 'Montserrat',
                     ),
                   ),                  
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 20),
                   ),
                   FloatingActionButton(onPressed: null, 
