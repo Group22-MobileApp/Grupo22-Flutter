@@ -6,9 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c397f5fe-62ce-492c-a1a6-6a999565b523" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/login.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/lib/services/Control_features.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/services/Control_features.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/itemGallery.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/itemGallery.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/searchPage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/searchPage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goatsmart/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +40,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "Chat",
+    "git-widget-placeholder": "BusquedasFrecuentes/dparraga",
     "last_opened_file_path": "C:/Users/Andres Parraga/Downloads/dartsdk-windows-x64-release/dart-sdk",
     "settings.editor.selected.configurable": "dart.settings"
   }
