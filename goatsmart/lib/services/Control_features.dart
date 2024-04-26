@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class ConnectionManager {
-  static const platform = const MethodChannel('connection_manager');
+  static const platform = MethodChannel('connection_manager');
 
   Future<String> getConnectionType() async {
     String connectionType = '';
@@ -38,6 +38,7 @@ Future<bool> checkInternetConnection() async {
       batteryLevel = await platform.invokeMethod('getBatteryLevel');
     } on PlatformException catch (e) {
       batteryLevel = -1;
+      print('Error getting battery level: ${e.message}');
     }
     return batteryLevel;
   }

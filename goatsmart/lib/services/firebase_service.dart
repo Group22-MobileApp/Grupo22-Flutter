@@ -181,6 +181,17 @@ class FirebaseService {
     }
   }
 
+  Future<List> fetchUsersIdCareer(String career) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('carrer', isEqualTo: career).get();
+      return querySnapshot.docs.map((doc) {
+        return doc['id'];
+      }).toList();
+    } catch (error) {
+      print('Error getting users: $error');
+      return [];
+    }
+  }    
   //Metod to get the user by the email
   Future<User?> getUserByEmail(String email) async {
     try {
@@ -211,14 +222,14 @@ class FirebaseService {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('Users').get();
       Map<String, int> carrers = {};
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         String carrer = doc['carrer'];
         if (carrers.containsKey(carrer)) {
           carrers[carrer] = carrers[carrer]! + 1;
         } else {
           carrers[carrer] = 1;
         }
-      });
+      }
       String mostPopularCarrer = '';
       int max = 0;
       carrers.forEach((key, value) {
