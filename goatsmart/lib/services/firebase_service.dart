@@ -125,6 +125,27 @@ class FirebaseService {
     }
   }
 
+  Future<List> fetchItemsByUserCareer(String career) async {
+    try {      
+      List usersId = await fetchUsersIdCareer(career);      
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('owner', whereIn: usersId).get();
+      return querySnapshot.docs.map((doc) {
+        final title = doc['title'] ?? '';
+        final description = doc['description'] ?? '';
+        return MaterialItem(
+          id: doc.id,
+          title: title,
+          description: description,
+          price: doc['price'] ?? 0.0,
+          images: List<String>.from(doc['images'] ?? []),
+          owner: doc['owner'] ?? '',
+        );
+      }).toList();
+    } catch (error) {
+      print('Error getting material items: $error');
+      return [];
+    }
+  }
   Future<void> addUser(User user) async {
     try {
       CollectionReference collectionUsers = _firestore.collection("Users");
