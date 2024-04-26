@@ -1,14 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
-import 'package:goatsmart/pages/login.dart';
+import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/ProfileEdit.dart';
 import 'package:goatsmart/pages/Profile.dart';
 import 'package:goatsmart/pages/geolocalization.dart';
 
-class UserProfile extends StatelessWidget {
+// Stateful widget
+class  UserProfile extends StatefulWidget {
   final User user;
 
   const UserProfile({Key? key, required this.user}) : super(key: key);
+
+  @override
+  _UserProfileState createState() => _UserProfileState(user);
+}
+
+class _UserProfileState extends State<UserProfile> {  
+  final User user;
+
+  _UserProfileState(this.user);
+
+
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+      } else if (index == 1) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+      } else if (index == 2) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddMaterialItemView(userLoggedIn: user)));                              
+      } else if (index == 3) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+      } else if (index == 4) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => UserProfile(user: widget.user)));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +133,7 @@ class UserProfile extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 40),
             buildButtonWithIcon(
               'Profile',
               Icons.arrow_forward_ios,
@@ -146,6 +183,7 @@ class UserProfile extends StatelessWidget {
                 // Add navigation logic for Terms and Conditions
               },
             ),
+            const SizedBox(height: 10),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -153,9 +191,9 @@ class UserProfile extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 20.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => ItemGallery()),
+                          (Route<dynamic> route) => false,
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -175,6 +213,38 @@ class UserProfile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        //BackgroundColor white and selected item color orange and black font
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
+
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Liked Items',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }

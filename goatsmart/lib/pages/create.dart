@@ -290,7 +290,7 @@ class CreatePageState extends State<CreatePage> {
       return;
     }
     
-    if (email.isEmpty || password.isEmpty || name.isEmpty || username.isEmpty) { 
+    if (email.isEmpty || password.isEmpty || name.isEmpty || username.isEmpty || phoneNumber.isEmpty || confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all required fields')),
       );
@@ -311,12 +311,19 @@ class CreatePageState extends State<CreatePage> {
       return;
     }
     
-    if (phoneNumber.length < 5) {
+    if (phoneNumber.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid phone number')),
       );
       return;
     }
+
+    if (_userImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please pick an image')),
+      );
+      return;
+    }    
     
     String? userId = await _auth.signUpWithEmailAndPassword(email, password);
 

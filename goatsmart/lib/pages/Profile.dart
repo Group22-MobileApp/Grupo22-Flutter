@@ -1,10 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
+import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/userProfile.dart';
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   final User user;
 
   const Profile({Key? key, required this.user}) : super(key: key);
+
+  @override
+  _ProfileState createState() => _ProfileState(user);
+}
+
+class _ProfileState extends State<Profile> {
+  int _selectedIndex = 0;
+  
+  User user;
+
+  _ProfileState(this.user);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+      } else if (index == 1) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+      } else if (index == 2) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddMaterialItemView(userLoggedIn: user)));                              
+      } else if (index == 3) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+      } else if (index == 4) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => UserProfile(user: widget.user)));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,9 +155,41 @@ class Profile extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        //BackgroundColor white and selected item color orange and black font
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
+
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Liked Items',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
     );
   }
-
+  
   // Método para construir una review
   Widget _buildReview(String imageUrl, String reviewerName, int starCount, String comment) {
     return Padding(
@@ -162,5 +237,5 @@ class Profile extends StatelessWidget {
         ],
       ),
     );
-  }
+  }   
 }

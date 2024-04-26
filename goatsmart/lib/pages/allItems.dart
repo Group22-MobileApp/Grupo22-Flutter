@@ -1,24 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/models/user.dart';
+import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart'; 
 
-class SeeAllItemsView extends StatefulWidget {
-  const SeeAllItemsView({Key? key}) : super(key: key);
-
+class SeeAllItemsView extends StatefulWidget {  
+  final User userLoggedIn;
+  const SeeAllItemsView({Key? key, required this.userLoggedIn}) : super(key: key);
   @override
-  _SeeAllItemsViewState createState() => _SeeAllItemsViewState();
+  _SeeAllItemsViewState createState() => _SeeAllItemsViewState(userLoggedIn);
 }
 
 class _SeeAllItemsViewState extends State<SeeAllItemsView> {
   final FirebaseService _firebaseService = FirebaseService();
-  late Future<List<MaterialItem>> _materialItemsFuture;
+  late Future<List<MaterialItem>> _materialItemsFuture;  
+
+  int _selectedIndex = 0;
+  
+  User userLoggedIn;
+  
+  _SeeAllItemsViewState(this.userLoggedIn);
 
   @override
   void initState() {
     super.initState();
-    _materialItemsFuture = _firebaseService.getMaterialItems();
+    _materialItemsFuture = _firebaseService.getMaterialItems();   
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+      } else if (index == 1) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+      } else if (index == 2) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn)));
+      } else if (index == 3) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+      } else if (index == 4) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => UserProfile(user : userLoggedIn)));
+      }
+    });
   }
 
   @override
@@ -113,9 +146,41 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
           }
         },
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        //BackgroundColor white and selected item color orange and black font
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
+
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Liked Items',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
     );
   }
-
+  
   String _formatPrice(double price) {
     String formattedPrice = price.toStringAsFixed(2);
     return NumberFormat.currency(locale: 'en_US', symbol: '').format(double.parse(formattedPrice));
