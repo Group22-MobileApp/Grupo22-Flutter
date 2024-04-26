@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
@@ -20,6 +19,11 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   final TextEditingController _priceController = TextEditingController();
   final FirebaseService _firebaseService = FirebaseService();
   final AuthService _auth = AuthService();  
+  bool _isNew = true;
+  bool _isUsed = false;
+  bool _isInterchangeable = false ;
+  bool _isNonInterchangeable = true;
+  
   File? _image;
 
   @override
@@ -47,26 +51,26 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
               height: MediaQuery.of(context).size.height / 4,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Color.fromARGB(21, 133, 133, 133),
+                color: const Color.fromARGB(21, 133, 133, 133),
                 borderRadius: BorderRadius.circular(90),
               ),
-            child: _image == null
+              child: _image == null
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         "Take or add a photo",              
                         style: TextStyle(color: Color.fromARGB(210, 158, 158, 158), fontSize: 16, fontWeight: FontWeight.bold),              
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       DottedBorder(
-                        color: Color.fromARGB(255, 67, 93, 122),
+                        color: const Color.fromARGB(255, 67, 93, 122),
                         strokeWidth: 2,
                         borderType: BorderType.Circle,
                         child: Padding(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           child: IconButton(
-                            icon: Icon(Icons.add_a_photo, color: Color.fromARGB(255, 67, 93, 122), size: 60),
+                            icon: const Icon(Icons.add_a_photo, color: Color.fromARGB(255, 67, 93, 122), size: 60),
                             onPressed: () {
                               _showImagePicker(context);
                             },
@@ -83,7 +87,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                 child: Container(                
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: Color.fromARGB(21, 133, 133, 133),
+                    color: const Color.fromARGB(21, 133, 133, 133),
                   ),
                   child: TextField(
                     controller: _titleController,
@@ -100,7 +104,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: Color.fromARGB(21, 133, 133, 133),
+                    color: const Color.fromARGB(21, 133, 133, 133),
                   ),
                   child: TextField(
                     controller: _priceController,
@@ -118,7 +122,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: Color.fromARGB(21, 133, 133, 133),
+                    color: const Color.fromARGB(21, 133, 133, 133),
                   ),
                   child: TextField(
                     controller: _descriptionController,
@@ -128,7 +132,85 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                     ),
                   ),
                 ),                
-              ),                                              
+              ),   
+
+              const SizedBox(height: 16),
+                Row(
+                  children: [                  
+                    SizedBox(        
+                      width: MediaQuery.of(context).size.width / 2 -16, 
+                      child: Expanded(                                                                                    
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Condition', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              ),
+                              CheckboxListTile(
+                                title: const Text('New'),
+                                value: _isNew,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isNew = value!;
+                                    _isUsed = !value;
+                                  });
+                                },
+                              ),
+                              CheckboxListTile(
+                                title: const Text('Used'),
+                                value: _isUsed,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isUsed = value!;
+                                    _isNew = !value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(        
+                      width: MediaQuery.of(context).size.width / 2 -16,                 
+                      child: Expanded(                                                                                    
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Interchangeable', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              ),
+                              CheckboxListTile(
+                                title: const Text('Yes'),
+                                value: _isInterchangeable,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isInterchangeable = value!;
+                                    _isNonInterchangeable = !value;
+                                  });
+                                },
+                              ),
+                              CheckboxListTile(
+                                title: const Text('No'),
+                                value: _isNonInterchangeable,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isNonInterchangeable = value!;
+                                    _isInterchangeable = !value;                                    
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),          
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.all(8.0),
