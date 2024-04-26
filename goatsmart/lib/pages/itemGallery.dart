@@ -215,6 +215,7 @@ class _ItemGallery extends State<ItemGallery> {
                     padding: EdgeInsets.all(screenWidth * 0.03),
                     child: CircleAvatar(
                       radius: screenWidth * 0.06,
+                      backgroundImage: NetworkImage(userImageUrl!),                  
                     ),
                   )
                 : const CircleAvatar(
