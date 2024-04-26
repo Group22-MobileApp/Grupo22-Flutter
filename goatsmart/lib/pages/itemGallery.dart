@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
 // import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
@@ -28,6 +30,25 @@ class _ItemGallery extends State<ItemGallery> {
   List<MaterialItem> itemsForYou = [];
   List<dynamic> itemsForYouImages = [];
 
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+      } else if (index == 1) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+      } else if (index == 2) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const AddMaterialItemView()));
+      } else if (index == 3) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+      } else if (index == 4) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(user: userLoggedIn!)));
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();    
@@ -47,16 +68,19 @@ class _ItemGallery extends State<ItemGallery> {
         itemsForYou = items;
         itemsForYouImages = items.map((item) => item.images.first).toList();
       });
-    } else {      
-      itemsForYou = List.generate(10, (index) => MaterialItem(
-        id: index.toString(),
-        title: 'Example Item $index',
-        description: 'Example Description $index',
-        price: 0.0,
-        images: ['assets/images/${index + 1}.jpg'],
-        owner: 'Example Owner $index',
-      ));
-      itemsForYouImages = List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
+    } else {     
+      setState(() {
+        // List of assets images
+        itemsForYouImages = List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
+        itemsForYou = List.generate(10, (index) => MaterialItem(
+          id: index.toString(),
+          title: 'Example Item $index',
+          description: 'No items found for your career ${userLoggedIn?.carrer} to recommend. However, this is an example of how the items would look like.',
+          price: Random().nextDouble() * 100000,
+          images: [itemsForYouImages[index]],
+          owner: 'Example Owner $index',
+        ));        
+      });      
     }
   }  
 
@@ -68,17 +92,20 @@ class _ItemGallery extends State<ItemGallery> {
         lastItemsImages = items.map((item) => item.images.first).toList();
       });
     } else {      
-      itemsForYou = List.generate(10, (index) => MaterialItem(
-        id: index.toString(),
-        title: 'Example Item $index',
-        description: 'Example Description $index',
-        price: 0.0,
-        images: ['assets/images/${index + 1}.jpg'],
-        owner: 'Example Owner $index',
-      ));
-      itemsForYouImages = List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
-    }
+      setState(() {
+        // List of assets images
+        lastItemsImages = List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
+        lastItems = List.generate(10, (index) => MaterialItem(
+          id: index.toString(),
+          title: 'Example Item $index',
+          description: 'No items found for your career ${userLoggedIn?.carrer} to recommend. However, this is an example of how the items would look like.',
+          price: Random().nextDouble() * 100000,
+          images: [lastItemsImages[index]],
+          owner: 'Example Owner $index',
+        ));
+      });      
   }
+}
 
   Future<void> _fetchUserImageUrl() async {
     String? userId = _auth.getCurrentUserId();
@@ -265,11 +292,17 @@ Widget build(BuildContext context) {
                                   padding: const EdgeInsets.all(5), 
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10), 
-                                    child: Image.network(
-                                      itemsForYouImages[index],
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                    ),
+                                    child: (itemsForYouImages[index] as String).startsWith('http')
+                                      ? Image.network(
+                                          itemsForYouImages[index] as String,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                        )
+                                      : Image.asset(
+                                          itemsForYouImages[index] as String,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                        ),
                                   ),
                                 ),
                               ),
@@ -349,7 +382,39 @@ Widget build(BuildContext context) {
       },
       child: const Icon(Icons.add),
     ),
-  );
+    bottomNavigationBar: BottomNavigationBar(
+        //BackgroundColor white and selected item color orange and black font
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
+
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Liked Items',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
 }
 
   String _formatPrice(double price) {
@@ -373,8 +438,14 @@ Widget build(BuildContext context) {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (item.images.isNotEmpty)
+                  if (item.images.isNotEmpty && item.images.first.startsWith('http'))
                     Image.network(
+                      item.images.first,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  else
+                    Image.asset(
                       item.images.first,
                       width: double.infinity,
                       fit: BoxFit.cover,
