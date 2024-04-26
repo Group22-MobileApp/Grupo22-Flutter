@@ -60,13 +60,14 @@ class _ItemGallery extends State<ItemGallery> {
   @override
   void initState() {
     super.initState();
+    welcomeMessage();
     _fetch_itemsForYou();
     _fetchLastItems();
     _fetchUserImageUrl();
     _fetchUserLoggedIn();
   }
 
-  Future<void> WelcomeMessage() async {
+  Future<void> welcomeMessage() async {
     int cont = await _auth.getNumberOfUsersLoggedInLast30Days();
      showDialog(
           context: context,
