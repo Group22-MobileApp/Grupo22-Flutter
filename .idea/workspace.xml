@@ -7,15 +7,8 @@
     <list default="true" id="c397f5fe-62ce-492c-a1a6-6a999565b523" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/itemGallery.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/itemGallery.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/lib/services/firebase_auth_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/services/firebase_auth_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/lib/services/firebase_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/services/firebase_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/linux/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/searchPage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/searchPage.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/goatsmart/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +40,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main__2",
+    "git-widget-placeholder": "BusquedasFrecuentes/dparraga",
     "last_opened_file_path": "C:/Users/Andres Parraga/Downloads/dartsdk-windows-x64-release/dart-sdk",
     "settings.editor.selected.configurable": "dart.settings"
   }

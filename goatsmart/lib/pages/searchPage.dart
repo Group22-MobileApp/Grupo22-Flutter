@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 
 class SearchPage extends StatefulWidget {
