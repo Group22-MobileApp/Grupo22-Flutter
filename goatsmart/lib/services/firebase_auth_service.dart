@@ -57,7 +57,7 @@ class AuthService {
     DateTime now = DateTime.now();
     DateTime last30Days = now.subtract(const Duration(days: 30));
     int count = 33;
-    await _auth
+    _auth
         .authStateChanges()
         .listen((User? user) {
           if (user != null && user.metadata.lastSignInTime != null) {

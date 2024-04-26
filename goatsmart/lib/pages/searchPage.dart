@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({Key? key}) : super(key: key);
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -45,7 +47,7 @@ class _SearchPageState extends State<SearchPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );
@@ -62,7 +64,7 @@ Future<void> searchProduct(String product) async {
       builder: (context) {
         return Scaffold(
           appBar: AppBar(
-            title: Text('Search Results'),
+            title: const Text('Search Results'),
           ),
           backgroundColor: Colors.white,
           body: ListView.builder(
@@ -90,7 +92,7 @@ Future<void> searchProduct(String product) async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search'),
+        title: const Text('Search'),
       ),
       backgroundColor: Colors.white,
       body: Column(
@@ -105,7 +107,7 @@ Future<void> searchProduct(String product) async {
                     decoration: InputDecoration(
                       hintText: 'Search products...',
                       suffixIcon: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                          Icons.search ,
                       ),
                       onPressed: () {
@@ -122,7 +124,7 @@ Future<void> searchProduct(String product) async {
           Expanded(
             child: ListView(
               children: [
-                ListTile(
+                const ListTile(
                   title: Text('Recent Searches'),
                 ),
                 for (String search in recentSearches)
@@ -130,7 +132,7 @@ Future<void> searchProduct(String product) async {
                     title: Text(search),
                     onTap: () => searchProduct(search),
                   ),
-                ListTile(
+                const ListTile(
                   title: Text('Popular Searches'),
                 ),
                 for (String search in popularSearches)
