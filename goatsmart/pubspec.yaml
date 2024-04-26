@@ -35,8 +35,9 @@ dependencies:
   cloud_firestore: ^4.15.8 # Update to the latest version
   intl_phone_number_input: ^0.7.4
   image_picker: ^1.0.8
+  geolocator: ^9.0.2
   stream_chat_flutter: ^7.2.0
-
+  dotted_border: ^2.0.0+1
 
 
 dev_dependencies:

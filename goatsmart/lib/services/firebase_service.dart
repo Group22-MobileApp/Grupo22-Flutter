@@ -164,6 +164,27 @@ class FirebaseService {
     }
   }
 
+
+  Future<void> editUser(User user) async {
+  try {
+    // Primero, obtén la referencia del documento del usuario que quieres editar
+    DocumentReference userRef = _firestore.collection('Users').doc(user.id);
+
+    // Luego, actualiza los campos necesarios del documento con los nuevos valores
+    await userRef.update({
+      'carrer': user.carrer,
+      'email': user.email,
+      'username': user.username,
+      'password': user.password,
+      'number': user.number,
+      'imageUrl': user.imageUrl,
+      'name': user.name,
+    });
+  } catch (error) {
+    rethrow;
+  }
+}
+
   Future<void> addPost(String category, String description, PickedFile image, String title) async {
     try {
       CollectionReference collectionPosts = _firestore.collection("Posts");

@@ -18,4 +18,30 @@ class User {
     required this.imageUrl,
     required this.name,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'carrer': carrer,
+      'email': email,
+      'username': username,
+      'password': password,
+      'id': id,
+      'number': number,
+      'imageUrl': imageUrl,
+      'name': name,
+    };
+  }
+
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
+      carrer: map['carrer'],
+      email: map['email'],
+      username: map['username'],
+      password: map['password'],
+      id: map['id'],
+      number: map['number'],
+      imageUrl: map['imageUrl'],
+      name: map['name'],
+    );
+  }
 }
