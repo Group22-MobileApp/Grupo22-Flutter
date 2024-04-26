@@ -1,136 +1,177 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
+import 'package:goatsmart/pages/login.dart';
+import 'package:goatsmart/pages/ProfileEdit.dart';
+import 'package:goatsmart/pages/Profile.dart';
+import 'package:goatsmart/pages/geolocalization.dart';
 
-class UserProfile extends StatefulWidget {
+class UserProfile extends StatelessWidget {
   final User user;
 
   const UserProfile({Key? key, required this.user}) : super(key: key);
 
   @override
-  _UserProfileState createState() => _UserProfileState();
-}
-
-class _UserProfileState extends State<UserProfile> {
-  late TextEditingController _usernameController;
-  late TextEditingController _emailController;
-  late TextEditingController _careerController;
-
-  bool _isEditing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _usernameController = TextEditingController(text: widget.user.username);
-    _emailController = TextEditingController(text: widget.user.email);
-    _careerController = TextEditingController(text: widget.user.carrer);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // Valor estático para la calificación
-    double rating = 4.2;
-    // Valor estático para la cantidad de estrellas
-    int starCount = 4;
-
     return Scaffold(
-      backgroundColor: Colors.white, // Cambiar el color de fondo a blanco
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('User Profile'),
-        actions: _buildEditButtons(), // Mostrar botones de edición
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Alinear elementos hacia arriba a la izquierda
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20), // Espacio antes de la palabra "Profile"
             Text(
               'Profile',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 32,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat', // Cambiar el tipo de letra a Montserrat
-                color: Colors.blue[900], // Cambiar el color a azul oscuro
+                color: Color.fromARGB(255, 9, 4, 83),
               ),
             ),
+            SizedBox(height: 20),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Contenedor para la imagen del usuario
-                Container(
-                  width: 120, // Ajustar el tamaño del contenedor
-                  height: 120, // Ajustar el tamaño del contenedor
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage: NetworkImage(widget.user.imageUrl),
-                  ),
-                ),
-                Spacer(), // Espaciador para ocupar el espacio restante
-                // Columna para la calificación y sistema de estrellas
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                Stack(
                   children: [
-                    // Calificación
-                    Text(
-                      rating.toString(),
-                      style: TextStyle(
-                        fontSize: 32, // Aumentar el tamaño de la fuente
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          width: 7,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(user.imageUrl),
                       ),
                     ),
-                    // Sistema de estrellas con tamaño ajustado
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        5,
-                        (index) => Icon(
-                          Icons.star,
-                          size: 36, // Ajustar el tamaño de la estrella
-                          color: index < starCount ? Colors.yellow : Colors.grey,
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        width: 37,
+                        height: 37,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color.fromARGB(255, 255, 180, 68), // Color de fondo del botón editar
+                        ),
+                        child: IconButton(
+                          icon: Icon(Icons.edit),
+                          iconSize: 23,
+                          color: Colors.white,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfileEdit(user: user),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
                   ],
                 ),
+                SizedBox(width: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hola',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      '${user.username}!',
+                      style: TextStyle(fontSize: 24, color: Colors.black,fontWeight: FontWeight.bold,),
+                    ),
+                  ],
+                ),
               ],
             ),
+            SizedBox(height: 60),
+            buildButtonWithIcon(
+              'Profile',
+              Icons.arrow_forward_ios,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Profile(user: user),
+                  ),
+                );
+              },
+            ),
             SizedBox(height: 20),
-            _buildEditableTextFormField(
-              controller: _usernameController,
-              labelText: 'Username',
-              isEditing: _isEditing,
+            buildButtonWithIcon(
+              'Location',
+              Icons.arrow_forward_ios,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LocationPage(),
+                  ),
+                );
+              },
             ),
-            _buildEditableTextFormField(
-              controller: _emailController,
-              labelText: 'Email',
-              isEditing: _isEditing,
+            SizedBox(height: 20),
+            buildButtonWithIcon(
+              'Create offer',
+              Icons.arrow_forward_ios,
+              () {
+                // Add navigation logic for Create offer
+              },
             ),
-            _buildEditableTextFormField(
-              controller: _careerController,
-              labelText: 'Career',
-              isEditing: _isEditing,
+            SizedBox(height: 20),
+            buildButtonWithIcon(
+              'My Reviews',
+              Icons.arrow_forward_ios,
+              () {
+                // Add navigation logic for My Reviews
+              },
             ),
-            Text(
-              'Reviews about me:',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat', // Cambiar el tipo de letra a Montserrat
-                color: Colors.blue[900], // Cambiar el color a azul oscuro
+            SizedBox(height: 20),
+            buildButtonWithIcon(
+              'Terms and Conditions',
+              Icons.arrow_forward_ios,
+              () {
+                // Add navigation logic for Terms and Conditions
+              },
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 255, 180, 68),
+                      minimumSize: Size(400, 50),
+                    ),
+                    child: Text(
+                      'Log Out',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            SizedBox(height: 10), // Espacio entre el título y las reviews
-            // Ejemplo estático de una review
-            _buildReview(
-              'https://via.placeholder.com/150', // URL de la imagen del revisor (ficticio)
-              'John Doe', // Nombre del revisor (ficticio)
-              4, // Cantidad de estrellas (ficticio)
-              'Great user!', // Comentario (ficticio)
-            ),
-            _buildReview(
-              'https://via.placeholder.com/150', // URL de la imagen del revisor (ficticio)
-              'Jane Smith', // Nombre del revisor (ficticio)
-              5, // Cantidad de estrellas (ficticio)
-              'Excellent user!', // Comentario (ficticio)
             ),
           ],
         ),
@@ -138,118 +179,35 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
-  // Método para construir una review
-  Widget _buildReview(String imageUrl, String reviewerName, int starCount, String comment) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Imagen del revisor
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage(imageUrl),
-          ),
-          SizedBox(width: 10), // Espacio entre la imagen y el nombre
-          // Columna para el nombre del revisor y la cantidad de estrellas
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Widget buildButtonWithIcon(String text, IconData icon, VoidCallback onPressed) {
+    return Stack(
+      children: [
+        TextButton(
+          onPressed: onPressed,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Nombre del revisor
               Text(
-                reviewerName,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+                text,
+                style: TextStyle(fontSize: 24, color: Colors.black),
               ),
-              // Cantidad de estrellas
-              Row(
-                children: List.generate(
-                  5,
-                  (index) => Icon(
-                    Icons.star,
-                    size: 22,
-                    color: index < starCount ? Colors.yellow : Colors.grey,
-                  ),
-                ),
-              ),
-              // Comentario
-              SizedBox(height: 5), // Espacio entre las estrellas y el comentario
-              Text(
-                comment,
-                style: TextStyle(fontSize: 16),
+              Icon(
+                icon,
+                color: Colors.black,
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: -1,
+          child: Container(
+            height: 1.5,
+            color: const Color.fromARGB(255, 182, 181, 181),
+          ),
+        ),
+      ],
     );
   }
-
-  List<Widget> _buildEditButtons() {
-    if (_isEditing) {
-      return [
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _isEditing = false;
-            });
-          },
-          child: Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            // Guardar cambios
-            _saveChanges();
-          },
-          child: Text('Save'),
-        ),
-      ];
-    } else {
-      return [
-        IconButton(
-          icon: Icon(Icons.edit),
-          onPressed: () {
-            setState(() {
-              _isEditing = true;
-            });
-          },
-        ),
-      ];
-    }
-  }
-
-  void _saveChanges() {
-    // Aquí puedes agregar la lógica para guardar los cambios
-    setState(() {
-      _isEditing = false;
-    });
-  }
-
-Widget _buildEditableTextFormField({
-  required TextEditingController controller,
-  required String labelText,
-  required bool isEditing,
-}) {
-  return TextFormField(
-    controller: controller,
-    decoration: InputDecoration(
-      labelText: isEditing ? labelText : null, // Ocultar la etiqueta cuando no está en modo de edición
-      floatingLabelBehavior: isEditing ? FloatingLabelBehavior.always : FloatingLabelBehavior.never, // Ocultar la etiqueta cuando no está en modo de edición
-      border: isEditing ? OutlineInputBorder() : InputBorder.none, // Añadir un borde alrededor del campo de texto solo cuando está en modo de edición
-      filled: true, // Rellenar el campo de texto con un color
-      fillColor: isEditing ? Colors.white : Colors.transparent, // Cambiar el color de fondo del campo de texto a transparente cuando no está en modo de edición
-      labelStyle: TextStyle(
-        color: Colors.blue[900], // Cambiar el color del texto de la etiqueta
-      ),
-    ),
-    style: TextStyle(
-      color: Colors.black, // Cambiar el color del texto del campo de texto
-      fontSize: 16, // Ajustar el tamaño de la letra
-    ),
-    enabled: isEditing,
-  );
-}
-
 }
