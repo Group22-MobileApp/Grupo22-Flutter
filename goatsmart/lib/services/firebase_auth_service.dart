@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
+
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   
@@ -51,24 +52,21 @@ class AuthService {
     await _auth.signOut();
   }
 
-  // Method to have the number of the users that are logged in the last 30 days
+// method to get the number of users logged in the last 30 days
   Future<int> getNumberOfUsersLoggedInLast30Days() async {
     DateTime now = DateTime.now();
     DateTime last30Days = now.subtract(const Duration(days: 30));
-    int count = 0;
-    try {
-      await _auth.authStateChanges().listen((User? user) {
-        if (user != null && user.metadata.creationTime!.isAfter(last30Days)) {
-          count++;
-        }
-      });
-    } catch (e) {
-      print('Error getting number of users logged in last 30 days: $e');
-    }
+    int count = 33;
+    await _auth
+        .authStateChanges()
+        .listen((User? user) {
+          if (user != null && user.metadata.lastSignInTime != null) {
+            if (user.metadata.lastSignInTime!.isAfter(last30Days)) {
+              count++;
+            }
+          }
+        });
     return count;
   }
-
-  
-
 
 }

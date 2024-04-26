@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
 import 'package:goatsmart/pages/home.dart';
+import 'package:goatsmart/pages/searchPage.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
@@ -26,11 +27,34 @@ class _ItemGallery extends State<ItemGallery> {
   @override
   void initState() {
     super.initState();
+    welcomeMessage();
     _fetchLastItemsImages();
     _fetchUserImageUrl();
     _fetchUserLoggedIn();
   }
 
+  Future<void> welcomeMessage() async {
+  _auth.getNumberOfUsersLoggedInLast30Days().then((cont) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Bienvenido de Nuevo! '),
+          backgroundColor: Colors.white,
+          content: Text('Estamos felices de verte de nuevo! Ya somos $cont usuarios activos!'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  });
+}
   Future<void> _fetchLastItemsImages() async {
     var images = await _firebaseService.fetchLastItemsImages();
     print(images);
@@ -38,29 +62,30 @@ class _ItemGallery extends State<ItemGallery> {
       setState(() {
         itemImages = images;
       });
-    } else {      
+    } else {
       setState(() {
-        itemImages = List.generate(4, (index) => 'assets/images/${index + 11}.jpg');
+        itemImages =
+            List.generate(4, (index) => 'assets/images/${index + 11}.jpg');
       });
     }
   }
 
   Future<void> _fetchUserImageUrl() async {
-    String? userId = _auth.getCurrentUserId(); 
-    User? user = await _firebaseService.getUser(userId); 
+    String? userId = _auth.getCurrentUserId();
+    User? user = await _firebaseService.getUser(userId);
     if (user != null) {
       setState(() {
-        userImageUrl = user.imageUrl; 
+        userImageUrl = user.imageUrl;
       });
     }
   }
 
   Future<void> _fetchUserLoggedIn() async {
-    String? userId = _auth.getCurrentUserId(); 
+    String? userId = _auth.getCurrentUserId();
     User? user = await _firebaseService.getUser(userId);
     if (user != null) {
       setState(() {
-        userLoggedIn = user; 
+        userLoggedIn = user;
         username = user.username;
       });
     }
@@ -74,45 +99,47 @@ class _ItemGallery extends State<ItemGallery> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-      toolbarHeight: screenHeight * 0.15,
-      leadingWidth: screenWidth * 0.3,
-      leading: GestureDetector(
-        onTap: () {
-          if (userLoggedIn != null && userImageUrl != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserProfile(user: userLoggedIn!),
-              ),
-            );
-          } else {
-            // Handle case when user or userImageUrl is null
-          }
-        },
-        child: userImageUrl != null
-            ? CircleAvatar(
-                radius: screenWidth * 0.08,
-                backgroundImage: NetworkImage(userImageUrl!),
-              )
-            : const CircleAvatar(
-                radius: 30,
-                child: Icon(Icons.person),
-              ),
-      ),
-
-      title: TextField(
-        decoration: InputDecoration(
-          fillColor: const Color.fromARGB(255, 211, 210, 210),
-          filled: true,
-          labelText: "Search",
-          hintText: "Search",
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
+          toolbarHeight: screenHeight * 0.15,
+          leadingWidth: screenWidth * 0.3,
+          leading: GestureDetector(
+            onTap: () {
+              if (userLoggedIn != null && userImageUrl != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserProfile(user: userLoggedIn!),
+                  ),
+                );
+              } else {
+                // Handle case when user or userImageUrl is null
+              }
+            },
+            child: userImageUrl != null
+                ? CircleAvatar(
+                    radius: screenWidth * 0.08,
+                    backgroundImage: NetworkImage(userImageUrl!),
+                  )
+                : const CircleAvatar(
+                    radius: 30,
+                    child: Icon(Icons.person),
+                  ),
           ),
-        ),
-      ),        
-    ),
+          title: TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchPage()),
+              );
+            },
+            child: Text("Search"),
+            style: TextButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 211, 210, 210),
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.all(Radius.circular(screenWidth * 0.04)),
+              ),
+            ),
+          )),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,8 +151,13 @@ class _ItemGallery extends State<ItemGallery> {
                 // userImageUrl ?? _auth.getCurrentUserId(),
                 username != null ? 'Hello $username!' : 'Loading...',
                 style: userImageUrl != null
-                    ? TextStyle(fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold)
-                    : TextStyle(fontSize: screenWidth * 0.1, color: const Color.fromARGB(230, 255, 168, 6), fontWeight: FontWeight.bold),
+                    ? TextStyle(
+                        fontSize: screenWidth * 0.08,
+                        fontWeight: FontWeight.bold)
+                    : TextStyle(
+                        fontSize: screenWidth * 0.1,
+                        color: const Color.fromARGB(230, 255, 168, 6),
+                        fontWeight: FontWeight.bold),
               ),
             ),
             Row(
@@ -141,7 +173,8 @@ class _ItemGallery extends State<ItemGallery> {
                 Padding(
                   padding: EdgeInsets.all(screenWidth * 0.02),
                   child: TextButton(
-                    onPressed: () => Navigator.popAndPushNamed(context, HomePage.routeName),
+                    onPressed: () =>
+                        Navigator.popAndPushNamed(context, HomePage.routeName),
                     style: TextButton.styleFrom(
                       foregroundColor: const Color.fromARGB(255, 0, 0, 0),
                     ),
@@ -160,9 +193,14 @@ class _ItemGallery extends State<ItemGallery> {
                         ),
                         FloatingActionButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const SeeAllItemsView()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SeeAllItemsView()));
                           },
-                          backgroundColor: const Color.fromARGB(230, 255, 168, 6),
+                          backgroundColor:
+                              const Color.fromARGB(230, 255, 168, 6),
                           child: const Icon(Icons.arrow_forward_outlined),
                         ),
                       ],
@@ -204,13 +242,15 @@ class _ItemGallery extends State<ItemGallery> {
                 scrollDirection: Axis.horizontal,
                 itemCount: itemImages.length,
                 itemBuilder: (context, index) {
-                  var imageList = itemImages[index];  
-                  var imagePath = imageList.isNotEmpty ? imageList[0] : 'assets/images/default.jpg'; 
+                  var imageList = itemImages[index];
+                  var imagePath = imageList.isNotEmpty
+                      ? imageList[0]
+                      : 'assets/images/default.jpg';
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Image.network(
                       imagePath,
-                      errorBuilder: (context, error, stackTrace) {                        
+                      errorBuilder: (context, error, stackTrace) {
                         return Image.asset('assets/images/default.jpg');
                       },
                       fit: BoxFit.cover,
@@ -224,7 +264,10 @@ class _ItemGallery extends State<ItemGallery> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddMaterialItemView()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AddMaterialItemView()));
         },
         child: const Icon(Icons.add),
       ),

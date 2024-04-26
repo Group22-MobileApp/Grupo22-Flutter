@@ -96,6 +96,18 @@ class FirebaseService {
       return [];
     }
   }  
+
+    Future<List> fetchLastItemsTittle() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').orderBy('created_at', descending: true).limit(5).get();
+      return querySnapshot.docs.map((doc) {
+        return doc['title'];
+      }).toList();
+    } catch (e) {
+      print('Error getting material items: $e');
+      return [];
+    }
+  }  
   
   Future<List<dynamic>> getPosts() async {
     try {
@@ -219,6 +231,19 @@ class FirebaseService {
     } catch (error) {
       print('Error getting most popular carrer: $error');
       return '';
+    }
+  }
+
+  //method to get the posts with the same title
+  Future<List> getPostByTitle(String title) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('title', isEqualTo: title).get();
+      return querySnapshot.docs.map((doc) {
+        return doc.data();
+      }).toList();
+    } catch (error) {
+      print('Error getting post by title: $error');
+      return [];
     }
   }
 }
