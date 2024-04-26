@@ -14,10 +14,6 @@ class MaterialItem {
     required this.price,
     required this.images,
     required this.owner,
-    bool? isNew, 
-    bool? isUsed,
-    bool? isNonInterchangeable, 
-    bool? isInterchangeable,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,10 +24,6 @@ class MaterialItem {
       'price': price,
       'images': images,
       'owner': owner,
-      'isNew': 'true',
-      'isUsed': 'false',
-      'isNonInterchangeable': 'true',
-      'isInterchangeable': 'false',
     };
   }
 
@@ -43,10 +35,6 @@ class MaterialItem {
       price: map['price'].toDouble(),
       images: List<String>.from(map['images']),
       owner: map['owner'],
-      isNew: map['isNew'],
-      isUsed: map['isUsed'],
-      isNonInterchangeable: map['isNonInterchangeable'],
-      isInterchangeable: map['isInterchangeable'],
     );
   }
 }
