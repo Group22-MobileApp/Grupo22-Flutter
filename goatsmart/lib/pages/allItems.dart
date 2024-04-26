@@ -23,7 +23,8 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(      
+      backgroundColor: const Color.fromARGB(255, 246, 246, 246),
       appBar: AppBar(
         title: const Text('All Items'),
       ),
@@ -36,72 +37,71 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             List<MaterialItem> materialItems = snapshot.data!;
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16.0,
-                mainAxisSpacing: 16.0,
-              ),
-              itemCount: materialItems.length,
-              itemBuilder: (context, index) {
-                MaterialItem item = materialItems[index];
-                return GestureDetector(
-                  onTap: () => _showItemDialog(context, item),
-                  child: Card(
-                    elevation: 4.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(8.0)),
-                            child: item.images.isNotEmpty
-                                ? Image.network(
-                                    item.images.first,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Container(),
+            return SizedBox(
+              height: MediaQuery.of(context).size.height ,
+              child: GridView.count(
+                crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
+                padding: const EdgeInsets.all(2),
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.7,
+                children: List.generate(
+                  materialItems.length,
+                  (index) => GestureDetector(
+                    onTap: () => _showItemDialog(context, materialItems[index]),
+                    child: Container(
+                      height: double.infinity,
+                      // backgroundColor: Colors.white,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color.fromARGB(60, 46, 64, 83), width: 1),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: (materialItems[index].images.first as String).startsWith('http')
+                                  ? Image.network(
+                                      materialItems[index].images.first as String,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                    )
+                                  : Image.asset(
+                                      materialItems[index].images.first as String,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                    ),
+                              ),
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.title,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                              Text(
-                                item.description,
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                ),
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text(
-                                'Price: \$${_formatPrice(item.price)}',
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ],
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.0001),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              materialItems[index].title,
+                              style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04, fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                      ],
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              '\$${_formatPrice(materialItems[index].price)}',
+                              style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.05, color: const Color.fromARGB(255, 138, 136, 136)),
+                            ),
+                          ),
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                        ],
+                      ),
                     ),
                   ),
-                );
-              },
+                ),
+              ),
             );
           } else {
             return const Center(child: Text('No items found'));
@@ -110,7 +110,6 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
       ),
     );
   }
-
 
   String _formatPrice(double price) {
     String formattedPrice = price.toStringAsFixed(2);
