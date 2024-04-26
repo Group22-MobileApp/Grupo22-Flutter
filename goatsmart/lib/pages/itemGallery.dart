@@ -228,7 +228,7 @@ class _ItemGallery extends State<ItemGallery> {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -435,6 +435,7 @@ class _ItemGallery extends State<ItemGallery> {
                       IconButton(
                         onPressed: () {
                           _fetchLastItems();
+                          _fetch_itemsForYou();
                         },
                         icon: const Icon(Icons.refresh),
                       ),

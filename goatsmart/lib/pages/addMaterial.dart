@@ -234,7 +234,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Montserrat',
-                      color: const Color(0xFF2E4053),
+                      color: Color(0xFF2E4053),
                     ),),
                   ),
                 ),

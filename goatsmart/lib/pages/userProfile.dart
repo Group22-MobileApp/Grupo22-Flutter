@@ -15,14 +15,14 @@ class UserProfile extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Profile',
               style: TextStyle(
                 fontSize: 32,
@@ -30,7 +30,7 @@ class UserProfile extends StatelessWidget {
                 color: Color.fromARGB(255, 9, 4, 83),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -55,12 +55,12 @@ class UserProfile extends StatelessWidget {
                       child: Container(
                         width: 37,
                         height: 37,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Color.fromARGB(255, 255, 180, 68), // Color de fondo del botón editar
                         ),
                         child: IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           iconSize: 23,
                           color: Colors.white,
                           onPressed: () {
@@ -76,11 +76,11 @@ class UserProfile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Hola',
                       style: TextStyle(
                         fontSize: 24,
@@ -90,13 +90,13 @@ class UserProfile extends StatelessWidget {
                     ),
                     Text(
                       '${user.username}!',
-                      style: TextStyle(fontSize: 24, color: Colors.black,fontWeight: FontWeight.bold,),
+                      style: const TextStyle(fontSize: 24, color: Colors.black,fontWeight: FontWeight.bold,),
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
             buildButtonWithIcon(
               'Profile',
               Icons.arrow_forward_ios,
@@ -109,7 +109,7 @@ class UserProfile extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildButtonWithIcon(
               'Location',
               Icons.arrow_forward_ios,
@@ -117,12 +117,12 @@ class UserProfile extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LocationPage(),
+                    builder: (context) => const LocationPage(),
                   ),
                 );
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildButtonWithIcon(
               'Create offer',
               Icons.arrow_forward_ios,
@@ -130,7 +130,7 @@ class UserProfile extends StatelessWidget {
                 // Add navigation logic for Create offer
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildButtonWithIcon(
               'My Reviews',
               Icons.arrow_forward_ios,
@@ -138,7 +138,7 @@ class UserProfile extends StatelessWidget {
                 // Add navigation logic for My Reviews
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildButtonWithIcon(
               'Terms and Conditions',
               Icons.arrow_forward_ios,
@@ -155,14 +155,14 @@ class UserProfile extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(builder: (context) => const LoginPage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 255, 180, 68),
-                      minimumSize: Size(400, 50),
+                      backgroundColor: const Color.fromARGB(255, 255, 180, 68),
+                      minimumSize: const Size(400, 50),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Log Out',
                       style: TextStyle(
                         fontSize: 20,
@@ -189,7 +189,7 @@ class UserProfile extends StatelessWidget {
             children: [
               Text(
                 text,
-                style: TextStyle(fontSize: 24, color: Colors.black),
+                style: const TextStyle(fontSize: 24, color: Colors.black),
               ),
               Icon(
                 icon,
