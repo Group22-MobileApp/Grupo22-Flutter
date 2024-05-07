@@ -7,6 +7,7 @@ class User {
   final String number;
   final String imageUrl;
   final String name;
+  final List<String> likedCategories; 
 
   User({
     required this.carrer,
@@ -17,6 +18,7 @@ class User {
     required this.number,
     required this.imageUrl,
     required this.name,
+    required this.likedCategories, 
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class User {
       'number': number,
       'imageUrl': imageUrl,
       'name': name,
+      'likedCategories': likedCategories, 
     };
   }
 
@@ -42,6 +45,7 @@ class User {
       number: map['number'],
       imageUrl: map['imageUrl'],
       name: map['name'],
+      likedCategories: List<String>.from(map['likedCategories']), 
     );
   }
 }

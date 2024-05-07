@@ -65,8 +65,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
       appBar: AppBar(
         title: const Text('Create a post'),
         backgroundColor: Colors.white,
-        elevation: 0,
-        // Bold and bigger
+        elevation: 0,        
         titleTextStyle: const TextStyle(
           color: Color.fromARGB(220, 0, 0, 0),
           fontSize: 30,
@@ -275,8 +274,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        //BackgroundColor white and selected item color orange and black font
+      bottomNavigationBar: BottomNavigationBar(        
         backgroundColor: Colors.white,
         selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
@@ -360,6 +358,10 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         price: price,
         images: _image != null ? [_image!.path] : [],
         owner: currentUserId, 
+        condition: _isNew ? 'New' : 'Used',
+        interchangeable: _isInterchangeable ? 'Yes' : 'No',
+        views: 0,
+        category: ''
       );
 
       _firebaseService.createMaterialItem(newItem).then((_) {

@@ -83,8 +83,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                   (index) => GestureDetector(
                     onTap: () => _showItemDialog(context, materialItems[index]),
                     child: Container(
-                      height: double.infinity,
-                      // backgroundColor: Colors.white,
+                      height: double.infinity,                      
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
@@ -109,8 +108,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                                   : Image.asset(
                                       materialItems[index].images.first,
                                       fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      // Good cache height and width for images
+                                      width: double.infinity,                                      
                                       cacheHeight: 1000,
                                       cacheWidth: 600,
                                     ),
@@ -146,8 +144,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
           }
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        //BackgroundColor white and selected item color orange and black font
+      bottomNavigationBar: BottomNavigationBar(        
         backgroundColor: Colors.white,
         selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
@@ -197,7 +194,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
           title: Text(item.title),
           content: SizedBox(
             width: double.maxFinite,
-            child: SingleChildScrollView( // Add this
+            child: SingleChildScrollView( 
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,

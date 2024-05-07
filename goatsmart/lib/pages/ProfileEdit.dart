@@ -254,6 +254,7 @@ class _ProfileFormState extends State<ProfileForm> {
         imageUrl: _imageUrl, // Actualiza la URL de la imagen con la nueva URL
         name: user.name,
         number: user.number,
+        likedCategories: user.likedCategories,
       );
 
       // Actualiza la información del usuario en Firestore
