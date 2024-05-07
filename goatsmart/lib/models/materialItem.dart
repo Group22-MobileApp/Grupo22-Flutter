@@ -1,4 +1,3 @@
-
 class MaterialItem {
   final String id;
   final String title;
@@ -6,6 +5,10 @@ class MaterialItem {
   final double price;
   final List<String> images;
   final String owner;
+  final String condition; 
+  final String interchangeable; 
+  int views; 
+  final String category; 
 
   MaterialItem({
     required this.id,
@@ -14,6 +17,10 @@ class MaterialItem {
     required this.price,
     required this.images,
     required this.owner,
+    required this.condition,
+    required this.interchangeable,
+    required this.views,
+    required this.category,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,6 +31,10 @@ class MaterialItem {
       'price': price,
       'images': images,
       'owner': owner,
+      'condition': condition, 
+      'interchangeable': interchangeable, 
+      'views': views, 
+      'category': category, 
     };
   }
 
@@ -35,6 +46,10 @@ class MaterialItem {
       price: map['price'].toDouble(),
       images: List<String>.from(map['images']),
       owner: map['owner'],
+      condition: map['condition'],
+      interchangeable: map['interchangeable'],
+      views: map['views'],
+      category: map['category'],
     );
   }
 }

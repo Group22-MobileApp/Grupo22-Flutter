@@ -23,6 +23,10 @@ class FirebaseService {
         'images': imageUrls,
         'owner': item.owner,
         'created_at': FieldValue.serverTimestamp(),
+        'condition': item.condition,
+        'interchangeable': item.interchangeable,
+        'views': item.views,
+        'category': item.category        
       });
     } catch (error) {
       rethrow;
@@ -41,7 +45,11 @@ class FirebaseService {
           description: description,
           price: doc['price'] ?? 0.0,
           images: List<String>.from(doc['images'] ?? []),
-          owner: doc['owner'] ?? '',      
+          owner: doc['owner'] ?? '',    
+          condition: doc['condition'] ?? 'New',
+          interchangeable: doc['interchangeable'] ?? 'No',
+          views: doc['views'] ?? 0,
+          category: doc['category'] ?? '',
         );
       }).toList();
     } catch (e) {
@@ -76,6 +84,10 @@ class FirebaseService {
           price: doc['price'] ?? 0.0,
           images: List<String>.from(doc['images'] ?? []),
           owner: doc['owner'] ?? '',
+          condition: doc['condition'] ?? 'New',
+          interchangeable: doc['interchangeable'] ?? 'No',
+          views: doc['views'] ?? 0,
+          category: doc['category'] ?? '',
         );
       }).toList();
     } catch (error) {
@@ -139,6 +151,10 @@ class FirebaseService {
           price: doc['price'] ?? 0.0,
           images: List<String>.from(doc['images'] ?? []),
           owner: doc['owner'] ?? '',
+          condition: doc['condition'] ?? 'New',
+          interchangeable: doc['interchangeable'] ?? 'No',
+          views: doc['views'] ?? 0,
+          category: doc['category'] ?? '',
         );
       }).toList();
     } catch (error) {
@@ -158,6 +174,7 @@ class FirebaseService {
         'number': user.number,
         'imageUrl': user.imageUrl,
         'name': user.name,
+        'likedCategories': user.likedCategories,
       });
     } catch (error) {
       rethrow;
@@ -179,6 +196,7 @@ class FirebaseService {
       'number': user.number,
       'imageUrl': user.imageUrl,
       'name': user.name,
+      'likedCategories': user.likedCategories,  
     });
   } catch (error) {
     rethrow;
@@ -205,6 +223,11 @@ class FirebaseService {
       QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
+        final data = doc.data();
+        List<String>? likedCategories;
+        if (data != null && (data as Map).containsKey('likedCategories')) {
+          likedCategories = List<String>.from(data['likedCategories'] as List<dynamic>);
+        }
         return User(
           carrer: doc['carrer'],
           email: doc['email'],
@@ -214,6 +237,7 @@ class FirebaseService {
           number: doc['number'],
           imageUrl: doc['imageUrl'],
           name: doc['name'],
+          likedCategories: likedCategories ?? [],
         );
       }
       return null;
@@ -241,6 +265,11 @@ class FirebaseService {
       QuerySnapshot querySnapshot = await _firestore.collection('Users').where('email', isEqualTo: email).get();
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
+        final data = doc.data();
+        List<String>? likedCategories;
+        if (data != null && (data as Map).containsKey('likedCategories')) {
+          likedCategories = List<String>.from(data['likedCategories'] as List<dynamic>);
+        }
         return User(
           carrer: doc['carrer'],
           email: doc['email'],
@@ -250,6 +279,7 @@ class FirebaseService {
           number: doc['number'],
           imageUrl: doc['imageUrl'],
           name: doc['name'],
+          likedCategories: likedCategories ?? [],
         );
       }
       return null;

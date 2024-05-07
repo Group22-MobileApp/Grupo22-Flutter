@@ -100,6 +100,7 @@ class _ItemGallery extends State<ItemGallery> {
         itemsForYouImages = items.map((item) => item.images.first).toList();
       });
     } else {
+      _fetchLastItems();
       setState(() {
         // List of assets images
         itemsForYouImages =
@@ -114,6 +115,10 @@ class _ItemGallery extends State<ItemGallery> {
                   price: Random().nextDouble() * 100000,
                   images: [itemsForYouImages[index]],
                   owner: 'Example Owner $index',
+                  condition: 'New',
+                  interchangeable: 'No',
+                  views: Random().nextInt(1000),
+                  category: 'Example Category $index',
                 ));
       });
     }
@@ -142,6 +147,10 @@ class _ItemGallery extends State<ItemGallery> {
                   price: Random().nextDouble() * 100000,
                   images: [lastItemsImages[index]],
                   owner: 'Example Owner $index',
+                  condition: 'New',
+                  interchangeable: 'No',
+                  views: Random().nextInt(1000),
+                  category: 'Example Category $index',
                 ));
       });
     }
@@ -454,7 +463,9 @@ class _ItemGallery extends State<ItemGallery> {
                           child: Image.network(
                             lastItemsImages[index],
                             errorBuilder: (context, error, stackTrace) {
-                              return Image.asset('assets/images/default.jpg');
+                              // Generate random number
+                              int rand = Random().nextInt(14)+1;
+                              return Image.asset('assets/images/$rand.jpg');
                             },
                             fit: BoxFit.cover,
                             cacheHeight: 300,
@@ -479,8 +490,7 @@ class _ItemGallery extends State<ItemGallery> {
         },
         child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        //BackgroundColor white and selected item color orange and black font
+      bottomNavigationBar: BottomNavigationBar(        
         backgroundColor: Colors.white,
         selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
