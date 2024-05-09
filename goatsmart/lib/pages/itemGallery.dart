@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:goatsmart/models/materialItem.dart';
@@ -10,6 +13,9 @@ import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity/connectivity.dart';
+
 
 class ItemGallery extends StatefulWidget {
   static const String routeName = 'ItemGallery';
@@ -20,6 +26,9 @@ class ItemGallery extends StatefulWidget {
 }
 
 class _ItemGallery extends State<ItemGallery> {
+  late SharedPreferences _prefs;
+  bool _dataLoaded = false;
+  
   final FirebaseService _firebaseService = FirebaseService();
   final AuthService _auth = AuthService();
   List<MaterialItem> lastItems = [];
@@ -59,15 +68,16 @@ class _ItemGallery extends State<ItemGallery> {
   @override
   void initState() {
     super.initState();
-    _fetch_itemsForYou();
+    _fetchItemsForYou();
     _fetchLastItems();
     _fetchUserImageUrl();
     _fetchUserLoggedIn();
-  }
+    _initPrefs();
+  }  
 
-  Future<void> WelcomeMessage() async {
+  Future<void> _welcomeMessage() async {
     int cont = await _auth.getNumberOfUsersLoggedInLast30Days();
-     showDialog(
+      showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -87,22 +97,56 @@ class _ItemGallery extends State<ItemGallery> {
         );
   }
 
-  Future<void> _fetch_itemsForYou() async {
+  Future<void> _initPrefs() async {
+    _prefs = await SharedPreferences.getInstance();    
+    if (!_dataLoaded) {
+      _fetchItemsForYou();
+      _fetchLastItems();
+      setState(() {
+        _dataLoaded = true;
+      });
+    }
+  }
+
+  Future<void> _fetchItemsForYou() async {
+    // Check cache first
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // Show snackbar with no internet connection
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('No internet connection'),
+          duration: Duration(hours: 12),
+        ),
+      );
+      // No internet connection, fetch from cache
+      final cachedData = _prefs.getStringList('itemsForYou');
+      if (cachedData != null) {
+        setState(() {
+          itemsForYou = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
+          itemsForYouImages = itemsForYou.map((item) => item.images.first).toList();
+        });
+      }
+      return;
+    }
+    // Fetch from server
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     String career = userLoggedIn!.carrer;
-    print("Career: $career");
     List<MaterialItem> items =
         (await _firebaseService.fetchItemsByUserCareer(career))
             .cast<MaterialItem>();
-    print("Items: $items");
     if (items.isNotEmpty) {
       setState(() {
         itemsForYou = items;
         itemsForYouImages = items.map((item) => item.images.first).toList();
       });
+      // Save to cache
+      final jsonList = items.map((item) => jsonEncode(item.toMap())).toList();
+      await _prefs.setStringList('itemsForYou', jsonList);
     } else {
       _fetchLastItems();
-      setState(() {
-        // List of assets images
+      setState(() {        
         itemsForYouImages =
             List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
         itemsForYou = List.generate(
@@ -118,13 +162,36 @@ class _ItemGallery extends State<ItemGallery> {
                   condition: 'New',
                   interchangeable: 'No',
                   views: Random().nextInt(1000),
-                  category: 'Example Category $index',
+                  categories: ['Example Category $index'],
                 ));
       });
     }
   }
 
   Future<void> _fetchLastItems() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // Show snackbar with no internet connection
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('No internet connection'),
+          duration: Duration(hours: 12),
+        ),
+      );
+      // No internet connection, fetch from cache
+      final cachedData = _prefs.getStringList('lastItems');
+      if (cachedData != null) {
+        setState(() {
+          lastItems = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
+          lastItemsImages = lastItems.map((item) => item.images.first).toList();
+        });
+      }
+      return;
+    }
+
+    // Fetch from server
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     List<MaterialItem> items =
         (await _firebaseService.fetchLastItems()).cast<MaterialItem>();
     if (items.isNotEmpty) {
@@ -132,9 +199,11 @@ class _ItemGallery extends State<ItemGallery> {
         lastItems = items;
         lastItemsImages = items.map((item) => item.images.first).toList();
       });
+      // Save to cache
+      final jsonList = items.map((item) => jsonEncode(item.toMap())).toList();
+      await _prefs.setStringList('lastItems', jsonList);
     } else {
-      setState(() {
-        // List of assets images
+      setState(() {        
         lastItemsImages =
             List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
         lastItems = List.generate(
@@ -150,7 +219,7 @@ class _ItemGallery extends State<ItemGallery> {
                   condition: 'New',
                   interchangeable: 'No',
                   views: Random().nextInt(1000),
-                  category: 'Example Category $index',
+                  categories: ['Example Category $index'],
                 ));
       });
     }
@@ -174,9 +243,10 @@ class _ItemGallery extends State<ItemGallery> {
         userLoggedIn = user;
         username = user.username;
       });
-      _fetch_itemsForYou();
+      _fetchItemsForYou();
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -219,17 +289,17 @@ class _ItemGallery extends State<ItemGallery> {
               }
             },
             child: userImageUrl != null
-                ? Padding(
-                    padding: EdgeInsets.all(screenWidth * 0.03),
-                    child: CircleAvatar(
-                      radius: screenWidth * 0.06,
-                      backgroundImage: NetworkImage(userImageUrl!),                  
-                    ),
-                  )
-                : const CircleAvatar(
-                    radius: 30,
-                    child: Icon(Icons.person),
-                  ),
+            ? Padding(
+                padding: EdgeInsets.all(screenWidth * 0.03),
+                child: CircleAvatar(
+                  radius: screenWidth * 0.06,
+                  backgroundImage: CachedNetworkImageProvider(userImageUrl!),                  
+                ),
+              )
+            : const CircleAvatar(
+                radius: 30,
+                child: Icon(Icons.person),
+              ),
           ),
           title: InkWell(
             onTap: () {
@@ -384,20 +454,19 @@ class _ItemGallery extends State<ItemGallery> {
                                   padding: const EdgeInsets.all(5),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: (itemsForYouImages[index] as String)
-                                            .startsWith('http')
-                                        ? Image.network(
-                                            itemsForYouImages[index] as String,
-                                            fit: BoxFit.cover,
-                                            width: double.infinity,
-                                            cacheHeight: 300,
-                                            cacheWidth: 220,
-                                          )
-                                        : Image.asset(
-                                            itemsForYouImages[index] as String,
-                                            fit: BoxFit.cover,
-                                            width: double.infinity,
-                                          ),
+                                    child: (itemsForYouImages[index] as String).startsWith('http')
+                                      ? CachedNetworkImage(
+                                          imageUrl: itemsForYouImages[index] as String,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          memCacheHeight: 300,
+                                          memCacheWidth: 220,
+                                        )
+                                      : Image.asset(
+                                          itemsForYouImages[index] as String,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                        ),
                                   ),
                                 ),
                               ),
@@ -442,7 +511,7 @@ class _ItemGallery extends State<ItemGallery> {
                       IconButton(
                         onPressed: () {
                           _fetchLastItems();
-                          _fetch_itemsForYou();
+                          _fetchItemsForYou();
                         },
                         icon: const Icon(Icons.refresh),
                       ),
@@ -460,16 +529,16 @@ class _ItemGallery extends State<ItemGallery> {
                         onTap: () => _showItemDialog(context, item),
                         child: Padding(
                           padding: const EdgeInsets.all(1),
-                          child: Image.network(
-                            lastItemsImages[index],
-                            errorBuilder: (context, error, stackTrace) {
+                          child: CachedNetworkImage(
+                            imageUrl: lastItemsImages[index],
+                            errorWidget: (context, error, stackTrace) {
                               // Generate random number
-                              int rand = Random().nextInt(14)+1;
+                              int rand = Random().nextInt(14) + 1;
                               return Image.asset('assets/images/$rand.jpg');
                             },
                             fit: BoxFit.cover,
-                            cacheHeight: 300,
-                            cacheWidth: 220,
+                            memCacheHeight: 300,
+                            memCacheWidth: 220,
                           ),
                         ),
                       );
@@ -546,21 +615,20 @@ class _ItemGallery extends State<ItemGallery> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (item.images.isNotEmpty &&
-                      item.images.first.startsWith('http'))
-                    Image.network(
-                      item.images.first,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      cacheHeight: 800,
-                      cacheWidth: 600,
-                    )
+                  if (item.images.isNotEmpty && item.images.first.startsWith('http'))
+                  CachedNetworkImage(
+                    imageUrl: item.images.first,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    memCacheHeight: 800,
+                    memCacheWidth: 600,
+                  )
                   else
-                    Image.asset(
-                      item.images.first,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                  Image.asset(
+                    item.images.first,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                   const SizedBox(height: 8.0),
                   Text('Description: ${item.description}'),
                   const SizedBox(height: 8.0),

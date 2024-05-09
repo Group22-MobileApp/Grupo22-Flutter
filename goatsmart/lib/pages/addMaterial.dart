@@ -8,6 +8,7 @@ import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/services/firebase_service.dart';
+import 'package:connectivity/connectivity.dart';
 
 class AddMaterialItemView extends StatefulWidget {
   final User userLoggedIn;
@@ -29,11 +30,56 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   bool _isUsed = false;
   bool _isInterchangeable = false ;
   bool _isNonInterchangeable = true;
+  bool _isPosting = false;
+  List<String> selectedCategories = [];
+
+  List<String> categories = [
+    'Textbooks',
+    'Notebooks',
+    'Stationery',
+    'Electronics',
+    'Clothing',
+    'Accessories',
+    'Furniture',
+    'Sports Equipment',
+    'Musical Instruments',
+    'Art Supplies',
+    'Kitchenware',
+    'Home Appliances',
+    'Tools',
+    'Beauty & Personal Care',
+    'Health & Fitness',
+    'Toys & Games',
+    'Pet Supplies',
+    'Outdoor Gear',
+    'Vehicles',
+    'Services',
+    'Tickets',
+    'Events',
+    'Miscellaneous',
+    'Bottles & Containers',
+    'Plants & Gardening',
+    'Food & Beverages',
+    'Books & Magazines',
+    'Movies & Music',
+    'Video Games',
+    'Board Games',
+    'Others'
+  ];
+
   
   File? _image;
 
   int _selectedIndex = 0;
-
+  void selectCategory(String category) {
+    setState(() {
+      if (selectedCategories.contains(category)) {
+        selectedCategories.remove(category); 
+      } else {
+        selectedCategories.add(category); 
+      }
+    });
+  }
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -123,7 +169,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                   child: TextField(
                     controller: _titleController,
                     decoration: const InputDecoration(
-                      labelText: 'Name',
+                      labelText: 'Title',
                       border: OutlineInputBorder(),
                     ),                  
                   ),
@@ -164,7 +210,65 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                   ),
                 ),                
               ),   
-
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Row(
+                  children: [
+                    Text(
+                      'Select Category',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // left padding little
+                    const SizedBox(width: 20),                                                                
+                    Icon(
+                      // Tap icon)
+                      Icons.auto_awesome_motion_outlined,
+                      size: 30,                                                                  
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                height: 200,
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                    childAspectRatio: 4,
+                  ),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    final isSelected = selectedCategories.contains(category);
+                    return InkWell(
+                      onTap: () => selectCategory(category),
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(10),
+                          color: isSelected ? Colors.blue : Colors.white,
+                        ),
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            category,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
               const SizedBox(height: 16),
                 Row(
                   children: [                  
@@ -343,30 +447,72 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
     }
   }
   
-  void _addMaterialItem(BuildContext context) {
+
+  void _addMaterialItem(BuildContext context) async {
+    if (_isPosting) {
+      return;
+    }
+
+    setState(() {
+      _isPosting = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _isPosting = false;
+      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text(
+              'No Internet Connection',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+            content: Text('Please check your internet connection and try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     String title = _titleController.text;
     String description = _descriptionController.text;
     double price = double.tryParse(_priceController.text) ?? 0.0;
-        
+
     String currentUserId = _auth.getCurrentUserId();
 
-    if (title.isNotEmpty && description.isNotEmpty && price > 0) {
+    if (title.isNotEmpty && description.isNotEmpty && price > 0 && _image != null) {
       MaterialItem newItem = MaterialItem(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
         description: description,
         price: price,
-        images: _image != null ? [_image!.path] : [],
-        owner: currentUserId, 
+        images: [_image!.path],
+        owner: currentUserId,
         condition: _isNew ? 'New' : 'Used',
         interchangeable: _isInterchangeable ? 'Yes' : 'No',
         views: 0,
-        category: ''
+        categories: selectedCategories,
       );
+
+      print("Categories: ${newItem.categories}");
 
       _firebaseService.createMaterialItem(newItem).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Material item added successfully')),
+          const SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Material item added successfully')),
         );
         _titleController.clear();
         _descriptionController.clear();
@@ -374,15 +520,44 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         setState(() {
           _image = null;
         });
+
+        // Navigate to ItemGallery
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ItemGallery()),
+        );
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add material item: $error')),
         );
+      }).whenComplete(() {
+        Future.delayed(const Duration(seconds: 5), () {
+          setState(() {
+            _isPosting = false;
+          });
+        });
       });
     } else {
+      String errorMessage = '';
+      if (title.isEmpty) {
+        errorMessage += 'Title is required. ';
+      }
+      if (description.isEmpty) {
+        errorMessage += 'Description is required. ';
+      }
+      if (price <= 0) {
+        errorMessage += 'Price must be greater than zero. ';
+      }
+      if (_image == null) {
+        errorMessage += 'Please add a picture. ';
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
+        SnackBar(content: Text(errorMessage)),
       );
+      setState(() {
+        _isPosting = false;
+      });
     }
   }
 }
