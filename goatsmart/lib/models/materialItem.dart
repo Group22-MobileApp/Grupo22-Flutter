@@ -5,10 +5,10 @@ class MaterialItem {
   final double price;
   final List<String> images;
   final String owner;
-  final String condition; 
-  final String interchangeable; 
-  int views; 
-  final List<String> categories; 
+  final String condition;
+  final String interchangeable;
+  int views;
+  final List<String> categories;
 
   MaterialItem({
     required this.id,
@@ -31,10 +31,10 @@ class MaterialItem {
       'price': price,
       'images': images,
       'owner': owner,
-      'condition': condition, 
-      'interchangeable': interchangeable, 
-      'views': views, 
-      'categories': categories, 
+      'condition': condition,
+      'interchangeable': interchangeable,
+      'views': views,
+      'categories': categories,
     };
   }
 
@@ -49,7 +49,22 @@ class MaterialItem {
       condition: map['condition'],
       interchangeable: map['interchangeable'],
       views: map['views'],
-      categories: List<String>.from(map['categories']), 
+      categories: List<String>.from(map['categories']),
+    );
+  }
+
+  factory MaterialItem.fromJson(Map<String, dynamic> json) {
+    return MaterialItem(
+      id: json['id'],
+      title: json['title'],
+      description: json['description'],
+      price: json['price'].toDouble(),
+      images: List<String>.from(json['images']),
+      owner: json['owner'],
+      condition: json['condition'],
+      interchangeable: json['interchangeable'],
+      views: json['views'],
+      categories: List<String>.from(json['categories']),
     );
   }
 }
