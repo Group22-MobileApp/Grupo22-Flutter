@@ -117,6 +117,7 @@ class _ItemGallery extends State<ItemGallery> {
         SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
+          duration: Duration(hours: 12),
         ),
       );
       // No internet connection, fetch from cache
@@ -130,6 +131,7 @@ class _ItemGallery extends State<ItemGallery> {
       return;
     }
     // Fetch from server
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     String career = userLoggedIn!.carrer;
     List<MaterialItem> items =
         (await _firebaseService.fetchItemsByUserCareer(career))
@@ -174,6 +176,7 @@ class _ItemGallery extends State<ItemGallery> {
         SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
+          duration: Duration(hours: 12),
         ),
       );
       // No internet connection, fetch from cache
@@ -188,6 +191,7 @@ class _ItemGallery extends State<ItemGallery> {
     }
 
     // Fetch from server
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     List<MaterialItem> items =
         (await _firebaseService.fetchLastItems()).cast<MaterialItem>();
     if (items.isNotEmpty) {
@@ -285,17 +289,17 @@ class _ItemGallery extends State<ItemGallery> {
               }
             },
             child: userImageUrl != null
-                ? Padding(
-                    padding: EdgeInsets.all(screenWidth * 0.03),
-                    child: CircleAvatar(
-                      radius: screenWidth * 0.06,
-                      backgroundImage: NetworkImage(userImageUrl!),                  
-                    ),
-                  )
-                : const CircleAvatar(
-                    radius: 30,
-                    child: Icon(Icons.person),
-                  ),
+            ? Padding(
+                padding: EdgeInsets.all(screenWidth * 0.03),
+                child: CircleAvatar(
+                  radius: screenWidth * 0.06,
+                  backgroundImage: CachedNetworkImageProvider(userImageUrl!),                  
+                ),
+              )
+            : const CircleAvatar(
+                radius: 30,
+                child: Icon(Icons.person),
+              ),
           ),
           title: InkWell(
             onTap: () {

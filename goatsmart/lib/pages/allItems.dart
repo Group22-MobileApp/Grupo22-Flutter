@@ -1,3 +1,7 @@
+// ignore_for_file: unnecessary_null_comparison
+
+import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/models/user.dart';
@@ -6,6 +10,8 @@ import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity/connectivity.dart';
 
 class SeeAllItemsView extends StatefulWidget {  
   final User userLoggedIn;
@@ -16,18 +22,58 @@ class SeeAllItemsView extends StatefulWidget {
 
 class _SeeAllItemsViewState extends State<SeeAllItemsView> {
   final FirebaseService _firebaseService = FirebaseService();
+  late SharedPreferences _prefs;
   late Future<List<MaterialItem>> _materialItemsFuture;  
 
-  int _selectedIndex = 0;
-  
-  User userLoggedIn;
-  
+  int _selectedIndex = 0;  
+  User userLoggedIn;  
   _SeeAllItemsViewState(this.userLoggedIn);
 
   @override
   void initState() {
     super.initState();
-    _materialItemsFuture = _firebaseService.getMaterialItems();   
+    _initPrefs();
+  }
+
+  Future<void> _initPrefs() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _materialItemsFuture = _fetchMaterialItems();
+    });
+  }
+
+  Future<List<MaterialItem>> _fetchMaterialItems() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('No internet connection'),
+          duration: Duration(hours: 12),
+        ),
+      );
+      // No internet connection, fetch from cache
+      final cachedData = _prefs.getStringList('materialItems');
+      if (cachedData != null) {
+        return cachedData
+            .map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString)))
+            .toList();
+      }
+    } else {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      // Fetch from server
+      List<MaterialItem> items =
+          (await _firebaseService.getMaterialItems()).cast<MaterialItem>();
+      if (items.isNotEmpty) {
+        // Save to cache
+        final jsonList =
+            items.map((item) => jsonEncode(item.toMap())).toList();
+        await _prefs.setStringList('materialItems', jsonList);
+        return items;
+      }
+    }
+    // Handle case when no items are fetched
+    return [];
   }
 
   void _onItemTapped(int index) {
@@ -61,7 +107,9 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
       appBar: AppBar(
         title: const Text('All Items'),
       ),
-      body: FutureBuilder<List<MaterialItem>>(
+      body: _materialItemsFuture == null
+      ? Center(child: CircularProgressIndicator())
+      : FutureBuilder<List<MaterialItem>>(
         future: _materialItemsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -98,12 +146,12 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: (materialItems[index].images.first).startsWith('http')
-                                  ? Image.network(
-                                      materialItems[index].images.first,
+                                  ? CachedNetworkImage(
+                                      imageUrl: materialItems[index].images.first,
                                       fit: BoxFit.cover,
                                       width: double.infinity,
-                                      cacheHeight: 1000,
-                                      cacheWidth: 600,
+                                      memCacheHeight: 1000,
+                                      memCacheWidth: 600,
                                     )
                                   : Image.asset(
                                       materialItems[index].images.first,
@@ -200,12 +248,12 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (item.images.isNotEmpty)
-                    Image.network(
-                      item.images.first,
+                    CachedNetworkImage(
+                      imageUrl: item.images.first,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      cacheHeight: 1000,
-                      cacheWidth: 600,
+                      memCacheHeight: 1000,
+                      memCacheWidth: 600,
                     ),
                   const SizedBox(height: 8.0),
                   Text('Description: ${item.description}'),
