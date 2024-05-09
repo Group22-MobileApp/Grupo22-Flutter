@@ -14,6 +14,8 @@ import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity/connectivity.dart';
+
 
 class ItemGallery extends StatefulWidget {
   static const String routeName = 'ItemGallery';
@@ -108,12 +110,23 @@ class _ItemGallery extends State<ItemGallery> {
 
   Future<void> _fetchItemsForYou() async {
     // Check cache first
-    final cachedData = _prefs.getStringList('itemsForYou');
-    if (cachedData != null) {
-      setState(() {
-        itemsForYou = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
-        itemsForYouImages = itemsForYou.map((item) => item.images.first).toList();
-      });
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // Show snackbar with no internet connection
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('No internet connection'),
+        ),
+      );
+      // No internet connection, fetch from cache
+      final cachedData = _prefs.getStringList('itemsForYou');
+      if (cachedData != null) {
+        setState(() {
+          itemsForYou = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
+          itemsForYouImages = itemsForYou.map((item) => item.images.first).toList();
+        });
+      }
       return;
     }
     // Fetch from server
@@ -154,15 +167,26 @@ class _ItemGallery extends State<ItemGallery> {
   }
 
   Future<void> _fetchLastItems() async {
-    // Check cache first
-    final cachedData = _prefs.getStringList('lastItems');
-    if (cachedData != null) {
-      setState(() {
-        lastItems = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
-        lastItemsImages = lastItems.map((item) => item.images.first).toList();
-      });
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // Show snackbar with no internet connection
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('No internet connection'),
+        ),
+      );
+      // No internet connection, fetch from cache
+      final cachedData = _prefs.getStringList('lastItems');
+      if (cachedData != null) {
+        setState(() {
+          lastItems = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
+          lastItemsImages = lastItems.map((item) => item.images.first).toList();
+        });
+      }
       return;
     }
+
     // Fetch from server
     List<MaterialItem> items =
         (await _firebaseService.fetchLastItems()).cast<MaterialItem>();
