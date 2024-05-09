@@ -125,7 +125,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                   child: TextField(
                     controller: _titleController,
                     decoration: const InputDecoration(
-                      labelText: 'Name',
+                      labelText: 'Title',
                       border: OutlineInputBorder(),
                     ),                  
                   ),
@@ -385,14 +385,14 @@ void _addMaterialItem(BuildContext context) async {
     double price = double.tryParse(_priceController.text) ?? 0.0;
         
     String currentUserId = _auth.getCurrentUserId();
-
-    if (title.isNotEmpty && description.isNotEmpty && price > 0) {
+    
+    if (title.isNotEmpty && description.isNotEmpty && price > 0 && _image != null) {
       MaterialItem newItem = MaterialItem(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
         description: description,
         price: price,
-        images: _image != null ? [_image!.path] : [],
+        images: [_image!.path], 
         owner: currentUserId, 
         condition: _isNew ? 'New' : 'Used',
         interchangeable: _isInterchangeable ? 'Yes' : 'No',
@@ -421,9 +421,23 @@ void _addMaterialItem(BuildContext context) async {
           });
         });
       });
-    } else {
+    } else {      
+      String errorMessage = '';
+      if (title.isEmpty) {
+        errorMessage += 'Title is required. ';
+      }
+      if (description.isEmpty) {
+        errorMessage += 'Description is required. ';
+      }
+      if (price <= 0) {
+        errorMessage += 'Price must be greater than zero. ';
+      }
+      if (_image == null) {
+        errorMessage += 'Please add a picture. ';
+      }
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
+        SnackBar(content: Text(errorMessage)),
       );      
       setState(() {
         _isPosting = false;
