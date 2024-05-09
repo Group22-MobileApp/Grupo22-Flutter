@@ -448,26 +448,29 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   }
   
 
-void _addMaterialItem(BuildContext context) async {    
+  void _addMaterialItem(BuildContext context) async {
     if (_isPosting) {
       return;
     }
-    
+
     setState(() {
       _isPosting = true;
     });
-    
+
     var connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {      
+    if (connectivityResult == ConnectivityResult.none) {
       setState(() {
         _isPosting = false;
       });
-      showDialog(      
+      showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: Colors.white,
-            title: Text('No Internet Connection', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            title: Text(
+              'No Internet Connection',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
             content: Text('Please check your internet connection and try again.'),
             actions: <Widget>[
               TextButton(
@@ -486,17 +489,17 @@ void _addMaterialItem(BuildContext context) async {
     String title = _titleController.text;
     String description = _descriptionController.text;
     double price = double.tryParse(_priceController.text) ?? 0.0;
-        
+
     String currentUserId = _auth.getCurrentUserId();
-    
+
     if (title.isNotEmpty && description.isNotEmpty && price > 0 && _image != null) {
       MaterialItem newItem = MaterialItem(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
         description: description,
         price: price,
-        images: [_image!.path], 
-        owner: currentUserId, 
+        images: [_image!.path],
+        owner: currentUserId,
         condition: _isNew ? 'New' : 'Used',
         interchangeable: _isInterchangeable ? 'Yes' : 'No',
         views: 0,
@@ -507,7 +510,9 @@ void _addMaterialItem(BuildContext context) async {
 
       _firebaseService.createMaterialItem(newItem).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Material item added successfully')),
+          const SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Material item added successfully')),
         );
         _titleController.clear();
         _descriptionController.clear();
@@ -515,18 +520,24 @@ void _addMaterialItem(BuildContext context) async {
         setState(() {
           _image = null;
         });
+
+        // Navigate to ItemGallery
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ItemGallery()),
+        );
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add material item: $error')),
         );
-      }).whenComplete(() {        
+      }).whenComplete(() {
         Future.delayed(const Duration(seconds: 5), () {
           setState(() {
             _isPosting = false;
           });
         });
       });
-    } else {      
+    } else {
       String errorMessage = '';
       if (title.isEmpty) {
         errorMessage += 'Title is required. ';
@@ -540,10 +551,10 @@ void _addMaterialItem(BuildContext context) async {
       if (_image == null) {
         errorMessage += 'Please add a picture. ';
       }
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
-      );      
+      );
       setState(() {
         _isPosting = false;
       });
