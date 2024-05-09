@@ -8,6 +8,7 @@ import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/services/firebase_service.dart';
+import 'package:connectivity/connectivity.dart';
 
 class AddMaterialItemView extends StatefulWidget {
   final User userLoggedIn;
@@ -29,6 +30,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   bool _isUsed = false;
   bool _isInterchangeable = false ;
   bool _isNonInterchangeable = true;
+  bool _isPosting = false;
   
   File? _image;
 
@@ -343,7 +345,41 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
     }
   }
   
-  void _addMaterialItem(BuildContext context) {
+
+void _addMaterialItem(BuildContext context) async {    
+    if (_isPosting) {
+      return;
+    }
+    
+    setState(() {
+      _isPosting = true;
+    });
+    
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {      
+      setState(() {
+        _isPosting = false;
+      });
+      showDialog(      
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('No Internet Connection', style: TextStyle(color: Colors.red)),
+            content: Text('Please check your internet connection and try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     String title = _titleController.text;
     String description = _descriptionController.text;
     double price = double.tryParse(_priceController.text) ?? 0.0;
@@ -378,11 +414,20 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add material item: $error')),
         );
+      }).whenComplete(() {        
+        Future.delayed(const Duration(seconds: 5), () {
+          setState(() {
+            _isPosting = false;
+          });
+        });
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all fields')),
-      );
+      );      
+      setState(() {
+        _isPosting = false;
+      });
     }
   }
 }
