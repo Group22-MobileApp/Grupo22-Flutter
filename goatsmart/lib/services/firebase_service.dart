@@ -124,7 +124,7 @@ class FirebaseService {
   Future<List<dynamic>> getPosts() async {
     try {
       List<dynamic> posts = [];
-      CollectionReference collectionPosts = _firestore.collection("Posts");
+      CollectionReference collectionPosts = _firestore.collection("material_items");
       QuerySnapshot querySnapshot = await collectionPosts.get();
       
       for (var element in querySnapshot.docs) {
@@ -329,4 +329,15 @@ class FirebaseService {
       return [];
     }
   }
+
+  void addView(String title) {
+    _firestore.collection('material_items').where('title', isEqualTo: title).get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        int views = doc['views'] ?? 0;
+        _firestore.collection('material_items').doc(doc.id).update({'views': views + 1});
+      });
+    });
+  }
+
+  
 }
