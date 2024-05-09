@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/services/firebase_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -19,13 +20,44 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     _fetchPopularSearches();
+    _loadRecentSearches();
   }
 
-  void _fetchPopularSearches() async {
-    List searches = await _firebaseService.fetchLastItemsTittle();
+  Future<void> _loadRecentSearches() async {
+  final prefs = await SharedPreferences.getInstance();
+  final storedSearches = prefs.getStringList('recentSearches');
+  if (storedSearches != null) {
     setState(() {
-      popularSearches = searches.cast<String>();
+      recentSearches = storedSearches;
     });
+  }
+}
+  void _fetchPopularSearches() async {
+    // Fetch the post with more views from the database
+    List<dynamic> posts = await _firebaseService.getPosts();
+    print("Posts: $posts");
+    posts.sort((a, b) => b['views'].compareTo(a['views']));
+    setState(() {
+      popularSearches =
+          posts.sublist(0, 3).map((post) => post['title'] as String).toList();
+    });
+  }
+
+  Future<void> _saveRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('recentSearches', recentSearches);
+  }
+
+  void _addRecentSearch(String search) async {
+    if (!recentSearches.contains(search)) {
+      setState(() {
+        recentSearches.insert(0, search);
+        if (recentSearches.length > 3) {
+          recentSearches.removeLast();
+        }
+      });
+      await _saveRecentSearches();
+    }
   }
 
   void _showItemDialog(BuildContext context, var item) {
@@ -55,38 +87,48 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-Future<void> searchProduct(String product) async {
-  List<dynamic> items = await _firebaseService.getPostByTitle(product);
+  Future<void> searchProduct(String product) async {
+    List<dynamic> items = await _firebaseService.getPostByTitle(product);
+    if (items.isEmpty) {
+      // Show a snackbar if the product is not found
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Product not found'),
+        ),
+      );
+    }
+    _addRecentSearch(product);
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Search Results'),
-          ),
-          backgroundColor: Colors.white,
-          body: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(items[index]['images'][0]),
-                ),
-                title: Text(items[index]['title']),
-                subtitle: Text(items[index]['description']),
-                onTap: () {
-                  _showItemDialog(context, items[index]);
-                },
-              );
-            },
-          ),
-        );
-      },
-    ),
-  );
-}
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Search Results'),
+            ),
+            backgroundColor: Colors.white,
+            body: ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(items[index]['images'][0]),
+                  ),
+                  title: Text(items[index]['title']),
+                  subtitle: Text(items[index]['description']),
+                  onTap: () {
+                    _firebaseService.addView(items[index]["title"]);
+                    _showItemDialog(context, items[index]);
+                  },
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,13 +149,13 @@ Future<void> searchProduct(String product) async {
                     decoration: InputDecoration(
                       hintText: 'Search products...',
                       suffixIcon: IconButton(
-                      icon: const Icon(
-                         Icons.search ,
+                        icon: const Icon(
+                          Icons.search,
+                        ),
+                        onPressed: () {
+                          searchProduct(searchController.text);
+                        },
                       ),
-                      onPressed: () {
-                        searchProduct( searchController.text);
-                      },
-                    ),
                     ),
                     onSubmitted: searchProduct,
                   ),
