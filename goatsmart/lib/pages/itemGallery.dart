@@ -118,7 +118,7 @@ class _ItemGallery extends State<ItemGallery> {
                   condition: 'New',
                   interchangeable: 'No',
                   views: Random().nextInt(1000),
-                  category: 'Example Category $index',
+                  categories: ['Example Category $index'],
                 ));
       });
     }
@@ -150,7 +150,7 @@ class _ItemGallery extends State<ItemGallery> {
                   condition: 'New',
                   interchangeable: 'No',
                   views: Random().nextInt(1000),
-                  category: 'Example Category $index',
+                  categories: ['Example Category $index'],
                 ));
       });
     }

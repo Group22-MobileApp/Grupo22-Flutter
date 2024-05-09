@@ -8,7 +8,7 @@ class MaterialItem {
   final String condition; 
   final String interchangeable; 
   int views; 
-  final String category; 
+  final List<String> categories; 
 
   MaterialItem({
     required this.id,
@@ -20,7 +20,7 @@ class MaterialItem {
     required this.condition,
     required this.interchangeable,
     required this.views,
-    required this.category,
+    required this.categories,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,7 +34,7 @@ class MaterialItem {
       'condition': condition, 
       'interchangeable': interchangeable, 
       'views': views, 
-      'category': category, 
+      'categories': categories, 
     };
   }
 
@@ -49,7 +49,7 @@ class MaterialItem {
       condition: map['condition'],
       interchangeable: map['interchangeable'],
       views: map['views'],
-      category: map['category'],
+      categories: List<String>.from(map['categories']), 
     );
   }
 }
