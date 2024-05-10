@@ -116,6 +116,7 @@ class CreatePageState extends State<CreatePage> {
                   ),
                 ),
                 TextField(
+                  maxLength: 20,
                   controller: nameController,
                   decoration: InputDecoration(
                     filled: true,
@@ -142,6 +143,7 @@ class CreatePageState extends State<CreatePage> {
                   ),
                 ),
                 TextField(
+                  maxLength: 10,
                   controller: usernameController,
                   decoration: InputDecoration(
                     filled: true,
@@ -156,6 +158,7 @@ class CreatePageState extends State<CreatePage> {
                 ),
                 const SizedBox(height: 10),
                 TextField(
+                  maxLength: 15,
                   controller: passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
@@ -180,6 +183,7 @@ class CreatePageState extends State<CreatePage> {
                   ),
                 ),
                 TextField(
+                  maxLength: 15,
                   controller: confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
