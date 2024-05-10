@@ -166,6 +166,25 @@ class FirebaseService {
       return [];
     }
   }
+
+  // Method to increment or descrease attribute likes from itemMaterial
+  Future<void> increaseLikes(String id, bool increment) async {
+    try {
+      DocumentReference itemRef = _firestore.collection('material_items').doc(id);
+      DocumentSnapshot itemSnapshot = await itemRef.get();
+      int likes = itemSnapshot['likes'] ?? 0;
+      if (increment) {
+        likes++;
+      } else {
+        likes--;
+      }
+      await itemRef.update({'likes': likes});
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+
   Future<void> addUser(User user) async {
     try {
       CollectionReference collectionUsers = _firestore.collection("Users");

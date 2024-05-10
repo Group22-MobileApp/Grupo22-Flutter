@@ -1,3 +1,5 @@
+import 'package:goatsmart/services/firebase_service.dart';
+
 class MaterialItem {
   final String id;
   final String title;
@@ -71,5 +73,20 @@ class MaterialItem {
       categories: List<String>.from(json['categories']),
       likes: json['likes'],
     );
+  }
+
+  Future<void> increaseLikes(bool increment) async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      await firebaseService.increaseLikes(id, increment);
+      if (increment) {
+        likes++;
+      } else {
+        likes--;
+      }
+    } catch (error) {      
+      print("Error updating likes: $error");
+      rethrow;
+    }
   }
 }
