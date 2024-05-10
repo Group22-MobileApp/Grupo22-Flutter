@@ -72,4 +72,23 @@ class User {
       print(e);
     }
   }
+
+  Future<void> addLikedCategories(List<String> categories) async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      await firebaseService.addLikedCategories(id, categories);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> getLikedCategories() async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      final List<String> categories = await firebaseService.getLikedCategories(id);
+      likedCategories.addAll(categories);
+    } catch (e) {
+      print(e);
+    }
+  } 
 }

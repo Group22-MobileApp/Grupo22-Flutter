@@ -381,6 +381,42 @@ class FirebaseService {
     }
   }
 
+  // method to add liked categories to the user profile
+  Future<void> addLikedCategories(String userId, List<String> categories) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        List<String> likedCategories = List<String>.from(doc['likedCategories'] ?? []);
+        if (likedCategories.isEmpty) {
+          likedCategories.addAll(categories);
+          await _firestore.collection('Users').doc(doc.id).update({'likedCategories': likedCategories});
+          return;
+        }                
+        categories.removeWhere((category) => likedCategories.contains(category));        
+        likedCategories.addAll(categories);
+        await _firestore.collection('Users').doc(doc.id).update({'likedCategories': likedCategories});
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  // method to retrieve the liked categories of the user profile
+  Future<List<String>> getLikedCategories(String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        return List<String>.from(doc['likedCategories'] ?? []);
+      }
+      return [];
+    } catch (error) {
+      print('Error getting liked categories: $error');
+      return [];
+    }
+  }
+
   //method to get the posts with the same title
   Future<List> getPostByTitle(String title) async {
     try {

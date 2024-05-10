@@ -81,11 +81,20 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     });
   }
 
-  void _fetchItemsForCategory(String? category) {
-    // Fetch items for the selected category from the server
-    // You can implement this based on your Firebase service logic
-    // For demonstration purposes, I'll just print the selected category
-    print('Fetching items for category: $category');
+  void _addCategoriesToUser() async {
+    try {
+      await userLoggedIn!.addLikedCategories(selectedCategories);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Text('Categories added successfully'),
+          duration: Duration(seconds: 5),
+        ),
+      );
+    } catch (error) {
+      // Handle error
+      print('Error adding categories to user: $error');
+    }
   }
 
   void _onItemTapped(int index) {
@@ -289,22 +298,23 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         padding: const EdgeInsets.all(8.0),
         child: Container(
           width: double.infinity,
+          height: 40,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),                                        
+            borderRadius: BorderRadius.circular(20),                                        
             color: const Color(0xFFF7DC6F),
           ),
           child: ElevatedButton(
-            onPressed: () => _fetchItemsForCategory(selectedCategories.first),
+            onPressed: () => _addCategoriesToUser(),
             style: ElevatedButton.styleFrom(                      
               backgroundColor: const Color(0xFFF7DC6F),
               padding: const EdgeInsets.all(10),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: const Text('Refresh'
+            child: const Text('Refresh categories'
             , style: TextStyle(
-              fontSize: 20,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
               fontFamily: 'Montserrat',
               color: Color(0xFF2E4053),
