@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:goatsmart/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:goatsmart/models/user.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+ // Importa la clase User de firebase_auth con un prefijo
+import 'package:goatsmart/models/user.dart' as LocalUser;
+import 'package:image_picker/image_picker.dart'; // Importa tu clase User con un prefijo
 
 class ProfileEdit extends StatelessWidget {
-  final User user;
+  final LocalUser.User user; // Usa el prefijo para especificar que User estás utilizando
 
   const ProfileEdit({Key? key, required this.user}) : super(key: key);
 
@@ -86,11 +89,7 @@ class ProfilePhoto extends StatelessWidget {
                     child: Text('Seleccionar de la galería'),
                     onTap: () async {
                       Navigator.of(context).pop();
-                      final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-                      // Aquí puedes manejar la imagen seleccionada
-                      if (pickedImage != null) {
-                        // Agrega aquí la lógica para manejar la imagen seleccionada
-                      }
+                      // Lógica para seleccionar de la galería
                     },
                   ),
                 ),
@@ -150,7 +149,7 @@ class ProfilePhoto extends StatelessWidget {
 }
 
 class ProfileForm extends StatefulWidget {
-  final User user;
+  final LocalUser.User user; // Usa el prefijo para especificar que User estás utilizando
 
   ProfileForm({Key? key, required this.user}) : super(key: key);
 
@@ -193,13 +192,13 @@ class _ProfileFormState extends State<ProfileForm> {
           height: 50.0,
           child: ElevatedButton(
             onPressed: () {
-              _saveChanges(widget.user); // Llama a la función para guardar los cambios
+              _saveChanges(widget.user);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 255, 180, 68), // Cambia el color de fondo del botón
-              textStyle: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255)), // Ajusta el tamaño del texto del botón
+              backgroundColor: Color.fromARGB(255, 255, 180, 68),
+              textStyle: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255)),
             ),
-            child: Text('Save Changes', style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255))), // Ajusta el tamaño del texto del botón
+            child: Text('Save Changes', style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255))),
           ),
         ),
       ],
@@ -236,36 +235,47 @@ class _ProfileFormState extends State<ProfileForm> {
     );
   }
 
-  void _saveChanges(User user) async {
-  try {
-    // Realiza una consulta para obtener el ID del documento asociado al usuario
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: user.id).get();
-
-    // Verifica si se encontró algún documento
-    if (querySnapshot.docs.isNotEmpty) {
-      String documentId = querySnapshot.docs.first.id;
-
-      User updatedUser = User(
-        id: user.id, // Asume que el ID se obtiene de la consulta
-        username: _username,
-        email: _email,
-        password: _password, // Considerar hashing antes de guardar
-        carrer: _career,
-        imageUrl: _imageUrl, // Actualiza la URL de la imagen con la nueva URL
-        name: user.name,
-        number: user.number,
-      );
-
+  void _saveChanges(LocalUser.User user) async {
+    try {
       // Actualiza la información del usuario en Firestore
-      await FirebaseFirestore.instance.collection('Users').doc(documentId).update(updatedUser.toMap());
+      // Consulta el documento correspondiente en Firestore
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: user.id).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        String documentId = querySnapshot.docs.first.id;
 
-      print('Changes saved successfully!');
-    } else {
-      print('User document not found.');
+        // Crea un objeto User actualizado con la información editada
+        LocalUser.User updatedUser = LocalUser.User(
+          id: user.id,
+          username: _username,
+          email: _email,
+          password: _password,
+          carrer: _career,
+          imageUrl: _imageUrl,
+          name: user.name,
+          number: user.number,
+        );
+
+        // Actualiza la información del usuario en Firestore
+        await FirebaseFirestore.instance.collection('Users').doc(documentId).update(updatedUser.toMap());
+
+        // Actualiza el correo electrónico si ha cambiado
+        if (_email != user.email) {
+          await FirebaseAuth.instance.currentUser?.updateEmail(_email);
+        }
+
+        // Actualiza la contraseña si ha cambiado
+        if (_password != user.password) {
+          await FirebaseAuth.instance.currentUser?.updatePassword(_password);
+        }
+
+        // Devuelve el usuario actualizado a la vista anterior
+        Navigator.pop(context, updatedUser);
+        print('Changes saved successfully!');
+      } else {
+        print('User document not found.');
+      }
+    } catch (error) {
+      print('Failed to save changes: $error');
     }
-  } catch (error) {
-    print('Failed to save changes: $error');
   }
-}
-
 }

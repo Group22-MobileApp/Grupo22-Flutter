@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
-import 'package:goatsmart/pages/login.dart';
+import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/ProfileEdit.dart';
 import 'package:goatsmart/pages/Profile.dart';
 import 'package:goatsmart/pages/geolocalization.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserProfile extends StatelessWidget {
+class UserProfile extends StatefulWidget {
   final User user;
 
   const UserProfile({Key? key, required this.user}) : super(key: key);
+
+  @override
+  _UserProfileState createState() => _UserProfileState();
+}
+
+class _UserProfileState extends State<UserProfile> {
+  late User _user;
+
+  @override
+  void initState() {
+  super.initState();
+  _user = widget.user;
+}
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +60,7 @@ class UserProfile extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         radius: 50,
-                        backgroundImage: NetworkImage(user.imageUrl),
+                        backgroundImage: NetworkImage(_user.imageUrl),
                       ),
                     ),
                     Positioned(
@@ -63,13 +77,18 @@ class UserProfile extends StatelessWidget {
                           icon: Icon(Icons.edit),
                           iconSize: 23,
                           color: Colors.white,
-                          onPressed: () {
-                            Navigator.push(
+                          onPressed: () async {
+                            final updatedUser = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ProfileEdit(user: user),
+                                builder: (context) => ProfileEdit(user: _user),
                               ),
                             );
+                            if (updatedUser != null) {
+                              setState(() {
+                                _user = updatedUser as User;
+                              });
+                            }
                           },
                         ),
                       ),
@@ -89,8 +108,8 @@ class UserProfile extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${user.username}!',
-                      style: TextStyle(fontSize: 24, color: Colors.black,fontWeight: FontWeight.bold,),
+                      '${_user.username}!',
+                      style: TextStyle(fontSize: 24, color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -104,7 +123,7 @@ class UserProfile extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Profile(user: user),
+                    builder: (context) => Profile(user: _user),
                   ),
                 );
               },
@@ -155,7 +174,7 @@ class UserProfile extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(builder: (context) => HomePage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
