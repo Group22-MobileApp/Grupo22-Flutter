@@ -215,7 +215,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                 child: Row(
                   children: [
                     Text(
-                      'Select Category',
+                      'Tap to select categories:',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
