@@ -70,20 +70,29 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   ];
 
   List<String> selectedCategories = [];
+  List<String> likedCategories = [];
 
-  void selectCategory(String category) {
-    print("Selected categories: $selectedCategories");
+  void selectCategory(String category) {    
     setState(() {
-      if (selectedCategories.contains(category)) {
-        selectedCategories.remove(category);         
-      } else {
-        selectedCategories.add(category); 
+      //Check if category is already selected and or liked
+      if (likedCategories.contains(category)) {        
+        likedCategories.remove(category);
+        print("Liked category removed: $category");
+        print("Liked categories: $likedCategories");
+        return;
       }
+      if (selectedCategories.contains(category)) {
+        selectedCategories.remove(category);
+      } else {
+        selectedCategories.add(category);
+      }     
     });
+    print("Selected categories: $selectedCategories");    
   }
 
   void _addCategoriesToUser() async {
-    try {
+    try {      
+      selectedCategories.addAll(likedCategories);
       await userLoggedIn!.addLikedCategories(selectedCategories);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -135,6 +144,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     super.initState();
     _fetchItemsForYou();
     _fetchUserLoggedIn();
+    _fetchLikedCategories();
     _initPrefs();
   }
 
@@ -217,9 +227,21 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
       setState(() {
         userLoggedIn = user;
         username = user.username;
-        selectedCategories = user.getLikedCategories() as List<String>;        
+        likedCategories = user.likedCategories;
+        print("Liked categories: $likedCategories");
       });
       _fetchItemsForYou();
+    }
+  }
+
+  Future<void> _fetchLikedCategories() async {
+    String? userId = _auth.getCurrentUserId();
+    User? user = await _firebaseService.getUser(userId);
+    if (user != null) {
+      setState(() {
+        likedCategories = _firebaseService.getLikedCategories(user.id) as List<String>;
+        print("Liked categories: $likedCategories");
+      });
     }
   }
 
@@ -276,7 +298,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         itemBuilder: (context, index) {
           final category = categories[index];
           final isSelected = selectedCategories.contains(category);
-          final isLikedCategory = userLoggedIn != null && userLoggedIn!.likedCategories.contains(category);
+          final isLikedCategory = likedCategories.contains(category);
 
           return InkWell(
             onTap: () => selectCategory(category),
