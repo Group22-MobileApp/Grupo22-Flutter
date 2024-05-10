@@ -49,7 +49,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
         SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
-          duration: Duration(hours: 12),
+          duration: Duration(seconds: 30),
         ),
       );
       // No internet connection, fetch from cache
@@ -60,7 +60,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
             .toList();
       }
     } else {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      
       // Fetch from server
       List<MaterialItem> items =
           (await _firebaseService.getMaterialItems()).cast<MaterialItem>();

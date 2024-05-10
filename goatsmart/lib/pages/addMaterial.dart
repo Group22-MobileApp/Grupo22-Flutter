@@ -504,6 +504,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         interchangeable: _isInterchangeable ? 'Yes' : 'No',
         views: 0,
         categories: selectedCategories,
+        likes: 0,
       );
 
       print("Categories: ${newItem.categories}");

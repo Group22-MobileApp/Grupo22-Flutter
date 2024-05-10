@@ -27,6 +27,7 @@ class FirebaseService {
         'interchangeable': item.interchangeable,
         'views': item.views,
         'categories': item.categories,
+        'likes': item.likes,
       });
     } catch (error) {
       rethrow;
@@ -50,6 +51,7 @@ class FirebaseService {
           interchangeable: doc['interchangeable'] ?? 'No',
           views: doc['views'] ?? 0,
           categories: List<String>.from(doc['categories'] ?? []),
+          likes: doc['likes'] ?? 0,
         );
       }).toList();
     } catch (e) {
@@ -88,6 +90,7 @@ class FirebaseService {
           interchangeable: doc['interchangeable'] ?? 'No',
           views: doc['views'] ?? 0,
           categories: List<String>.from(doc['categories'] ?? []),
+          likes: doc['likes'] ?? 0,
         );
       }).toList();
     } catch (error) {
@@ -155,6 +158,7 @@ class FirebaseService {
           interchangeable: doc['interchangeable'] ?? 'No',
           views: doc['views'] ?? 0,
           categories: List<String>.from(doc['categories'] ?? []),
+          likes: doc['likes'] ?? 0,
         );
       }).toList();
     } catch (error) {

@@ -117,7 +117,7 @@ class _ItemGallery extends State<ItemGallery> {
         SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
-          duration: Duration(hours: 12),
+          duration: Duration(seconds: 30),
         ),
       );
       // No internet connection, fetch from cache
@@ -131,7 +131,7 @@ class _ItemGallery extends State<ItemGallery> {
       return;
     }
     // Fetch from server
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    
     String career = userLoggedIn!.carrer;
     List<MaterialItem> items =
         (await _firebaseService.fetchItemsByUserCareer(career))
@@ -163,6 +163,7 @@ class _ItemGallery extends State<ItemGallery> {
                   interchangeable: 'No',
                   views: Random().nextInt(1000),
                   categories: ['Example Category $index'],
+                  likes: Random().nextInt(100),
                 ));
       });
     }
@@ -176,7 +177,7 @@ class _ItemGallery extends State<ItemGallery> {
         SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
-          duration: Duration(hours: 12),
+          duration: Duration(seconds: 30),
         ),
       );
       // No internet connection, fetch from cache
@@ -191,7 +192,7 @@ class _ItemGallery extends State<ItemGallery> {
     }
 
     // Fetch from server
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    
     List<MaterialItem> items =
         (await _firebaseService.fetchLastItems()).cast<MaterialItem>();
     if (items.isNotEmpty) {
@@ -220,6 +221,7 @@ class _ItemGallery extends State<ItemGallery> {
                   interchangeable: 'No',
                   views: Random().nextInt(1000),
                   categories: ['Example Category $index'],
+                  likes: Random().nextInt(100),
                 ));
       });
     }
