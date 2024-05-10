@@ -3,6 +3,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/likedItems.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -87,7 +88,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
       } else if (index == 2) {
         Navigator.push(
             context,

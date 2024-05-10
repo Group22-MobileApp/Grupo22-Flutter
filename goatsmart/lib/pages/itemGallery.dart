@@ -8,6 +8,7 @@ import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
 // import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/likedItems.dart';
 import 'package:goatsmart/pages/searchPage.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
@@ -48,7 +49,7 @@ class _ItemGallery extends State<ItemGallery> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
       } else if (index == 2) {
         Navigator.push(
             context,
