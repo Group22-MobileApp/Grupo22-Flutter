@@ -30,8 +30,8 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   final AuthService _auth = AuthService();    
   User? userLoggedIn;
   String? username;
-  List<MaterialItem> itemsForYou = [];
-  List<dynamic> itemsForYouImages = [];
+  List<MaterialItem> likedItemsForYou = [];
+  List<dynamic> likedItemsForYouImages = [];
 
   int _selectedIndex = 0;
 
@@ -108,7 +108,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
           builder: (context) => LikedItemsGallery(),
         ),
       );
-      _fetchItemsForYou();
+      _fetchUserLoggedIn();
     } catch (error) {
       // Handle error
       print('Error adding categories to user: $error');
@@ -142,7 +142,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   @override
   void initState() {
     super.initState();
-    _fetchItemsForYou();
+    _fetchLikedItemsForYou();
     _fetchUserLoggedIn();
     _fetchLikedCategories();
     _initPrefs();
@@ -151,14 +151,14 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   Future<void> _initPrefs() async {
     _prefs = await SharedPreferences.getInstance();
     if (!_dataLoaded) {
-      _fetchItemsForYou();      
+      _fetchLikedItemsForYou();      
       setState(() {
         _dataLoaded = true;
       });
     }
   }
 
-  Future<void> _fetchItemsForYou() async {
+  Future<void> _fetchLikedItemsForYou() async {
     // Check cache first
     var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
@@ -171,53 +171,53 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         ),
       );
       // No internet connection, fetch from cache
-      final cachedData = _prefs.getStringList('itemsForYou');
+      final cachedData = _prefs.getStringList('likedItemsForYou');
       if (cachedData != null) {
         setState(() {
-          itemsForYou = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
-          itemsForYouImages = itemsForYou.map((item) => item.images.first).toList();
+          likedItemsForYou = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
+          likedItemsForYouImages = likedItemsForYou.map((item) => item.images.first).toList();
         });
       }
       return;
     }
     // Fetch from server
 
-    String career = userLoggedIn!.carrer;
-    List<MaterialItem> items =
-        (await _firebaseService.fetchItemsByUserCareer(career))
-            .cast<MaterialItem>();
-    if (items.isNotEmpty) {
-      setState(() {
-        itemsForYou = items;
-        itemsForYouImages = items.map((item) => item.images.first).toList();
-      });
-      // Save to cache
-      final jsonList = items.map((item) => jsonEncode(item.toMap())).toList();
-      await _prefs.setStringList('itemsForYou', jsonList);
-    } else {
-      // Show white with red font dialog with no items found
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: Text(
-              'No items found',
-              style: TextStyle(color: Colors.red),
-            ),
-            content: Text('No items found for your career: $career'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Close'),
+      String career = userLoggedIn!.carrer;
+      List<MaterialItem> items =
+          (await _firebaseService.fetchItemsByLikedCategories(likedCategories))
+              .cast<MaterialItem>();
+      if (items.isNotEmpty) {
+        setState(() {
+          likedItemsForYou = items;
+          likedItemsForYouImages = items.map((item) => item.images.first).toList();
+        });
+        // Save to cache
+        final jsonList = items.map((item) => jsonEncode(item.toMap())).toList();
+        await _prefs.setStringList('likedItemsForYou', jsonList);
+      } else {
+        // Show white with red font dialog with no items found
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text(
+                'No items found',
+                style: TextStyle(color: Colors.red),
               ),
-            ],
-          );
-        },
-      );
-    }
+              content: Text('No items found for your liked categories: $likedCategories'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      }
   }
 
   Future<void> _fetchUserLoggedIn() async {
@@ -230,7 +230,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         likedCategories = user.likedCategories;
         print("Liked categories: $likedCategories");
       });
-      _fetchItemsForYou();
+      _fetchLikedItemsForYou();
     }
   }
 
@@ -431,9 +431,9 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         mainAxisSpacing: 10,
         childAspectRatio: 0.45,
         children: List.generate(
-          itemsForYou.length,
+          likedItemsForYou.length,
           (index) => GestureDetector(
-            onTap: () => _showItemDialog(context, itemsForYou[index]),
+            onTap: () => _showItemDialog(context, likedItemsForYou[index]),
             child: Container(
               height: double.infinity,
               decoration: BoxDecoration(
@@ -451,16 +451,16 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                       padding: const EdgeInsets.all(5),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: (itemsForYouImages[index] as String).startsWith('http')
+                        child: (likedItemsForYouImages[index] as String).startsWith('http')
                             ? CachedNetworkImage(
-                                imageUrl: itemsForYouImages[index] as String,
+                                imageUrl: likedItemsForYouImages[index] as String,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 memCacheHeight: 300,
                                 memCacheWidth: 220,
                               )
                             : Image.asset(
-                                itemsForYouImages[index] as String,
+                                likedItemsForYouImages[index] as String,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                               ),
@@ -471,7 +471,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      itemsForYou[index].title,
+                      likedItemsForYou[index].title,
                       style: TextStyle(
                         fontSize: screenWidth * 0.04,
                         fontWeight: FontWeight.bold,
@@ -482,7 +482,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      '\$${_formatPrice(itemsForYou[index].price)}',
+                      '\$${_formatPrice(likedItemsForYou[index].price)}',
                       style: TextStyle(
                         fontSize: screenWidth * 0.03,
                         color: const Color.fromARGB(255, 138, 136, 136),
@@ -491,15 +491,15 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                   ),
                   SizedBox(height: screenHeight * 0.02),                  
                   HeartIconButton(
-                    isLiked: itemsForYou[index].likes > 0,
+                    isLiked: likedItemsForYou[index].likes > 0,
                     onTap: (bool isLiked) async {
                       try {
-                        await itemsForYou[index].increaseLikes(isLiked);
+                        await likedItemsForYou[index].increaseLikes(isLiked);
                         setState(() {
                           if (isLiked) {
-                            itemsForYou[index].likes++;
+                            likedItemsForYou[index].likes++;
                           } else {
-                            itemsForYou[index].likes--;
+                            likedItemsForYou[index].likes--;
                           }
                         });
                       } catch (error) {
@@ -508,9 +508,9 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                       }
                       try {    
                         if (isLiked) {
-                          await userLoggedIn!.likeItem(itemsForYou[index].id);
+                          await userLoggedIn!.likeItem(likedItemsForYou[index].id);
                         } else {
-                          await userLoggedIn!.unlikeItem(itemsForYou[index].id);
+                          await userLoggedIn!.unlikeItem(likedItemsForYou[index].id);
                         }
                       } catch (error) {
                         // Handle error updating user liked items
@@ -564,10 +564,14 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                     fit: BoxFit.cover,
                   ),
                   const SizedBox(height: 8.0),
-                  Text('Description: ${item.description}'),
                   const SizedBox(height: 8.0),
-                  Text('Price: \$${_formatPrice(item.price)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Description: ${item.description}'),
+                  Text('Categories: ${item.categories.join(', ')}'),                
+                  Text('Condition: ${item.condition}'),
+                  Text('Interchangeable: ${item.interchangeable}'),
+                  Text('Views: ${item.views}'),
+                  Text('Likes: ${item.likes}'),                  
+                  Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                   if (user != null) ...[
                     const SizedBox(height: 8.0),
                     Text('Owner username: ${user.username}'),

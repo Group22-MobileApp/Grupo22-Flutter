@@ -169,6 +169,32 @@ class FirebaseService {
     }
   }
 
+  Future<List> fetchItemsByLikedCategories(List<String> likedCategories) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('categories', arrayContainsAny: likedCategories).get();
+      return querySnapshot.docs.map((doc) {
+        final title = doc['title'] ?? '';
+        final description = doc['description'] ?? '';
+        return MaterialItem(
+          id: doc.id,
+          title: title,
+          description: description,
+          price: doc['price'] ?? 0.0,
+          images: List<String>.from(doc['images'] ?? []),
+          owner: doc['owner'] ?? '',
+          condition: doc['condition'] ?? 'New',
+          interchangeable: doc['interchangeable'] ?? 'No',
+          views: doc['views'] ?? 0,
+          categories: List<String>.from(doc['categories'] ?? []),
+          likes: doc['likes'] ?? 0,
+        );
+      }).toList();
+    } catch (error) {
+      print('Error getting material items: $error');
+      return [];
+    }
+  }
+
   Future<void> increaseLikes(String id, bool increment) async {
     try {
       DocumentReference itemRef = _firestore.collection('material_items').doc(id);

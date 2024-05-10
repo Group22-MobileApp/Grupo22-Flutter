@@ -258,7 +258,11 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                     ),
                   const SizedBox(height: 8.0),
                   Text('Description: ${item.description}'),
-                  const SizedBox(height: 8.0),
+                  Text('Categories: ${item.categories.join(', ')}'),                
+                  Text('Condition: ${item.condition}'),
+                  Text('Interchangeable: ${item.interchangeable}'),
+                  Text('Views: ${item.views}'),
+                  Text('Likes: ${item.likes}'),                  
                   Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                   if (user != null) ...[
                     const SizedBox(height: 8.0),                  
