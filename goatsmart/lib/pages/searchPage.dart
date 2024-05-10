@@ -25,6 +25,15 @@ class _SearchPageState extends State<SearchPage> {
     _loadRecentSearches();
   }
 
+  //delete the recent searches
+  void deleteRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('recentSearches');
+    setState(() {
+      recentSearches = [];
+    });
+  }
+
   Future<void> _loadRecentSearches() async {
     final prefs = await SharedPreferences.getInstance();
     final storedSearches = prefs.getStringList('recentSearches');
@@ -194,7 +203,12 @@ class _SearchPageState extends State<SearchPage> {
             child: ListView(
               children: [
                 const ListTile(
-                  title: Text('Recent Searches'),
+                  title: Row(children: [
+                    Text('Search History',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Spacer(), // Add a spacer to push the icon to the right
+                    
+                  ]),
                 ),
                 for (String search in recentSearches)
                   ListTile(
@@ -202,7 +216,8 @@ class _SearchPageState extends State<SearchPage> {
                     onTap: () => searchProduct(search),
                   ),
                 const ListTile(
-                  title: Text('Popular Searches'),
+                  title: Text('Popular Searches',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 for (String search in popularSearches)
                   ListTile(
