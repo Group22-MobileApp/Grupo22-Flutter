@@ -133,10 +133,8 @@ class _ItemGallery extends State<ItemGallery> {
     }
     // Fetch from server
     
-    String career = userLoggedIn!.carrer;
     List<MaterialItem> items =
-        (await _firebaseService.fetchItemsByUserCareer(career))
-            .cast<MaterialItem>();
+        (await _firebaseService.fetchLikedItems(userLoggedIn!.id)).cast<MaterialItem>();            
     if (items.isNotEmpty) {
       setState(() {
         itemsForYou = items;

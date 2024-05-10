@@ -142,10 +142,9 @@ class FirebaseService {
     }
   }
 
-  Future<List> fetchItemsByUserCareer(String career) async {
-    try {      
-      List usersId = await fetchUsersIdCareer(career);      
-      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('owner', whereIn: usersId).get();
+  Future<List> fetchItemsByLikedCategories(List<String> likedCategories) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('categories', arrayContainsAny: likedCategories).get();
       return querySnapshot.docs.map((doc) {
         final title = doc['title'] ?? '';
         final description = doc['description'] ?? '';
@@ -169,9 +168,43 @@ class FirebaseService {
     }
   }
 
-  Future<List> fetchItemsByLikedCategories(List<String> likedCategories) async {
+  // FetchLikedItems
+  Future<List> fetchLikedItems(String userId) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('categories', arrayContainsAny: likedCategories).get();
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        List<String> likedItems = List<String>.from(doc['likedItems'] ?? []);
+        QuerySnapshot itemsSnapshot = await _firestore.collection('material_items').where(FieldPath.documentId, whereIn: likedItems).get();
+        return itemsSnapshot.docs.map((doc) {
+          final title = doc['title'] ?? '';
+          final description = doc['description'] ?? '';
+          return MaterialItem(
+            id: doc.id,
+            title: title,
+            description: description,
+            price: doc['price'] ?? 0.0,
+            images: List<String>.from(doc['images'] ?? []),
+            owner: doc['owner'] ?? '',
+            condition: doc['condition'] ?? 'New',
+            interchangeable: doc['interchangeable'] ?? 'No',
+            views: doc['views'] ?? 0,
+            categories: List<String>.from(doc['categories'] ?? []),
+            likes: doc['likes'] ?? 0,
+          );
+        }).toList();
+      }
+      return [];
+    } catch (error) {
+      print('Error getting liked items: $error');
+      return [];
+    }
+  }
+
+  Future<List> fetchItemsByUserCareer(String career) async {
+    try {
+      List usersId = await fetchUsersIdCareer(career);      
+      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('owner', whereIn: usersId).get();
       return querySnapshot.docs.map((doc) {
         final title = doc['title'] ?? '';
         final description = doc['description'] ?? '';

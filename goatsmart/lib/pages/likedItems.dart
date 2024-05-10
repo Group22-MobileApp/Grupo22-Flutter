@@ -182,7 +182,6 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     }
     // Fetch from server
 
-      String career = userLoggedIn!.carrer;
       List<MaterialItem> items =
           (await _firebaseService.fetchItemsByLikedCategories(likedCategories))
               .cast<MaterialItem>();
@@ -194,28 +193,11 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         // Save to cache
         final jsonList = items.map((item) => jsonEncode(item.toMap())).toList();
         await _prefs.setStringList('likedItemsForYou', jsonList);
-      } else {
-        // Show white with red font dialog with no items found
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              backgroundColor: Colors.white,
-              title: Text(
-                'No items found',
-                style: TextStyle(color: Colors.red),
-              ),
-              content: Text('No items found for your liked categories: $likedCategories'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Close'),
-                ),
-              ],
-            );
-          },
+      } else {        
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('No items found for your liked categories: $likedCategories'),
+          duration: Duration(seconds: 2),
         );
       }
   }
