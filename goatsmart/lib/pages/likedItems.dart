@@ -72,9 +72,10 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   List<String> selectedCategories = [];
 
   void selectCategory(String category) {
+    print("Selected categories: $selectedCategories");
     setState(() {
       if (selectedCategories.contains(category)) {
-        selectedCategories.remove(category); 
+        selectedCategories.remove(category);         
       } else {
         selectedCategories.add(category); 
       }
@@ -87,10 +88,18 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.green,
-          content: Text('Categories added successfully'),
+          content: Text('Categories updated successfully'),
           duration: Duration(seconds: 5),
         ),
       );
+      // Refresh page      
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LikedItemsGallery(),
+        ),
+      );
+      _fetchItemsForYou();
     } catch (error) {
       // Handle error
       print('Error adding categories to user: $error');
@@ -132,7 +141,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   Future<void> _initPrefs() async {
     _prefs = await SharedPreferences.getInstance();
     if (!_dataLoaded) {
-      _fetchItemsForYou();
+      _fetchItemsForYou();      
       setState(() {
         _dataLoaded = true;
       });
@@ -208,6 +217,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
       setState(() {
         userLoggedIn = user;
         username = user.username;
+        selectedCategories = user.getLikedCategories() as List<String>;        
       });
       _fetchItemsForYou();
     }
@@ -223,8 +233,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
       appBar: _appBar(screenWidth, context),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Text "Select one or more categories you like"
+        children: [          
           Padding(
             padding: EdgeInsets.all(screenWidth * 0.02),
             child: Text(
@@ -255,42 +264,48 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
 
   Container _selectCategoriesContainer() {
     return Container(
-          height: 240,
-          child: GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10.0,
-              mainAxisSpacing: 10.0,
-              childAspectRatio: 2,
-            ),
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final category = categories[index];
-              final isSelected = selectedCategories.contains(category);
-              return InkWell(
-                onTap: () => selectCategory(category),
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(10),
-                    color: isSelected ? const Color(0xFF2E4053) : Colors.white,
-                  ),
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      category,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
-                      ),
-                    ),
+      height: 240,
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 10.0,
+          mainAxisSpacing: 10.0,
+          childAspectRatio: 2,
+        ),
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          final isSelected = selectedCategories.contains(category);
+          final isLikedCategory = userLoggedIn != null && userLoggedIn!.likedCategories.contains(category);
+
+          return InkWell(
+            onTap: () => selectCategory(category),
+            child: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(10),
+                // color: isSelected ? const Color(0xFF2E4053) : (isLikedCategory ? Colors.green : Colors.white),                
+                // Is selected or liked category, green color, else white
+                color: isSelected || isLikedCategory ? Colors.green : Colors.white,
+              ),
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  category,
+                  style: TextStyle(
+                    // color: isSelected ? Colors.white : (isLikedCategory ? Colors.white : Colors.black),                    
+                    // Is selected or liked category, white color, else red
+                    color: isSelected || isLikedCategory ? Colors.white : Colors.black,
                   ),
                 ),
-              );
-            },
-          ),
-        );
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Padding _refreshButton() {

@@ -391,9 +391,8 @@ class FirebaseService {
         if (likedCategories.isEmpty) {
           likedCategories.addAll(categories);
           await _firestore.collection('Users').doc(doc.id).update({'likedCategories': likedCategories});
-          return;
-        }                
-        categories.removeWhere((category) => likedCategories.contains(category));        
+        }
+        likedCategories.clear(); 
         likedCategories.addAll(categories);
         await _firestore.collection('Users').doc(doc.id).update({'likedCategories': likedCategories});
       }
