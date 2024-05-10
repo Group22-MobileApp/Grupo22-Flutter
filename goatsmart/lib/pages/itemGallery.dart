@@ -9,6 +9,7 @@ import 'package:goatsmart/pages/searchPage.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
+import 'package:goatsmart/services/Control_features.dart';
 import 'package:intl/intl.dart';
 
 class ItemGallery extends StatefulWidget {
@@ -22,6 +23,8 @@ class ItemGallery extends StatefulWidget {
 class _ItemGallery extends State<ItemGallery> {
   final FirebaseService _firebaseService = FirebaseService();
   final AuthService _auth = AuthService();
+  final ConnectionManager _connectionManager = ConnectionManager();
+
   List<MaterialItem> lastItems = [];
   List<dynamic> lastItemsImages = [];
   String? userImageUrl;
@@ -32,19 +35,21 @@ class _ItemGallery extends State<ItemGallery> {
 
   int _selectedIndex = 0;
 
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
       } else if (index == 2) {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));                            
+                builder: (context) =>
+                    AddMaterialItemView(userLoggedIn: userLoggedIn!)));
       } else if (index == 3) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
       } else if (index == 4) {
@@ -59,6 +64,7 @@ class _ItemGallery extends State<ItemGallery> {
   @override
   void initState() {
     super.initState();
+    verificarConexion();
     _fetch_itemsForYou();
     _fetchLastItems();
     _fetchUserImageUrl();
@@ -67,24 +73,51 @@ class _ItemGallery extends State<ItemGallery> {
 
   Future<void> WelcomeMessage() async {
     int cont = await _auth.getNumberOfUsersLoggedInLast30Days();
-     showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Bienvenido! '),
-              backgroundColor: Colors.white,
-              content: Text('Estamos felices de tenerte en nuestra plataforma! Ya somos $cont usuarios activos!'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Bienvenido! '),
+          backgroundColor: Colors.white,
+          content: Text(
+              'Estamos felices de tenerte en nuestra plataforma! Ya somos $cont usuarios activos!'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
+      },
+    );
+  }
+
+  Future<void> verificarConexion() async {
+    bool connection = await _connectionManager.checkInternetConnection();
+    
+    if (connection == false) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error de conexión'),
+            backgroundColor: Colors.white,
+            content:
+                const Text('No se ha podido establecer conexión a internet'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Future<void> _fetch_itemsForYou() async {
@@ -223,7 +256,7 @@ class _ItemGallery extends State<ItemGallery> {
                     padding: EdgeInsets.all(screenWidth * 0.03),
                     child: CircleAvatar(
                       radius: screenWidth * 0.06,
-                      backgroundImage: NetworkImage(userImageUrl!),                  
+                      backgroundImage: NetworkImage(userImageUrl!),
                     ),
                   )
                 : const CircleAvatar(
@@ -233,7 +266,8 @@ class _ItemGallery extends State<ItemGallery> {
           ),
           title: InkWell(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const SearchPage()));
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8.0),
@@ -249,28 +283,34 @@ class _ItemGallery extends State<ItemGallery> {
                         hintText: "Search",
                         prefixIcon: GestureDetector(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const SearchPage()));
                           },
                           child: const Icon(Icons.search),
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
-                        ),                       
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(screenWidth * 0.04)),
+                        ),
                       ),
                       onChanged: (value) {
-                        // Handle text change                        
+                        // Handle text change
                       },
                       onSubmitted: (value) {
                         // Handle submission
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SearchPage()));
                       },
                     ),
-                  ),                  
+                  ),
                 ],
               ),
             ),
           )),
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -332,7 +372,8 @@ class _ItemGallery extends State<ItemGallery> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => SeeAllItemsView(userLoggedIn: userLoggedIn!)));
+                                      builder: (context) => SeeAllItemsView(
+                                          userLoggedIn: userLoggedIn!)));
                             },
                             child: const SizedBox(
                               width: 46,
@@ -464,7 +505,7 @@ class _ItemGallery extends State<ItemGallery> {
                             lastItemsImages[index],
                             errorBuilder: (context, error, stackTrace) {
                               // Generate random number
-                              int rand = Random().nextInt(14)+1;
+                              int rand = Random().nextInt(14) + 1;
                               return Image.asset('assets/images/$rand.jpg');
                             },
                             fit: BoxFit.cover,
@@ -486,15 +527,15 @@ class _ItemGallery extends State<ItemGallery> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));    
+                  builder: (context) =>
+                      AddMaterialItemView(userLoggedIn: userLoggedIn!)));
         },
         child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: BottomNavigationBar(        
+      bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
-
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
