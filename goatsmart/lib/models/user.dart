@@ -1,3 +1,5 @@
+import 'package:goatsmart/services/firebase_service.dart';
+
 class User {
   final String carrer;
   final String email;
@@ -7,7 +9,8 @@ class User {
   final String number;
   final String imageUrl;
   final String name;
-  final List<String> likedCategories; 
+  final List<String> likedCategories;
+  final List<String> likedItems; 
 
   User({
     required this.carrer,
@@ -18,7 +21,8 @@ class User {
     required this.number,
     required this.imageUrl,
     required this.name,
-    required this.likedCategories, 
+    required this.likedCategories,
+    required this.likedItems, 
   });
 
   Map<String, dynamic> toMap() {
@@ -31,7 +35,8 @@ class User {
       'number': number,
       'imageUrl': imageUrl,
       'name': name,
-      'likedCategories': likedCategories, 
+      'likedCategories': likedCategories,
+      'likedItems': likedItems, 
     };
   }
 
@@ -45,7 +50,45 @@ class User {
       number: map['number'],
       imageUrl: map['imageUrl'],
       name: map['name'],
-      likedCategories: List<String>.from(map['likedCategories']), 
+      likedCategories: List<String>.from(map['likedCategories']),
+      likedItems: List<String>.from(map['likedItems']), 
     );
   }
+
+  Future<void> likeItem(String itemId) async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      await firebaseService.likeItem(id, itemId);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> unlikeItem(String itemId) async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      await firebaseService.unlikeItem(id, itemId);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> addLikedCategories(List<String> categories) async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      await firebaseService.addLikedCategories(id, categories);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> getLikedCategories() async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      final List<String> categories = await firebaseService.getLikedCategories(id);
+      likedCategories.addAll(categories);
+    } catch (e) {
+      print(e);
+    }
+  } 
 }

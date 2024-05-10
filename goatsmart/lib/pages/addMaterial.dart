@@ -3,6 +3,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/likedItems.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -87,7 +88,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
       } else if (index == 2) {
         Navigator.push(
             context,
@@ -215,7 +216,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                 child: Row(
                   children: [
                     Text(
-                      'Select Category',
+                      'Tap to select categories:',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -252,7 +253,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(10),
-                          color: isSelected ? Colors.blue : Colors.white,
+                          color: isSelected ? const Color(0xFF2E4053) : Colors.white,
                         ),
                         alignment: Alignment.center,
                         child: Padding(
@@ -504,6 +505,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         interchangeable: _isInterchangeable ? 'Yes' : 'No',
         views: 0,
         categories: selectedCategories,
+        likes: 0,
       );
 
       print("Categories: ${newItem.categories}");
