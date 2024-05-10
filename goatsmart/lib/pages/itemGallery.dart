@@ -12,6 +12,7 @@ import 'package:goatsmart/pages/searchPage.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
+import 'package:goatsmart/services/Control_features.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity/connectivity.dart';
@@ -31,6 +32,8 @@ class _ItemGallery extends State<ItemGallery> {
   
   final FirebaseService _firebaseService = FirebaseService();
   final AuthService _auth = AuthService();
+  final ConnectionManager _connectionManager = ConnectionManager();
+
   List<MaterialItem> lastItems = [];
   List<dynamic> lastItemsImages = [];
   String? userImageUrl;
@@ -41,19 +44,21 @@ class _ItemGallery extends State<ItemGallery> {
 
   int _selectedIndex = 0;
 
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
       } else if (index == 2) {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));                            
+                builder: (context) =>
+                    AddMaterialItemView(userLoggedIn: userLoggedIn!)));
       } else if (index == 3) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
       } else if (index == 4) {
@@ -303,7 +308,8 @@ class _ItemGallery extends State<ItemGallery> {
           ),
           title: InkWell(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const SearchPage()));
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8.0),
@@ -319,28 +325,34 @@ class _ItemGallery extends State<ItemGallery> {
                         hintText: "Search",
                         prefixIcon: GestureDetector(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const SearchPage()));
                           },
                           child: const Icon(Icons.search),
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
-                        ),                       
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(screenWidth * 0.04)),
+                        ),
                       ),
                       onChanged: (value) {
-                        // Handle text change                        
+                        // Handle text change
                       },
                       onSubmitted: (value) {
                         // Handle submission
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SearchPage()));
                       },
                     ),
-                  ),                  
+                  ),
                 ],
               ),
             ),
           )),
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -402,7 +414,8 @@ class _ItemGallery extends State<ItemGallery> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => SeeAllItemsView(userLoggedIn: userLoggedIn!)));
+                                      builder: (context) => SeeAllItemsView(
+                                          userLoggedIn: userLoggedIn!)));
                             },
                             child: const SizedBox(
                               width: 46,
@@ -555,15 +568,15 @@ class _ItemGallery extends State<ItemGallery> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));    
+                  builder: (context) =>
+                      AddMaterialItemView(userLoggedIn: userLoggedIn!)));
         },
         child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: BottomNavigationBar(        
+      bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
-
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
