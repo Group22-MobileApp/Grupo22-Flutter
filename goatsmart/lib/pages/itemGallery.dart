@@ -461,7 +461,17 @@ class _ItemGallery extends State<ItemGallery> {
                         });
                       } catch (error) {
                         // Handle error
-                        print('Error updating likes: $error');
+                        print('Error updating item likes: $error');
+                      }
+                      try {    
+                        if (isLiked) {
+                          await userLoggedIn!.likeItem(itemsForYou[index].id);
+                        } else {
+                          await userLoggedIn!.unlikeItem(itemsForYou[index].id);
+                        }
+                      } catch (error) {
+                        // Handle error updating user liked items
+                        print('Error updating user liked items: $error');
                       }
                     },
                   ),

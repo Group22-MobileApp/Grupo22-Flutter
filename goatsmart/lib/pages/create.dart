@@ -345,6 +345,7 @@ class CreatePageState extends State<CreatePage> {
         imageUrl: imageUrl ?? '', 
         name: name,
         likedCategories: [],
+        likedItems: [],
       ));
       
       ScaffoldMessenger.of(context).showSnackBar(
