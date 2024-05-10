@@ -1,3 +1,5 @@
+import 'package:goatsmart/services/firebase_service.dart';
+
 class MaterialItem {
   final String id;
   final String title;
@@ -9,6 +11,7 @@ class MaterialItem {
   final String interchangeable;
   int views;
   final List<String> categories;
+  int likes;
 
   MaterialItem({
     required this.id,
@@ -21,6 +24,7 @@ class MaterialItem {
     required this.interchangeable,
     required this.views,
     required this.categories,
+    required this.likes,
   });
 
   Map<String, dynamic> toMap() {
@@ -35,6 +39,7 @@ class MaterialItem {
       'interchangeable': interchangeable,
       'views': views,
       'categories': categories,
+      'likes': likes,
     };
   }
 
@@ -50,6 +55,7 @@ class MaterialItem {
       interchangeable: map['interchangeable'],
       views: map['views'],
       categories: List<String>.from(map['categories']),
+      likes: map['likes'],
     );
   }
 
@@ -65,6 +71,22 @@ class MaterialItem {
       interchangeable: json['interchangeable'],
       views: json['views'],
       categories: List<String>.from(json['categories']),
+      likes: json['likes'],
     );
+  }
+
+  Future<void> increaseLikes(bool increment) async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      await firebaseService.increaseLikes(id, increment);
+      if (increment) {
+        likes++;
+      } else {
+        likes--;
+      }
+    } catch (error) {      
+      print("Error updating likes: $error");
+      rethrow;
+    }
   }
 }

@@ -255,6 +255,7 @@ class _ProfileFormState extends State<ProfileForm> {
         name: user.name,
         number: user.number,
         likedCategories: user.likedCategories,
+        likedItems: user.likedItems,
       );
 
       // Actualiza la información del usuario en Firestore

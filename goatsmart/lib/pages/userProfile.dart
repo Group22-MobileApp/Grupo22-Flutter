@@ -5,6 +5,7 @@ import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/ProfileEdit.dart';
 import 'package:goatsmart/pages/Profile.dart';
 import 'package:goatsmart/pages/geolocalization.dart';
+import 'package:goatsmart/pages/likedItems.dart';
 
 // Stateful widget
 class  UserProfile extends StatefulWidget {
@@ -30,7 +31,7 @@ class _UserProfileState extends State<UserProfile> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
       } else if (index == 2) {
         Navigator.push(
             context,

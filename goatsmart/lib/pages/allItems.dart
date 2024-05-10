@@ -7,6 +7,7 @@ import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/likedItems.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart'; 
@@ -49,7 +50,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
         SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
-          duration: Duration(hours: 12),
+          duration: Duration(seconds: 30),
         ),
       );
       // No internet connection, fetch from cache
@@ -60,7 +61,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
             .toList();
       }
     } else {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      
       // Fetch from server
       List<MaterialItem> items =
           (await _firebaseService.getMaterialItems()).cast<MaterialItem>();
@@ -83,7 +84,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const LikeItemsView()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
       } else if (index == 2) {
         Navigator.push(
             context,
@@ -257,7 +258,11 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                     ),
                   const SizedBox(height: 8.0),
                   Text('Description: ${item.description}'),
-                  const SizedBox(height: 8.0),
+                  Text('Categories: ${item.categories.join(', ')}'),                
+                  Text('Condition: ${item.condition}'),
+                  Text('Interchangeable: ${item.interchangeable}'),
+                  Text('Views: ${item.views}'),
+                  Text('Likes: ${item.likes}'),                  
                   Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                   if (user != null) ...[
                     const SizedBox(height: 8.0),                  
