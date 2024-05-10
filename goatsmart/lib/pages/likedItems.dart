@@ -69,7 +69,24 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     'Others'
   ];
 
-  
+  List<String> selectedCategories = [];
+
+  void selectCategory(String category) {
+    setState(() {
+      if (selectedCategories.contains(category)) {
+        selectedCategories.remove(category); 
+      } else {
+        selectedCategories.add(category); 
+      }
+    });
+  }
+
+  void _fetchItemsForCategory(String? category) {
+    // Fetch items for the selected category from the server
+    // You can implement this based on your Firebase service logic
+    // For demonstration purposes, I'll just print the selected category
+    print('Fetching items for category: $category');
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -83,7 +100,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));                            
+                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));
       } else if (index == 3) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
       } else if (index == 4) {
@@ -98,15 +115,15 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   @override
   void initState() {
     super.initState();
-    _fetchItemsForYou();        
+    _fetchItemsForYou();
     _fetchUserLoggedIn();
     _initPrefs();
-  }  
+  }
 
   Future<void> _initPrefs() async {
-    _prefs = await SharedPreferences.getInstance();    
+    _prefs = await SharedPreferences.getInstance();
     if (!_dataLoaded) {
-      _fetchItemsForYou();      
+      _fetchItemsForYou();
       setState(() {
         _dataLoaded = true;
       });
@@ -136,7 +153,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
       return;
     }
     // Fetch from server
-    
+
     String career = userLoggedIn!.carrer;
     List<MaterialItem> items =
         (await _firebaseService.fetchItemsByUserCareer(career))
@@ -149,7 +166,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
       // Save to cache
       final jsonList = items.map((item) => jsonEncode(item.toMap())).toList();
       await _prefs.setStringList('itemsForYou', jsonList);
-    } else {      
+    } else {
       // Show white with red font dialog with no items found
       showDialog(
         context: context,
@@ -171,9 +188,9 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
             ],
           );
         },
-      );      
+      );
     }
-  }    
+  }
 
   Future<void> _fetchUserLoggedIn() async {
     String? userId = _auth.getCurrentUserId();
@@ -187,7 +204,6 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -198,20 +214,106 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
       appBar: _appBar(screenWidth, context),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [          
+        children: [
+          // Text "Select one or more categories you like"
+          Padding(
+            padding: EdgeInsets.all(screenWidth * 0.02),
+            child: Text(
+              'Select one or more categories you like',
+              style: TextStyle(
+                fontSize: screenWidth * 0.05,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF2E4053),
+              ),
+            ),
+          ),        
+          _selectCategoriesContainer(),          
+          _refreshButton(),         
+          //      
           Expanded(
             child: ListView(
               padding: EdgeInsets.all(screenWidth * 0.02),
-              children: [              
-                _justForYouContainer(screenHeight, screenWidth, context),                
+              children: [
+                _justForYouContainer(screenHeight, screenWidth, context),
               ],
             ),
           ),
         ],
-      ),      
+      ),
       bottomNavigationBar: _bottomNavBar(),
     );
   }
+
+  Container _selectCategoriesContainer() {
+    return Container(
+          height: 240,
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 10.0,
+              mainAxisSpacing: 10.0,
+              childAspectRatio: 2,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              final isSelected = selectedCategories.contains(category);
+              return InkWell(
+                onTap: () => selectCategory(category),
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                    color: isSelected ? const Color(0xFF2E4053) : Colors.white,
+                  ),
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      category,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+  }
+
+  Padding _refreshButton() {
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),                                        
+            color: const Color(0xFFF7DC6F),
+          ),
+          child: ElevatedButton(
+            onPressed: () => _fetchItemsForCategory(selectedCategories.first),
+            style: ElevatedButton.styleFrom(                      
+              backgroundColor: const Color(0xFFF7DC6F),
+              padding: const EdgeInsets.all(10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            child: const Text('Refresh'
+            , style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Montserrat',
+              color: Color(0xFF2E4053),
+            ),),
+          ),
+        ),
+      );
+  }
+
 
   AppBar _appBar(double screenWidth, BuildContext context) {
     return AppBar(
@@ -276,11 +378,11 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     return SizedBox(
       height: screenHeight * 0.35,
       child: GridView.count(
-        crossAxisCount: screenWidth > 600 ? 4 : 2,
+        crossAxisCount: screenWidth > 600 ? 4 : 3,
         padding: const EdgeInsets.all(2),
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.65,
+        childAspectRatio: 0.45,
         children: List.generate(
           itemsForYou.length,
           (index) => GestureDetector(
@@ -335,7 +437,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                     child: Text(
                       '\$${_formatPrice(itemsForYou[index].price)}',
                       style: TextStyle(
-                        fontSize: screenWidth * 0.05,
+                        fontSize: screenWidth * 0.03,
                         color: const Color.fromARGB(255, 138, 136, 136),
                       ),
                     ),

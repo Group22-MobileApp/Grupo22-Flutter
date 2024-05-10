@@ -253,7 +253,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(10),
-                          color: isSelected ? Colors.blue : Colors.white,
+                          color: isSelected ? const Color(0xFF2E4053) : Colors.white,
                         ),
                         alignment: Alignment.center,
                         child: Padding(
