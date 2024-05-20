@@ -8,8 +8,12 @@ import 'package:goatsmart/pages/Profile.dart';
 import 'package:goatsmart/pages/geolocalization.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/likedItems.dart';
 
-class UserProfile extends StatefulWidget {
+// Stateful widget
+class  UserProfile extends StatefulWidget {
   final User user;
 
   const UserProfile({Key? key, required this.user}) : super(key: key);
@@ -34,7 +38,32 @@ class _UserProfileState extends State<UserProfile> {
             content: Text('No internet connection'),
             duration: Duration(seconds: 10),
           ),
-        );
+        );}
+      
+  _UserProfileState(this.user);
+
+
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+      } else if (index == 1) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
+      } else if (index == 2) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddMaterialItemView(userLoggedIn: user)));                              
+      } else if (index == 3) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+      } else if (index == 4) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => UserProfile(user: widget.user)));
       }
     });
   }
@@ -50,14 +79,14 @@ class _UserProfileState extends State<UserProfile> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Profile',
               style: TextStyle(
                 fontSize: 32,
@@ -65,7 +94,7 @@ class _UserProfileState extends State<UserProfile> {
                 color: Color.fromARGB(255, 9, 4, 83),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -90,12 +119,12 @@ class _UserProfileState extends State<UserProfile> {
                       child: Container(
                         width: 37,
                         height: 37,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Color.fromARGB(255, 255, 180, 68), // Color de fondo del botón editar
                         ),
                         child: IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           iconSize: 23,
                           color: Colors.white,
                           onPressed: () async {
@@ -116,11 +145,11 @@ class _UserProfileState extends State<UserProfile> {
                     ),
                   ],
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Hola',
                       style: TextStyle(
                         fontSize: 24,
@@ -129,14 +158,14 @@ class _UserProfileState extends State<UserProfile> {
                       ),
                     ),
                     Text(
-                      '${_user.username}!',
-                      style: TextStyle(fontSize: 24, color: Colors.black, fontWeight: FontWeight.bold),
+                      '${user.username}!',
+                      style: const TextStyle(fontSize: 24, color: Colors.black,fontWeight: FontWeight.bold,),
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 60),
+            const SizedBox(height: 40),
             buildButtonWithIcon(
               'Profile',
               Icons.arrow_forward_ios,
@@ -149,7 +178,7 @@ class _UserProfileState extends State<UserProfile> {
                 );
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildButtonWithIcon(
               'Location',
               Icons.arrow_forward_ios,
@@ -157,12 +186,12 @@ class _UserProfileState extends State<UserProfile> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LocationPage(),
+                    builder: (context) => const LocationPage(),
                   ),
                 );
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildButtonWithIcon(
               'Create offer',
               Icons.arrow_forward_ios,
@@ -170,7 +199,7 @@ class _UserProfileState extends State<UserProfile> {
                 // Add navigation logic for Create offer
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildButtonWithIcon(
               'My Reviews',
               Icons.arrow_forward_ios,
@@ -178,7 +207,7 @@ class _UserProfileState extends State<UserProfile> {
                 // Add navigation logic for My Reviews
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             buildButtonWithIcon(
               'Terms and Conditions',
               Icons.arrow_forward_ios,
@@ -186,6 +215,7 @@ class _UserProfileState extends State<UserProfile> {
                 // Add navigation logic for Terms and Conditions
               },
             ),
+            const SizedBox(height: 10),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -193,16 +223,16 @@ class _UserProfileState extends State<UserProfile> {
                   padding: const EdgeInsets.only(bottom: 20.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => ItemGallery()),
+                          (Route<dynamic> route) => false,
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 255, 180, 68),
-                      minimumSize: Size(400, 50),
+                      backgroundColor: const Color.fromARGB(255, 255, 180, 68),
+                      minimumSize: const Size(400, 50),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Log Out',
                       style: TextStyle(
                         fontSize: 20,
@@ -215,6 +245,38 @@ class _UserProfileState extends State<UserProfile> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        //BackgroundColor white and selected item color orange and black font
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
+
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Liked Items',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }
@@ -229,7 +291,7 @@ class _UserProfileState extends State<UserProfile> {
             children: [
               Text(
                 text,
-                style: TextStyle(fontSize: 24, color: Colors.black),
+                style: const TextStyle(fontSize: 24, color: Colors.black),
               ),
               Icon(
                 icon,

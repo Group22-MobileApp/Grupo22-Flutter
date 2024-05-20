@@ -2,16 +2,19 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:goatsmart/services/firebase_service.dart';
 
 class User {
-  String carrer;
-  String email;
-  String username;
-  String password;
-  String id;
-  String number;
-  String imageUrl;
-  String name;
+  final String carrer;
+  final String email;
+  final String username;
+  final String password;
+  final String id;
+  final String number;
+  final String imageUrl;
+  final String name;
+  final List<String> likedCategories;
+  final List<String> likedItems; 
 
   User({
     required this.carrer,
@@ -22,6 +25,8 @@ class User {
     required this.number,
     required this.imageUrl,
     required this.name,
+    required this.likedCategories,
+    required this.likedItems, 
   });
 
   Map<String, dynamic> toMap() {
@@ -34,6 +39,8 @@ class User {
       'number': number,
       'imageUrl': imageUrl,
       'name': name,
+      'likedCategories': likedCategories,
+      'likedItems': likedItems, 
     };
   }
 
@@ -47,6 +54,8 @@ class User {
       number: map['number'],
       imageUrl: map['imageUrl'],
       name: map['name'],
+      likedCategories: List<String>.from(map['likedCategories']),
+      likedItems: List<String>.from(map['likedItems']), 
     );
   }
 
@@ -79,4 +88,40 @@ class User {
   Future<String> getDocumentId() async {
     return 'document_id'; // Aquí debes implementar la lógica real para obtener el ID del documento
   }
+  Future<void> likeItem(String itemId) async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      await firebaseService.likeItem(id, itemId);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> unlikeItem(String itemId) async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      await firebaseService.unlikeItem(id, itemId);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> addLikedCategories(List<String> categories) async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      await firebaseService.addLikedCategories(id, categories);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> getLikedCategories() async {
+    try {
+      final FirebaseService firebaseService = FirebaseService(); 
+      final List<String> categories = await firebaseService.getLikedCategories(id);
+      likedCategories.addAll(categories);
+    } catch (e) {
+      print(e);
+    }
+  } 
 }

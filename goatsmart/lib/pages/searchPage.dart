@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:goatsmart/services/firebase_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:goatsmart/services/Control_features.dart';
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({Key? key}) : super(key: key);
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
   final FirebaseService _firebaseService = FirebaseService();
+  final ConnectionManager _contextFeatures = ConnectionManager();
   TextEditingController searchController = TextEditingController();
 
   List<String> recentSearches = [];
@@ -17,13 +22,54 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     _fetchPopularSearches();
+    _loadRecentSearches();
+  }
+
+  //delete the recent searches
+  void deleteRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('recentSearches');
+    setState(() {
+      recentSearches = [];
+    });
+  }
+
+  Future<void> _loadRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedSearches = prefs.getStringList('recentSearches');
+    if (storedSearches != null) {
+      setState(() {
+        recentSearches = storedSearches;
+      });
+    }
   }
 
   void _fetchPopularSearches() async {
-    List searches = await _firebaseService.fetchLastItemsTittle();
+    // Fetch the post with more views from the database
+    List<dynamic> posts = await _firebaseService.getPosts();
+    print("Posts: $posts");
+    posts.sort((a, b) => b['views'].compareTo(a['views']));
     setState(() {
-      popularSearches = searches.cast<String>();
+      popularSearches =
+          posts.sublist(0, 3).map((post) => post['title'] as String).toList();
     });
+  }
+
+  Future<void> _saveRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('recentSearches', recentSearches);
+  }
+
+  void _addRecentSearch(String search) async {
+    if (!recentSearches.contains(search)) {
+      setState(() {
+        recentSearches.insert(0, search);
+        if (recentSearches.length > 3) {
+          recentSearches.removeLast();
+        }
+      });
+      await _saveRecentSearches();
+    }
   }
 
   void _showItemDialog(BuildContext context, var item) {
@@ -45,7 +91,7 @@ class _SearchPageState extends State<SearchPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );
@@ -53,44 +99,78 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-Future<void> searchProduct(String product) async {
-  List<dynamic> items = await _firebaseService.getPostByTitle(product);
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Search Results'),
-          ),
-          backgroundColor: Colors.white,
-          body: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(items[index]['images'][0]),
-                ),
-                title: Text(items[index]['title']),
-                subtitle: Text(items[index]['description']),
-                onTap: () {
-                  _showItemDialog(context, items[index]);
+  Future<void> searchProduct(String product) async {
+    bool connection = await _contextFeatures.checkInternetConnection();
+    if (connection == false) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error de conexión'),
+            backgroundColor: Colors.white,
+            content:
+                const Text('No se ha podido establecer conexión a internet'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
-              );
-            },
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    } else {
+      List<dynamic> items = await _firebaseService.getPostByTitle(product);
+      if (items.isEmpty) {
+        // Show a snackbar if the product is not found
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Product not found'),
           ),
         );
-      },
-    ),
-  );
-}
+      }
+      _addRecentSearch(product);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Search Results'),
+              ),
+              backgroundColor: Colors.white,
+              body: ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(items[index]['images'][0]),
+                    ),
+                    title: Text(items[index]['title']),
+                    subtitle: Text(items[index]['description']),
+                    onTap: () {
+                      _firebaseService.addView(items[index]["title"]);
+                      _showItemDialog(context, items[index]);
+                    },
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search'),
+        title: const Text('Search'),
       ),
       backgroundColor: Colors.white,
       body: Column(
@@ -105,13 +185,13 @@ Future<void> searchProduct(String product) async {
                     decoration: InputDecoration(
                       hintText: 'Search products...',
                       suffixIcon: IconButton(
-                      icon: Icon(
-                         Icons.search ,
+                        icon: const Icon(
+                          Icons.search,
+                        ),
+                        onPressed: () {
+                          searchProduct(searchController.text);
+                        },
                       ),
-                      onPressed: () {
-                        searchProduct( searchController.text);
-                      },
-                    ),
                     ),
                     onSubmitted: searchProduct,
                   ),
@@ -122,16 +202,22 @@ Future<void> searchProduct(String product) async {
           Expanded(
             child: ListView(
               children: [
-                ListTile(
-                  title: Text('Recent Searches'),
+                const ListTile(
+                  title: Row(children: [
+                    Text('Search History',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Spacer(), // Add a spacer to push the icon to the right
+                    
+                  ]),
                 ),
                 for (String search in recentSearches)
                   ListTile(
                     title: Text(search),
                     onTap: () => searchProduct(search),
                   ),
-                ListTile(
-                  title: Text('Popular Searches'),
+                const ListTile(
+                  title: Text('Popular Searches',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 for (String search in popularSearches)
                   ListTile(

@@ -3,6 +3,8 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:math';
 
 class LocationPage extends StatefulWidget {
+  const LocationPage({Key? key}) : super(key: key);
+
   @override
   _LocationPageState createState() => _LocationPageState();
 }
@@ -58,14 +60,14 @@ class _LocationPageState extends State<LocationPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Mensaje'),
-            content: Text('¡Estás dentro del área!'),
+            title: const Text('Mensaje'),
+            content: const Text('¡Estás dentro del área!'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cerrar'),
+                child: const Text('Cerrar'),
               ),
             ],
           );
@@ -77,15 +79,15 @@ class _LocationPageState extends State<LocationPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Importante'),
-            content: Text('¡Estás dentro de un área de Intercambio!'),
+            title: const Text('Importante'),
+            content: const Text('¡Estás dentro de un área de Intercambio!'),
             backgroundColor: Colors.white,
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cerrar'),
+                child: const Text('Cerrar'),
               ),
             ],
           );
@@ -98,7 +100,7 @@ class _LocationPageState extends State<LocationPage> {
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      title: Text('Location'),
+      title: const Text('Location'),
     ),
     backgroundColor: Colors.white,
     body: Center(
@@ -106,7 +108,7 @@ Widget build(BuildContext context) {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Padding(
+          const Padding(
             padding: EdgeInsets.only(top: 230.0),
             child: Text(
               'Verifica si estás en una zona de Intercambio',
@@ -117,15 +119,15 @@ Widget build(BuildContext context) {
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Padding(
-            padding: EdgeInsets.only(bottom: 350.0), // Ajusta la posición vertical del botón
+            padding: const EdgeInsets.only(bottom: 350.0), // Ajusta la posición vertical del botón
             child: ElevatedButton(
               onPressed: getCurrentLocation,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 255, 180, 68),
+                backgroundColor: const Color.fromARGB(255, 255, 180, 68),
               ),
-              child: Text(
+              child: const Text(
                 'Obtener Ubicación',
                 style: TextStyle(
                   color: Colors.white,

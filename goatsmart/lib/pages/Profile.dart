@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/likedItems.dart';
+import 'package:goatsmart/pages/userProfile.dart';
 
 class Profile extends StatefulWidget {
   final User user;
@@ -68,6 +72,51 @@ void initState() {
     print('Error fetching user data: $error');
   }
 }
+  _ProfileState createState() => _ProfileState(user);
+}
+
+class _ProfileState extends State<Profile> {
+  int _selectedIndex = 0;
+  
+  User user;
+
+  _ProfileState(this.user);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+      } else if (index == 1) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
+      } else if (index == 2) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddMaterialItemView(userLoggedIn: user)));                              
+      } else if (index == 3) {
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+      } else if (index == 4) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => UserProfile(user: widget.user)));
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Valor estático para la calificación
+    double rating = 4.2;
+    // Valor estático para la cantidad de estrellas
+    int starCount = 4;
 
 
   @override
@@ -75,13 +124,14 @@ void initState() {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 20), // Espacio antes de la palabra "Profile"
             Text(
               'Profile',
               style: TextStyle(
@@ -97,17 +147,28 @@ void initState() {
                 Container(
                   width: 120,
                   height: 120,
+                // Contenedor para la imagen del usuario
+                SizedBox(
+                  width: 120, // Ajustar el tamaño del contenedor
+                  height: 120, // Ajustar el tamaño del contenedor
                   child: CircleAvatar(
                     radius: 60,
                     backgroundImage: NetworkImage(_user.imageUrl),
                   ),
                 ),
                 SizedBox(width: 50),
+                const Spacer(), // Espaciador para ocupar el espacio restante
+                // Columna para la calificación y sistema de estrellas
                 Column(
                   children: [
                     Text(
                       _averageRating.toStringAsFixed(1),
                       style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                      rating.toString(),
+                      style: const TextStyle(
+                        fontSize: 32, // Aumentar el tamaño de la fuente
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 5),
                     Row(
@@ -146,6 +207,18 @@ void initState() {
             Divider(
               thickness: 2,
               color: Colors.grey,
+            const SizedBox(height: 20),
+            Text(
+              user.username,
+              style: const TextStyle(fontSize: 20),
+            ),
+            Text(
+              user.email,
+              style: const TextStyle(fontSize: 20),
+            ),
+            Text(
+              user.carrer,
+              style: const TextStyle(fontSize: 20),
             ),
             SizedBox(height: 20),
             Text(
@@ -158,6 +231,8 @@ void initState() {
               ),
             ),
             SizedBox(height: 10),
+            const SizedBox(height: 10), // Espacio entre el título y las reviews
+            // Ejemplo estático de una review
             _buildReview(
               'https://via.placeholder.com/150',
               'John Doe',
@@ -173,9 +248,42 @@ void initState() {
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        //BackgroundColor white and selected item color orange and black font
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
+
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Liked Items',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
     );
   }
-
+  
+  // Método para construir una review
   Widget _buildReview(String imageUrl, String reviewerName, int starCount, String comment) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -187,12 +295,14 @@ void initState() {
             backgroundImage: NetworkImage(imageUrl),
           ),
           SizedBox(width: 10),
+          const SizedBox(width: 10), // Espacio entre la imagen y el nombre
+          // Columna para el nombre del revisor y la cantidad de estrellas
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 reviewerName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
@@ -208,9 +318,11 @@ void initState() {
                 ),
               ),
               SizedBox(height: 5),
+              // Comentario
+              const SizedBox(height: 5), // Espacio entre las estrellas y el comentario
               Text(
                 comment,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             ],
           ),

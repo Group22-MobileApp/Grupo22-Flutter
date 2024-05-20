@@ -56,18 +56,18 @@ class _ProfileEditState extends State<ProfileEdit> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Edit Profile',
           style: TextStyle(color: Colors.black),
         ),
       ),
       body: Container(
         color: Colors.white,
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(left: 20.0),
               child: Text(
                 'Settings',
@@ -77,7 +77,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                 ),
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(left: 20.0),
               child: Text(
                 'Edit your profile',
@@ -111,21 +111,21 @@ class ProfilePhoto extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: Text('Change profile photo'),
+          title: const Text('Cambiar foto de perfil'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 GestureDetector(
-                  child: Text('Take photo'),
+                  child: const Text('Tomar foto'),
                   onTap: () async {
                     Navigator.of(context).pop();
                     await onImagePicked(ImageSource.camera);
                   },
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: GestureDetector(
-                    child: Text('Select from gallery'),
+                    child: const Text('Seleccionar de la galería'),
                     onTap: () async {
                       Navigator.of(context).pop();
                       await onImagePicked(ImageSource.gallery);
@@ -165,23 +165,23 @@ class ProfilePhoto extends StatelessWidget {
               child: Container(
                 width: 37.0,
                 height: 37.0,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Color.fromARGB(255, 255, 180, 68),
                 ),
                 child: IconButton(
                   onPressed: () => _showImagePickerDialog(context),
                   iconSize: 23.0,
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.camera_alt,
-                    color: const Color.fromARGB(255, 255, 255, 255),
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
               ),
             ),
           ],
         ),
-        SizedBox(width: 20.0),
+        const SizedBox(width: 20.0),
       ],
     );
   }
@@ -192,6 +192,7 @@ class ProfileForm extends StatefulWidget {
   final File? imageFile;
 
   ProfileForm({Key? key, required this.user, required this.imageFile}) : super(key: key);
+
 
   @override
   _ProfileFormState createState() => _ProfileFormState();
@@ -220,13 +221,13 @@ class _ProfileFormState extends State<ProfileForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildTextField('Username', _username),
-        SizedBox(height: 20.0),
+        const SizedBox(height: 20.0),
         _buildTextField('Email', _email),
-        SizedBox(height: 20.0),
+        const SizedBox(height: 20.0),
         _buildTextField('Password', '********', isPassword: true),
-        SizedBox(height: 20.0),
+        const SizedBox(height: 20.0),
         _buildTextField('Career', _career),
-        SizedBox(height: 20.0),
+        const SizedBox(height: 20.0),
         SizedBox(
           width: double.infinity,
           height: 50.0,
@@ -235,10 +236,10 @@ class _ProfileFormState extends State<ProfileForm> {
               _saveChanges(widget.user, widget.imageFile);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 255, 180, 68),
-              textStyle: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255)),
+              backgroundColor: const Color.fromARGB(255, 255, 180, 68), // Cambia el color de fondo del botón
+              textStyle: const TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255)), // Ajusta el tamaño del texto del botón
             ),
-            child: Text('Save Changes', style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255))),
+            child: const Text('Save Changes', style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255))), // Ajusta el tamaño del texto del botón
           ),
         ),
       ],
@@ -250,7 +251,7 @@ class _ProfileFormState extends State<ProfileForm> {
       initialValue: initialValue,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       onChanged: (value) {
         setState(() {
@@ -285,6 +286,8 @@ class _ProfileFormState extends State<ProfileForm> {
           imageUrl: imageUrl,
           name: user.name,
           number: user.number,
+          likedCategories: user.likedCategories,
+          likedItems: user.likedItems,
         );
 
         await FirebaseFirestore.instance.collection('Users').doc(documentId).update(updatedUser.toMap());
