@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/home.dart';
@@ -5,6 +7,7 @@ import 'package:goatsmart/pages/ProfileEdit.dart';
 import 'package:goatsmart/pages/Profile.dart';
 import 'package:goatsmart/pages/geolocalization.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 
 class UserProfile extends StatefulWidget {
   final User user;
@@ -17,12 +20,30 @@ class UserProfile extends StatefulWidget {
 
 class _UserProfileState extends State<UserProfile> {
   late User _user;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void initState() {
-  super.initState();
-  _user = widget.user;
-}
+    super.initState();
+    _user = widget.user;
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('No internet connection'),
+            duration: Duration(seconds: 10),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

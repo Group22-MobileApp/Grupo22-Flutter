@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 
 class Profile extends StatefulWidget {
   final User user;
@@ -12,51 +14,61 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  late User _user; // Cambiamos la declaración a 'late' para inicializar más adelante
-  final double _averageRating = 4.2; // Calificación promedio (temporal)
+  late User _user;
+  final double _averageRating = 4.2;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
-  void initState() {
-    super.initState();
-    // Copiamos los datos del usuario recibido en el estado local
-    _user = widget.user;
-    _fetchUserData();
-  }
+  @override
+void initState() {
+  super.initState();
+  _user = widget.user;
+  _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    if (result == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('No internet connection'),
+          duration: Duration(seconds: 10),
+        ),
+      );
+    }
+  });
+  _fetchUserData(); // Llama al método para obtener la información actualizada del usuario
+}
+
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Actualizamos los datos del usuario cada vez que la vista está a punto de mostrarse
     _fetchUserData();
   }
 
-  Future<void> _fetchUserData() async {
-    try {
-      // Realiza una consulta a Firebase Firestore para obtener los datos actualizados del usuario
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: _user.id).get();
-
-      // Verifica si se encontraron datos
-      if (querySnapshot.docs.isNotEmpty) {
-        // Extrae los datos del primer documento (ya que debería haber solo uno)
-        DocumentSnapshot userData = querySnapshot.docs.first;
-
-        // Construye un nuevo objeto User con los datos recuperados
-        User updatedUser = User.fromMap(userData.data() as Map<String, dynamic>);
-
-        // Actualiza el estado de la vista con los nuevos datos del usuario
-        setState(() {
-          _user = updatedUser;
-        });
-      } else {
-        // Si no se encuentran datos, muestra un mensaje de error o maneja la situación según sea necesario
-        print('No se encontraron datos del usuario en Firestore.');
-      }
-    } catch (error) {
-      // Maneja los errores de la consulta a Firebase Firestore
-      print('Error al obtener los datos del usuario: $error');
-    }
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
   }
+
+  Future<void> _fetchUserData() async {
+  try {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: _user.id).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot userData = querySnapshot.docs.first;
+      User updatedUser = User.fromMap(userData.data() as Map<String, dynamic>);
+      setState(() {
+        _user = updatedUser;
+      });
+    } else {
+      print('No user data found in Firestore.');
+    }
+  } catch (error) {
+    print('Error fetching user data: $error');
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +87,13 @@ class _ProfileState extends State<Profile> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat', // Cambiar el tipo de letra a Montserrat
-                color: Colors.blue[900], // Cambiar el color a azul oscuro
+                fontFamily: 'Montserrat',
+                color: Colors.blue[900],
               ),
             ),
             SizedBox(height: 20),
-            // Contenedor para la imagen del usuario y calificación promedio
             Row(
               children: [
-                // Contenedor para la imagen del usuario
                 Container(
                   width: 120,
                   height: 120,
@@ -93,23 +103,20 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 SizedBox(width: 50),
-                // Columna para la calificación promedio y estrellas
                 Column(
                   children: [
-                    // Texto de la calificación promedio
                     Text(
-                      _averageRating.toStringAsFixed(1), // Muestra una sola cifra decimal
+                      _averageRating.toStringAsFixed(1),
                       style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 5),
-                    // Estrellas para representar la calificación promedio
                     Row(
                       children: List.generate(
                         5,
                         (index) => Icon(
                           Icons.star,
-                          size: 35, // Aumenta el tamaño de las estrellas
-                          color: index < 4 ? Colors.yellow : Colors.grey, // Cambia a 4 estrellas
+                          size: 35,
+                          color: index < 4 ? Colors.yellow : Colors.grey,
                         ),
                       ),
                     ),
@@ -118,7 +125,6 @@ class _ProfileState extends State<Profile> {
               ],
             ),
             SizedBox(height: 20),
-            // Columna para la información del usuario
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -137,7 +143,6 @@ class _ProfileState extends State<Profile> {
               ],
             ),
             SizedBox(height: 20),
-            // Separador entre la imagen del usuario y las revisiones
             Divider(
               thickness: 2,
               color: Colors.grey,
@@ -148,23 +153,22 @@ class _ProfileState extends State<Profile> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat', // Cambiar el tipo de letra a Montserrat
-                color: Colors.blue[900], // Cambiar el color a azul oscuro
+                fontFamily: 'Montserrat',
+                color: Colors.blue[900],
               ),
             ),
-            SizedBox(height: 10), // Espacio entre el título y las reviews
-            // Ejemplo estático de una review
+            SizedBox(height: 10),
             _buildReview(
-              'https://via.placeholder.com/150', // URL de la imagen del revisor (ficticio)
-              'John Doe', // Nombre del revisor (ficticio)
-              4, // Cantidad de estrellas (ficticio)
-              'Great user!', // Comentario (ficticio)
+              'https://via.placeholder.com/150',
+              'John Doe',
+              4,
+              'Great user!',
             ),
             _buildReview(
-              'https://via.placeholder.com/150', // URL de la imagen del revisor (ficticio)
-              'Jane Smith', // Nombre del revisor (ficticio)
-              5, // Cantidad de estrellas (ficticio)
-              'Excellent user!', // Comentario (ficticio)
+              'https://via.placeholder.com/150',
+              'Jane Smith',
+              5,
+              'Excellent user!',
             ),
           ],
         ),
@@ -172,24 +176,20 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  // Método para construir una review
   Widget _buildReview(String imageUrl, String reviewerName, int starCount, String comment) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Imagen del revisor
           CircleAvatar(
             radius: 50,
             backgroundImage: NetworkImage(imageUrl),
           ),
-          SizedBox(width: 10), // Espacio entre la imagen y el nombre
-          // Columna para el nombre del revisor y la cantidad de estrellas
+          SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Nombre del revisor
               Text(
                 reviewerName,
                 style: TextStyle(
@@ -197,7 +197,6 @@ class _ProfileState extends State<Profile> {
                   fontSize: 18,
                 ),
               ),
-              // Cantidad de estrellas
               Row(
                 children: List.generate(
                   5,
@@ -208,8 +207,7 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
-              // Comentario
-              SizedBox(height: 5), // Espacio entre las estrellas y el comentario
+              SizedBox(height: 5),
               Text(
                 comment,
                 style: TextStyle(fontSize: 16),
@@ -221,4 +219,3 @@ class _ProfileState extends State<Profile> {
     );
   }
 }
-

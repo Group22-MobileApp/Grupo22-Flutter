@@ -74,7 +74,7 @@ packages:
     source: hosted
     version: "2.1.1"
   cached_network_image:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: cached_network_image
       sha256: "28ea9690a8207179c319965c13cd8df184d5ee721ae2ce60f398ced1219cea1f"
@@ -153,6 +153,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  connectivity:
+    dependency: "direct main"
+    description:
+      name: connectivity
+      sha256: a8e91263cf3e25fb5cc95e19dfde4999e32a648ac3b9e8a558a28165731678f8
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.6"
+  connectivity_for_web:
+    dependency: transitive
+    description:
+      name: connectivity_for_web
+      sha256: "01a390c1d5adc2ed1fa1f52d120c07fe9fd01166a93f965a832fd6cfc0ea6482"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.0+1"
+  connectivity_macos:
+    dependency: transitive
+    description:
+      name: connectivity_macos
+      sha256: "51ae08d5162eca9669b9d8951ed83ce19c5355a81149f94e4dee2740beb93628"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1+2"
+  connectivity_platform_interface:
+    dependency: transitive
+    description:
+      name: connectivity_platform_interface
+      sha256: "2d82e942df9d49f29a24bb07fb5ce085d4a53e47818c62364d2b6deb9e0d7a8e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   connectivity_plus:
     dependency: transitive
     description:
@@ -273,6 +305,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.4.3+1"
+  dotted_border:
+    dependency: "direct main"
+    description:
+      name: dotted_border
+      sha256: "108837e11848ca776c53b30bc870086f84b62ed6e01c503ed976e8f8c7df9c04"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   equatable:
     dependency: transitive
     description:
@@ -561,10 +601,10 @@ packages:
     dependency: "direct main"
     description:
       name: geolocator
-      sha256: "5c23f3613f50586c0bbb2b8f970240ae66b3bd992088cf60dd5ee2e6f7dde3a8"
+      sha256: "6cb9fb6e5928b58b9a84bdf85012d757fd07aab8215c5205337021c4999bad27"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.2"
+    version: "11.1.0"
   geolocator_android:
     dependency: transitive
     description:
@@ -593,18 +633,18 @@ packages:
     dependency: transitive
     description:
       name: geolocator_web
-      sha256: "102e7da05b48ca6bf0a5bda0010f886b171d1a08059f01bfe02addd0175ebece"
+      sha256: "49d8f846ebeb5e2b6641fe477a7e97e5dd73f03cbfef3fd5c42177b7300fb0ed"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "3.0.0"
   geolocator_windows:
     dependency: transitive
     description:
       name: geolocator_windows
-      sha256: "4f4218f122a6978d0ad655fa3541eea74c67417440b09f0657238810d5af6bdc"
+      sha256: "53da08937d07c24b0d9952eb57a3b474e29aae2abf9dd717f7e1230995f13f0e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.3"
+    version: "0.2.3"
   get:
     dependency: "direct main"
     description:
@@ -933,6 +973,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
+  path_drawing:
+    dependency: transitive
+    description:
+      name: path_drawing
+      sha256: bbb1934c0cbb03091af082a6389ca2080345291ef07a5fa6d6e078ba8682f977
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   path_parsing:
     dependency: transitive
     description:

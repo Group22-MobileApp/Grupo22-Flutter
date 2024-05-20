@@ -1,14 +1,17 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class User {
-  final String carrer;
-  final String email;
-  final String username;
-  final String password;
-  final String id;
-  final String number;
-  final String imageUrl;
-  final String name;
+  String carrer;
+  String email;
+  String username;
+  String password;
+  String id;
+  String number;
+  String imageUrl;
+  String name;
 
   User({
     required this.carrer,
@@ -49,24 +52,31 @@ class User {
 
   Future<void> updateUserInfo(User updatedUser) async {
     try {
-      // Realiza una consulta para obtener el ID del documento asociado al usuario
-      // Suponiendo que tienes un método en tu clase User para obtener el ID del usuario
       String documentId = await getDocumentId();
-
-      // Actualiza la información del usuario en Firestore
       await FirebaseFirestore.instance.collection('Users').doc(documentId).update(updatedUser.toMap());
-
       print('User information updated successfully!');
     } catch (error) {
       print('Failed to update user information: $error');
     }
   }
 
+  Future<String> updateImageUrl(File? imageFile) async {
+  try {
+    if (imageFile != null) {
+      final Reference ref = FirebaseStorage.instance.ref().child('user_profile_images').child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await ref.putFile(imageFile);
+      final String imageUrl = await ref.getDownloadURL();
+      return imageUrl;
+    }
+    return imageUrl; // Si no se subió ninguna imagen nueva, se devuelve la URL actual
+  } catch (error) {
+    print('Failed to update image URL: $error');
+    return ''; // En caso de error, se devuelve una cadena vacía
+  }
+}
+
+
   Future<String> getDocumentId() async {
-    // Aquí deberías tener la lógica para obtener el ID del documento asociado al usuario
-    // Por ejemplo, si el ID del usuario se almacena en el campo 'id' de la colección 'Users'
-    // Puedes hacer una consulta a Firestore para obtener el ID del documento basado en el 'id' del usuario
-    // y luego devolver ese ID
-    return 'document_id'; // Esta es una implementación de ejemplo, debes reemplazarla con tu lógica real
+    return 'document_id'; // Aquí debes implementar la lógica real para obtener el ID del documento
   }
 }

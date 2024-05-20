@@ -1,15 +1,56 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
- // Importa la clase User de firebase_auth con un prefijo
 import 'package:goatsmart/models/user.dart' as LocalUser;
-import 'package:image_picker/image_picker.dart'; // Importa tu clase User con un prefijo
+import 'package:image_picker/image_picker.dart';
 
-class ProfileEdit extends StatelessWidget {
-  final LocalUser.User user; // Usa el prefijo para especificar que User estás utilizando
+class ProfileEdit extends StatefulWidget {
+  final LocalUser.User user;
 
   const ProfileEdit({Key? key, required this.user}) : super(key: key);
+
+  @override
+  _ProfileEditState createState() => _ProfileEditState();
+}
+
+class _ProfileEditState extends State<ProfileEdit> {
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  File? _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('No internet connection'),
+            duration: Duration(seconds: 10),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedImage = await ImagePicker().pickImage(source: source);
+    if (pickedImage != null) {
+      setState(() {
+        _imageFile = File(pickedImage.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +88,9 @@ class ProfileEdit extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20.0),
-            ProfilePhoto(imageUrl: user.imageUrl),
+            ProfilePhoto(imageFile: _imageFile, imageUrl: widget.user.imageUrl, onImagePicked: _pickImage),
             SizedBox(height: 40.0),
-            ProfileForm(user: user),
+            ProfileForm(user: widget.user, imageFile: _imageFile),
           ],
         ),
       ),
@@ -58,9 +99,11 @@ class ProfileEdit extends StatelessWidget {
 }
 
 class ProfilePhoto extends StatelessWidget {
+  final File? imageFile;
   final String imageUrl;
+  final Future<void> Function(ImageSource source) onImagePicked;
 
-  const ProfilePhoto({Key? key, required this.imageUrl}) : super(key: key);
+  const ProfilePhoto({Key? key, required this.imageFile, required this.imageUrl, required this.onImagePicked}) : super(key: key);
 
   Future<void> _showImagePickerDialog(BuildContext context) async {
     return showDialog<void>(
@@ -68,28 +111,24 @@ class ProfilePhoto extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: Text('Cambiar foto de perfil'),
+          title: Text('Change profile photo'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 GestureDetector(
-                  child: Text('Tomar foto'),
+                  child: Text('Take photo'),
                   onTap: () async {
                     Navigator.of(context).pop();
-                    final pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-                    // Aquí puedes manejar la imagen tomada
-                    if (pickedImage != null) {
-                      // Agrega aquí la lógica para manejar la imagen tomada
-                    }
+                    await onImagePicked(ImageSource.camera);
                   },
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: GestureDetector(
-                    child: Text('Seleccionar de la galería'),
+                    child: Text('Select from gallery'),
                     onTap: () async {
                       Navigator.of(context).pop();
-                      // Lógica para seleccionar de la galería
+                      await onImagePicked(ImageSource.gallery);
                     },
                   ),
                 ),
@@ -117,7 +156,7 @@ class ProfilePhoto extends StatelessWidget {
               ),
               child: CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(imageUrl),
+                backgroundImage: imageFile != null ? FileImage(imageFile!) : NetworkImage(imageUrl) as ImageProvider,
               ),
             ),
             Positioned(
@@ -149,9 +188,10 @@ class ProfilePhoto extends StatelessWidget {
 }
 
 class ProfileForm extends StatefulWidget {
-  final LocalUser.User user; // Usa el prefijo para especificar que User estás utilizando
+  final LocalUser.User user;
+  final File? imageFile;
 
-  ProfileForm({Key? key, required this.user}) : super(key: key);
+  ProfileForm({Key? key, required this.user, required this.imageFile}) : super(key: key);
 
   @override
   _ProfileFormState createState() => _ProfileFormState();
@@ -192,7 +232,7 @@ class _ProfileFormState extends State<ProfileForm> {
           height: 50.0,
           child: ElevatedButton(
             onPressed: () {
-              _saveChanges(widget.user);
+              _saveChanges(widget.user, widget.imageFile);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Color.fromARGB(255, 255, 180, 68),
@@ -204,7 +244,7 @@ class _ProfileFormState extends State<ProfileForm> {
       ],
     );
   }
-
+  
   Widget _buildTextField(String label, String initialValue, {bool isPassword = false}) {
     return TextFormField(
       initialValue: initialValue,
@@ -213,62 +253,50 @@ class _ProfileFormState extends State<ProfileForm> {
         border: OutlineInputBorder(),
       ),
       onChanged: (value) {
-        if (label == 'Username') {
-          setState(() {
+        setState(() {
+          if (label == 'Username') {
             _username = value;
-          });
-        } else if (label == 'Email') {
-          setState(() {
+          } else if (label == 'Email') {
             _email = value;
-          });
-        } else if (label == 'Password') {
-          setState(() {
+          } else if (label == 'Password') {
             _password = value;
-          });
-        } else if (label == 'Career') {
-          setState(() {
+          } else if (label == 'Career') {
             _career = value;
-          });
-        }
+          }
+        });
       },
       obscureText: isPassword,
     );
   }
 
-  void _saveChanges(LocalUser.User user) async {
+  void _saveChanges(LocalUser.User user, File? imageFile) async {
     try {
-      // Actualiza la información del usuario en Firestore
-      // Consulta el documento correspondiente en Firestore
+      String imageUrl = await user.updateImageUrl(imageFile);
+      
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: user.id).get();
       if (querySnapshot.docs.isNotEmpty) {
         String documentId = querySnapshot.docs.first.id;
-
-        // Crea un objeto User actualizado con la información editada
         LocalUser.User updatedUser = LocalUser.User(
           id: user.id,
           username: _username,
           email: _email,
           password: _password,
           carrer: _career,
-          imageUrl: _imageUrl,
+          imageUrl: imageUrl,
           name: user.name,
           number: user.number,
         );
 
-        // Actualiza la información del usuario en Firestore
         await FirebaseFirestore.instance.collection('Users').doc(documentId).update(updatedUser.toMap());
 
-        // Actualiza el correo electrónico si ha cambiado
         if (_email != user.email) {
           await FirebaseAuth.instance.currentUser?.updateEmail(_email);
         }
 
-        // Actualiza la contraseña si ha cambiado
         if (_password != user.password) {
           await FirebaseAuth.instance.currentUser?.updatePassword(_password);
         }
 
-        // Devuelve el usuario actualizado a la vista anterior
         Navigator.pop(context, updatedUser);
         print('Changes saved successfully!');
       } else {
@@ -278,4 +306,4 @@ class _ProfileFormState extends State<ProfileForm> {
       print('Failed to save changes: $error');
     }
   }
-}
+} 
