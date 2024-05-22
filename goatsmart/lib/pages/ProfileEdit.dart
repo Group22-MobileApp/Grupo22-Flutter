@@ -1,12 +1,56 @@
-import 'package:flutter/material.dart';
-import 'package:goatsmart/models/user.dart';
+import 'dart:async';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:goatsmart/models/user.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:goatsmart/models/user.dart' as LocalUser;
 import 'package:image_picker/image_picker.dart';
 
-class ProfileEdit extends StatelessWidget {
-  final User user;
+class ProfileEdit extends StatefulWidget {
+  final LocalUser.User user;
 
   const ProfileEdit({Key? key, required this.user}) : super(key: key);
+
+  @override
+  _ProfileEditState createState() => _ProfileEditState();
+}
+
+class _ProfileEditState extends State<ProfileEdit> {
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  File? _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('No internet connection'),
+            duration: Duration(seconds: 10),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedImage = await ImagePicker().pickImage(source: source);
+    if (pickedImage != null) {
+      setState(() {
+        _imageFile = File(pickedImage.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +87,10 @@ class ProfileEdit extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20.0),
-            ProfilePhoto(imageUrl: user.imageUrl),
-            const SizedBox(height: 40.0),
-            ProfileForm(user: user),
+            SizedBox(height: 20.0),
+            ProfilePhoto(imageFile: _imageFile, imageUrl: widget.user.imageUrl, onImagePicked: _pickImage),
+            SizedBox(height: 40.0),
+            ProfileForm(user: widget.user, imageFile: _imageFile),
           ],
         ),
       ),
@@ -55,9 +99,11 @@ class ProfileEdit extends StatelessWidget {
 }
 
 class ProfilePhoto extends StatelessWidget {
+  final File? imageFile;
   final String imageUrl;
+  final Future<void> Function(ImageSource source) onImagePicked;
 
-  const ProfilePhoto({Key? key, required this.imageUrl}) : super(key: key);
+  const ProfilePhoto({Key? key, required this.imageFile, required this.imageUrl, required this.onImagePicked}) : super(key: key);
 
   Future<void> _showImagePickerDialog(BuildContext context) async {
     return showDialog<void>(
@@ -73,11 +119,7 @@ class ProfilePhoto extends StatelessWidget {
                   child: const Text('Tomar foto'),
                   onTap: () async {
                     Navigator.of(context).pop();
-                    final pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-                    // Aquí puedes manejar la imagen tomada
-                    if (pickedImage != null) {
-                      // Agrega aquí la lógica para manejar la imagen tomada
-                    }
+                    await onImagePicked(ImageSource.camera);
                   },
                 ),
                 Padding(
@@ -86,11 +128,7 @@ class ProfilePhoto extends StatelessWidget {
                     child: const Text('Seleccionar de la galería'),
                     onTap: () async {
                       Navigator.of(context).pop();
-                      final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-                      // Aquí puedes manejar la imagen seleccionada
-                      if (pickedImage != null) {
-                        // Agrega aquí la lógica para manejar la imagen seleccionada
-                      }
+                      await onImagePicked(ImageSource.gallery);
                     },
                   ),
                 ),
@@ -118,7 +156,7 @@ class ProfilePhoto extends StatelessWidget {
               ),
               child: CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(imageUrl),
+                backgroundImage: imageFile != null ? FileImage(imageFile!) : NetworkImage(imageUrl) as ImageProvider,
               ),
             ),
             Positioned(
@@ -150,9 +188,11 @@ class ProfilePhoto extends StatelessWidget {
 }
 
 class ProfileForm extends StatefulWidget {
-  final User user;
+  final LocalUser.User user;
+  final File? imageFile;
 
-  const ProfileForm({Key? key, required this.user}) : super(key: key);
+  ProfileForm({Key? key, required this.user, required this.imageFile}) : super(key: key);
+
 
   @override
   _ProfileFormState createState() => _ProfileFormState();
@@ -193,7 +233,7 @@ class _ProfileFormState extends State<ProfileForm> {
           height: 50.0,
           child: ElevatedButton(
             onPressed: () {
-              _saveChanges(widget.user); // Llama a la función para guardar los cambios
+              _saveChanges(widget.user, widget.imageFile);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 255, 180, 68), // Cambia el color de fondo del botón
@@ -205,7 +245,7 @@ class _ProfileFormState extends State<ProfileForm> {
       ],
     );
   }
-
+  
   Widget _buildTextField(String label, String initialValue, {bool isPassword = false}) {
     return TextFormField(
       initialValue: initialValue,
@@ -214,60 +254,59 @@ class _ProfileFormState extends State<ProfileForm> {
         border: const OutlineInputBorder(),
       ),
       onChanged: (value) {
-        if (label == 'Username') {
-          setState(() {
+        setState(() {
+          if (label == 'Username') {
             _username = value;
-          });
-        } else if (label == 'Email') {
-          setState(() {
+          } else if (label == 'Email') {
             _email = value;
-          });
-        } else if (label == 'Password') {
-          setState(() {
+          } else if (label == 'Password') {
             _password = value;
-          });
-        } else if (label == 'Career') {
-          setState(() {
+          } else if (label == 'Career') {
             _career = value;
-          });
-        }
+          }
+        });
       },
       obscureText: isPassword,
     );
   }
 
-  void _saveChanges(User user) async {
-  try {
-    // Realiza una consulta para obtener el ID del documento asociado al usuario
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: user.id).get();
+  void _saveChanges(LocalUser.User user, File? imageFile) async {
+    try {
+      String imageUrl = await user.updateImageUrl(imageFile);
+      
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: user.id).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        String documentId = querySnapshot.docs.first.id;
+        LocalUser.User updatedUser = LocalUser.User(
+          id: user.id,
+          username: _username,
+          email: _email,
+          password: _password,
+          carrer: _career,
+          imageUrl: imageUrl,
+          name: user.name,
+          number: user.number,
+          likedCategories: user.likedCategories,
+          likedItems: user.likedItems,
+        );
 
-    // Verifica si se encontró algún documento
-    if (querySnapshot.docs.isNotEmpty) {
-      String documentId = querySnapshot.docs.first.id;
+        await FirebaseFirestore.instance.collection('Users').doc(documentId).update(updatedUser.toMap());
 
-      User updatedUser = User(
-        id: user.id, // Asume que el ID se obtiene de la consulta
-        username: _username,
-        email: _email,
-        password: _password, // Considerar hashing antes de guardar
-        carrer: _career,
-        imageUrl: _imageUrl, // Actualiza la URL de la imagen con la nueva URL
-        name: user.name,
-        number: user.number,
-        likedCategories: user.likedCategories,
-        likedItems: user.likedItems,
-      );
+        if (_email != user.email) {
+          await FirebaseAuth.instance.currentUser?.updateEmail(_email);
+        }
 
-      // Actualiza la información del usuario en Firestore
-      await FirebaseFirestore.instance.collection('Users').doc(documentId).update(updatedUser.toMap());
+        if (_password != user.password) {
+          await FirebaseAuth.instance.currentUser?.updatePassword(_password);
+        }
 
-      print('Changes saved successfully!');
-    } else {
-      print('User document not found.');
+        Navigator.pop(context, updatedUser);
+        print('Changes saved successfully!');
+      } else {
+        print('User document not found.');
+      }
+    } catch (error) {
+      print('Failed to save changes: $error');
     }
-  } catch (error) {
-    print('Failed to save changes: $error');
   }
-}
-
-}
+} 
