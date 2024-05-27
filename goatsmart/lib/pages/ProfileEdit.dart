@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 

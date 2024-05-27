@@ -106,8 +106,8 @@ class _ChatServiceState extends State<ChatService> {
                   }
                 }),
             Container(
-              color: Colors.white,
               decoration: const BoxDecoration(
+                color: Colors.white,
                 border: Border(
                   top: BorderSide(
                       color: Color.fromARGB(255, 139, 139, 139), width: 2.0),

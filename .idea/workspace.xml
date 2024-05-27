@@ -6,14 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="c397f5fe-62ce-492c-a1a6-6a999565b523" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/HomeChat.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/HomeChat.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/itemGallery.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/itemGallery.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/lib/services/firebase_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/services/firebase_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/linux/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goatsmart/lib/pages/ProfileEdit.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/pages/ProfileEdit.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goatsmart/lib/services/chat_Service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/lib/services/chat_Service.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/goatsmart/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/goatsmart/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goatsmart/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/goatsmart/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/goatsmart/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/goatsmart/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
