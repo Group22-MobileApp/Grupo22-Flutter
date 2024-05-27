@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/materialItem.dart';
@@ -7,6 +8,7 @@ import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/userProfile.dart';
+import 'package:goatsmart/services/dialogService.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart';
@@ -28,12 +30,15 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   
   final FirebaseService _firebaseService = FirebaseService();
   final AuthService _auth = AuthService();    
+  final DialogService _dialogService = DialogService();
   User? userLoggedIn;
   String? username;
   List<MaterialItem> likedItemsForYou = [];
   List<dynamic> likedItemsForYouImages = [];
 
   int _selectedIndex = 0;
+
+  int rand = Random().nextInt(14) + 1;
 
   List<String> categories = [
     'Textbooks',
@@ -415,7 +420,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         children: List.generate(
           likedItemsForYou.length,
           (index) => GestureDetector(
-            onTap: () => _showItemDialog(context, likedItemsForYou[index]),
+            onTap: () => _dialogService.showItemDialog(context, likedItemsForYou[index], rand),
             child: Container(
               height: double.infinity,
               decoration: BoxDecoration(
@@ -440,6 +445,9 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                                 width: double.infinity,
                                 memCacheHeight: 300,
                                 memCacheWidth: 220,
+                                errorWidget: (context, error, stackTrace) {
+                                  return Image.asset('assets/images/$rand.jpg');
+                                },
                               )
                             : Image.asset(
                                 likedItemsForYouImages[index] as String,
@@ -513,69 +521,6 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     String formattedPrice = price.toStringAsFixed(2);
     return NumberFormat.currency(locale: 'en_US', symbol: '')
         .format(double.parse(formattedPrice));
-  }
-
-  Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {
-    User? user = await _firebaseService.getUser(item.owner);
-
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Text(item.title),
-          content: SingleChildScrollView(
-            child: SizedBox(
-              width: double.maxFinite,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (item.images.isNotEmpty && item.images.first.startsWith('http'))
-                  CachedNetworkImage(
-                    imageUrl: item.images.first,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    memCacheHeight: 800,
-                    memCacheWidth: 600,
-                  )
-                  else
-                  Image.asset(
-                    item.images.first,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                  const SizedBox(height: 8.0),
-                  const SizedBox(height: 8.0),
-                  Text('Description: ${item.description}'),
-                  Text('Categories: ${item.categories.join(', ')}'),                
-                  Text('Condition: ${item.condition}'),
-                  Text('Interchangeable: ${item.interchangeable}'),
-                  Text('Views: ${item.views}'),
-                  Text('Likes: ${item.likes}'),                  
-                  Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  if (user != null) ...[
-                    const SizedBox(height: 8.0),
-                    Text('Owner username: ${user.username}'),
-                    Text('Owner name: ${user.name}'),
-                    Text('Email: ${user.email}'),
-                    Text('Career: ${user.carrer}'),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
   }
 }
 

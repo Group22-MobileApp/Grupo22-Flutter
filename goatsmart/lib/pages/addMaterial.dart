@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,36 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   bool _isNonInterchangeable = true;
   bool _isPosting = false;
   List<String> selectedCategories = [];
+  StreamSubscription? _connectivitySubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((event) {
+      if (event == ConnectivityResult.none) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('No Internet Connection'),
+          ),
+        );
+      }
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Connected to the Internet'),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription?.cancel();
+    super.dispose();
+  }
 
   List<String> categories = [
     'Textbooks',

@@ -11,6 +11,7 @@ import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/likedItems.dart';
 import 'package:goatsmart/pages/searchPage.dart';
 import 'package:goatsmart/pages/userProfile.dart';
+import 'package:goatsmart/services/dialogService.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart';
@@ -34,6 +35,7 @@ class _ItemGallery extends State<ItemGallery> {
   final FirebaseService _firebaseService = FirebaseService();
   final _controlFeatures = ConnectionManager();
   final AuthService _auth = AuthService();
+  final _dialogService = DialogService();
   List<MaterialItem> lastItems = [];
   List<dynamic> lastItemsImages = [];
   String? userImageUrl;
@@ -43,6 +45,7 @@ class _ItemGallery extends State<ItemGallery> {
   List<dynamic> itemsForYouImages = [];
 
   int _selectedIndex = 0;
+  int rand = Random().nextInt(14) + 1;
 
   void _onItemTapped(int index) {
     setState(() async {
@@ -95,13 +98,14 @@ class _ItemGallery extends State<ItemGallery> {
 
   @override
   void initState() {
-    super.initState();
+  super.initState();
+  _fetchUserImageUrl();
+  _fetchUserLoggedIn().then((_) {
     _fetchItemsForYou();
     _fetchLastItems();
-    _fetchUserImageUrl();
-    _fetchUserLoggedIn();
-    _initPrefs();
-  }  
+  });
+  _initPrefs();
+}
 
   Future<void> _welcomeMessage() async {
     int cont = await _auth.getNumberOfUsersLoggedInLast30Days();
@@ -218,7 +222,6 @@ class _ItemGallery extends State<ItemGallery> {
     }
 
     // Fetch from server
-    
     List<MaterialItem> items =
         (await _firebaseService.fetchLastItems()).cast<MaterialItem>();
     if (items.isNotEmpty) {
@@ -252,7 +255,7 @@ class _ItemGallery extends State<ItemGallery> {
       });
     }
   }
-
+  
   Future<void> _fetchUserImageUrl() async {
     String? userId = _auth.getCurrentUserId();
     User? user = await _firebaseService.getUser(userId);
@@ -384,13 +387,12 @@ class _ItemGallery extends State<ItemGallery> {
                   itemBuilder: (context, index) {
                     var item = lastItems[index];
                     return GestureDetector(
-                      onTap: () => _showItemDialog(context, item),
+                      onTap: () => _dialogService.showItemDialog(context, item, rand),
                       child: Padding(
                         padding: const EdgeInsets.all(1),
                         child: CachedNetworkImage(
                           imageUrl: lastItemsImages[index],
-                          errorWidget: (context, error, stackTrace) {                            
-                            int rand = Random().nextInt(14) + 1;
+                          errorWidget: (context, error, stackTrace) {                                                        
                             return Image.asset('assets/images/$rand.jpg');
                           },
                           fit: BoxFit.cover,
@@ -416,7 +418,7 @@ class _ItemGallery extends State<ItemGallery> {
         children: List.generate(
           itemsForYou.length,
           (index) => GestureDetector(
-            onTap: () => _showItemDialog(context, itemsForYou[index]),
+            onTap: () => _dialogService.showItemDialog(context, itemsForYou[index], rand),
             child: Container(
               height: double.infinity,
               decoration: BoxDecoration(
@@ -441,6 +443,9 @@ class _ItemGallery extends State<ItemGallery> {
                                 width: double.infinity,
                                 memCacheHeight: 300,
                                 memCacheWidth: 220,
+                                errorWidget: (context, error, stackTrace) {
+                                  return Image.asset('assets/images/$rand.jpg');
+                                },
                               )
                             : Image.asset(
                                 itemsForYouImages[index] as String,
@@ -465,7 +470,7 @@ class _ItemGallery extends State<ItemGallery> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      '\$${_formatPrice(itemsForYou[index].price)}',
+                      '\$${_formatPrice(itemsForYou[index].price)}',                      
                       style: TextStyle(
                         fontSize: screenWidth * 0.05,
                         color: const Color.fromARGB(255, 138, 136, 136),
@@ -678,75 +683,14 @@ class _ItemGallery extends State<ItemGallery> {
           ),
         ));
   }
-
   String _formatPrice(double price) {
     String formattedPrice = price.toStringAsFixed(2);
     return NumberFormat.currency(locale: 'en_US', symbol: '')
         .format(double.parse(formattedPrice));
   }
-
-  Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {
-    User? user = await _firebaseService.getUser(item.owner);
-
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Text(item.title),
-          content: SingleChildScrollView(
-            child: SizedBox(
-              width: double.maxFinite,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (item.images.isNotEmpty && item.images.first.startsWith('http'))
-                  CachedNetworkImage(
-                    imageUrl: item.images.first,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    memCacheHeight: 800,
-                    memCacheWidth: 600,
-                  )
-                  else
-                  Image.asset(
-                    item.images.first,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                  const SizedBox(height: 8.0),
-                  Text('Description: ${item.description}'),
-                  Text('Categories: ${item.categories.join(', ')}'),                
-                  Text('Condition: ${item.condition}'),
-                  Text('Interchangeable: ${item.interchangeable}'),
-                  Text('Views: ${item.views}'),
-                  Text('Likes: ${item.likes}'),                  
-                  Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  if (user != null) ...[
-                    const SizedBox(height: 8.0),
-                    Text('Owner username: ${user.username}'),
-                    Text('Owner name: ${user.name}'),
-                    Text('Email: ${user.email}'),
-                    Text('Career: ${user.carrer}'),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
+
+
 class HeartIconButton extends StatelessWidget {
   final bool isLiked;
   final Function(bool) onTap;

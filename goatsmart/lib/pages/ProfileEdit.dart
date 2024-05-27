@@ -33,10 +33,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           ),
         );
       }
-    });
-    if (widget.user.imageUrl.isNotEmpty) {
-      _imageFile = File(widget.user.imageUrl);
-    }
+    });    
   }
 
   @override
@@ -271,7 +268,8 @@ class _ProfileFormState extends State<ProfileForm> {
 
   void _saveChanges(LocalUser.User user, File? imageFile) async {
     try {
-      String imageUrl = await user.updateImageUrl(imageFile);
+      String imageUrl = await user.updateImageUrl(imageFile);    
+      print('Image URL after update: $imageUrl');
       
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: user.id).get();
       if (querySnapshot.docs.isNotEmpty) {
