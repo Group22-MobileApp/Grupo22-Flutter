@@ -1,10 +1,11 @@
+// ignore_for_file: unused_field
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:goatsmart/models/user.dart';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:goatsmart/models/user.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class ProfileEdit extends StatefulWidget {
   final User user;
@@ -33,6 +34,9 @@ class _ProfileEditState extends State<ProfileEdit> {
         );
       }
     });
+    if (widget.user.imageUrl.isNotEmpty) {
+      _imageFile = File(widget.user.imageUrl);
+    }
   }
 
   @override

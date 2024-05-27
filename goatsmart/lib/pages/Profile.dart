@@ -1,8 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:goatsmart/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
+import 'dart:async';
+
+import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/likedItems.dart';
@@ -38,7 +39,7 @@ class _ProfileState extends State<Profile> {
         );
       }
     });
-    _fetchUserData(); // Llama al método para obtener la información actualizada del usuario
+    _fetchUserData();
   }
 
   @override
@@ -76,22 +77,15 @@ class _ProfileState extends State<Profile> {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
       } else if (index == 2) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: _user)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AddMaterialItemView(userLoggedIn: _user)));
       } else if (index == 3) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
       } else if (index == 4) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => UserProfile(user: widget.user)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(user: _user)));
       }
     });
   }
@@ -133,7 +127,7 @@ class _ProfileState extends State<Profile> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      _averageRating.toString(),
+                      _averageRating.toStringAsFixed(1),
                       style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -155,22 +149,17 @@ class _ProfileState extends State<Profile> {
               ],
             ),
             const SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _user.username,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                Text(
-                  _user.email,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                Text(
-                  _user.carrer,
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ],
+            Text(
+              _user.username,
+              style: const TextStyle(fontSize: 20),
+            ),
+            Text(
+              _user.email,
+              style: const TextStyle(fontSize: 20),
+            ),
+            Text(
+              _user.carrer,
+              style: const TextStyle(fontSize: 20),
             ),
             const SizedBox(height: 20),
             const Divider(
@@ -277,6 +266,5 @@ class _ProfileState extends State<Profile> {
         ],
       ),
     );
-  }   
+  }
 }
-

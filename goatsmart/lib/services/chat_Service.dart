@@ -15,7 +15,6 @@ class ChatService extends StatefulWidget {
 }
 
 class _ChatServiceState extends State<ChatService> {
-  final _channelController = TextEditingController();
   final _controlFeatures = ConnectionManager();
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;

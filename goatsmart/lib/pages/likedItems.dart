@@ -267,7 +267,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   }
 
   Container _selectCategoriesContainer() {
-    return SizedBox(
+    return Container(
       height: 240,
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
