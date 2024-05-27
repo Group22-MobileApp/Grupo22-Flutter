@@ -2,18 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
-import 'package:goatsmart/pages/home.dart';
+import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/ProfileEdit.dart';
 import 'package:goatsmart/pages/Profile.dart';
 import 'package:goatsmart/pages/geolocalization.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:goatsmart/pages/addMaterial.dart';
-import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/likedItems.dart';
+import 'package:connectivity/connectivity.dart';
 
-// Stateful widget
-class  UserProfile extends StatefulWidget {
+class UserProfile extends StatefulWidget {
   final User user;
 
   const UserProfile({Key? key, required this.user}) : super(key: key);
@@ -25,11 +22,13 @@ class  UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   late User _user;
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _user = widget.user;
+
     _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.none) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -38,12 +37,17 @@ class _UserProfileState extends State<UserProfile> {
             content: Text('No internet connection'),
             duration: Duration(seconds: 10),
           ),
-        );}
-      
-  _UserProfileState(this.user);
+        );
+      }
+    });
+  }
 
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
 
-  int _selectedIndex = 0;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -56,22 +60,16 @@ class _UserProfileState extends State<UserProfile> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: user)));                              
+                builder: (context) => AddMaterialItemView(userLoggedIn: _user)));
       } else if (index == 3) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
       } else if (index == 4) {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => UserProfile(user: widget.user)));
+                builder: (context) => UserProfile(user: _user)));
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _connectivitySubscription.cancel();
-    super.dispose();
   }
 
   @override
@@ -158,8 +156,12 @@ class _UserProfileState extends State<UserProfile> {
                       ),
                     ),
                     Text(
-                      '${user.username}!',
-                      style: const TextStyle(fontSize: 24, color: Colors.black,fontWeight: FontWeight.bold,),
+                      '${_user.username}!',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -225,7 +227,7 @@ class _UserProfileState extends State<UserProfile> {
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => ItemGallery()),
-                          (Route<dynamic> route) => false,
+                        (Route<dynamic> route) => false,
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -247,11 +249,9 @@ class _UserProfileState extends State<UserProfile> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        //BackgroundColor white and selected item color orange and black font
         backgroundColor: Colors.white,
         selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
-
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

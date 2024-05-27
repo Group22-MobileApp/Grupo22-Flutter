@@ -1,16 +1,14 @@
-// ignore_for_file: unnecessary_null_comparison
-
-import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/models/user.dart';
+import 'package:goatsmart/services/firebase_service.dart';
+import 'package:intl/intl.dart'; 
+import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/likedItems.dart';
 import 'package:goatsmart/pages/userProfile.dart';
-import 'package:goatsmart/services/firebase_service.dart';
-import 'package:intl/intl.dart'; 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity/connectivity.dart';
 
