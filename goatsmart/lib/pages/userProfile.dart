@@ -35,7 +35,7 @@ class _UserProfileState extends State<UserProfile> {
           const SnackBar(
             backgroundColor: Colors.red,
             content: Text('No internet connection'),
-            duration: Duration(seconds: 10),
+            duration: Duration(seconds: 2),
           ),
         );
       }

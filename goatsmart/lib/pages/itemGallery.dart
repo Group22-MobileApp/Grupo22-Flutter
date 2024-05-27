@@ -145,7 +145,7 @@ class _ItemGallery extends State<ItemGallery> {
         const SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
-          duration: Duration(seconds: 30),
+          duration: Duration(seconds: 3),
         ),
       );
       // No internet connection, fetch from cache
@@ -203,7 +203,7 @@ class _ItemGallery extends State<ItemGallery> {
         const SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
-          duration: Duration(seconds: 30),
+          duration: Duration(seconds: 3),
         ),
       );
       // No internet connection, fetch from cache
