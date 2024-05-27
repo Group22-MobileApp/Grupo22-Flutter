@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/materialItem.dart';
@@ -34,6 +35,8 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   List<dynamic> likedItemsForYouImages = [];
 
   int _selectedIndex = 0;
+
+  int rand = Random().nextInt(14) + 1;
 
   List<String> categories = [
     'Textbooks',
@@ -440,6 +443,9 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                                 width: double.infinity,
                                 memCacheHeight: 300,
                                 memCacheWidth: 220,
+                                errorWidget: (context, error, stackTrace) {
+                                  return Image.asset('assets/images/$rand.jpg');
+                                },
                               )
                             : Image.asset(
                                 likedItemsForYouImages[index] as String,
@@ -538,6 +544,9 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                     fit: BoxFit.cover,
                     memCacheHeight: 800,
                     memCacheWidth: 600,
+                    errorWidget: (context, error, stackTrace) {
+                      return Image.asset('assets/images/$rand.jpg');
+                    },
                   )
                   else
                   Image.asset(

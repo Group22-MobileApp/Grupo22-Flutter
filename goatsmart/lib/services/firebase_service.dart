@@ -102,7 +102,7 @@ class FirebaseService {
         );
       }).toList();
     } catch (error) {
-      print('Error getting material items: $error');
+      print('Error getting last 10 material items: $error');
       return [];
     }
   }

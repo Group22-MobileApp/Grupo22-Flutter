@@ -43,6 +43,7 @@ class _ItemGallery extends State<ItemGallery> {
   List<dynamic> itemsForYouImages = [];
 
   int _selectedIndex = 0;
+  int rand = Random().nextInt(14) + 1;
 
   void _onItemTapped(int index) {
     setState(() async {
@@ -95,13 +96,14 @@ class _ItemGallery extends State<ItemGallery> {
 
   @override
   void initState() {
-    super.initState();
+  super.initState();
+  _fetchUserImageUrl();
+  _fetchUserLoggedIn().then((_) {
     _fetchItemsForYou();
     _fetchLastItems();
-    _fetchUserImageUrl();
-    _fetchUserLoggedIn();
-    _initPrefs();
-  }  
+  });
+  _initPrefs();
+}
 
   Future<void> _welcomeMessage() async {
     int cont = await _auth.getNumberOfUsersLoggedInLast30Days();
@@ -218,7 +220,6 @@ class _ItemGallery extends State<ItemGallery> {
     }
 
     // Fetch from server
-    
     List<MaterialItem> items =
         (await _firebaseService.fetchLastItems()).cast<MaterialItem>();
     if (items.isNotEmpty) {
@@ -252,7 +253,7 @@ class _ItemGallery extends State<ItemGallery> {
       });
     }
   }
-
+  
   Future<void> _fetchUserImageUrl() async {
     String? userId = _auth.getCurrentUserId();
     User? user = await _firebaseService.getUser(userId);
@@ -389,8 +390,7 @@ class _ItemGallery extends State<ItemGallery> {
                         padding: const EdgeInsets.all(1),
                         child: CachedNetworkImage(
                           imageUrl: lastItemsImages[index],
-                          errorWidget: (context, error, stackTrace) {                            
-                            int rand = Random().nextInt(14) + 1;
+                          errorWidget: (context, error, stackTrace) {                                                        
                             return Image.asset('assets/images/$rand.jpg');
                           },
                           fit: BoxFit.cover,
@@ -441,6 +441,9 @@ class _ItemGallery extends State<ItemGallery> {
                                 width: double.infinity,
                                 memCacheHeight: 300,
                                 memCacheWidth: 220,
+                                errorWidget: (context, error, stackTrace) {
+                                  return Image.asset('assets/images/$rand.jpg');
+                                },
                               )
                             : Image.asset(
                                 itemsForYouImages[index] as String,
@@ -708,6 +711,9 @@ class _ItemGallery extends State<ItemGallery> {
                     fit: BoxFit.cover,
                     memCacheHeight: 800,
                     memCacheWidth: 600,
+                    errorWidget: (context, error, stackTrace) {
+                      return Image.asset('assets/images/$rand.jpg');
+                    },
                   )
                   else
                   Image.asset(

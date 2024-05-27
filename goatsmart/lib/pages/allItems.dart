@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'dart:convert';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/materialItem.dart';
@@ -27,8 +28,10 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
   late Future<List<MaterialItem>> _materialItemsFuture;  
 
   int _selectedIndex = 0;  
-  User userLoggedIn;  
+  User userLoggedIn;    
   _SeeAllItemsViewState(this.userLoggedIn);
+
+  int rand = Random().nextInt(14) + 1;
 
   @override
   void initState() {
@@ -153,6 +156,9 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                                       width: double.infinity,
                                       memCacheHeight: 1000,
                                       memCacheWidth: 600,
+                                      errorWidget: (context, error, stackTrace) {
+                                        return Image.asset('assets/images/$rand.jpg');
+                                      },                                      
                                     )
                                   : Image.asset(
                                       materialItems[index].images.first,
@@ -255,6 +261,9 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                       fit: BoxFit.cover,
                       memCacheHeight: 1000,
                       memCacheWidth: 600,
+                      errorWidget: (context, error, stackTrace) {
+                        return Image.asset('assets/images/$rand.jpg');
+                      },                                      
                     ),
                   const SizedBox(height: 8.0),
                   Text('Description: ${item.description}'),

@@ -112,6 +112,7 @@ class User {
       final Reference ref = FirebaseStorage.instance.ref().child('user_profile_images').child('${DateTime.now().millisecondsSinceEpoch}.jpg');
       await ref.putFile(imageFile);
       final String imageUrl = await ref.getDownloadURL();
+      print("Image URL in updateImageUrl: $imageUrl");
       return imageUrl;
     }
     return imageUrl; // Si no se subió ninguna imagen nueva, se devuelve la URL actual
