@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:goatsmart/services/control_features.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,7 @@ class ChatService extends StatefulWidget {
 
 class _ChatServiceState extends State<ChatService> {
   final _channelController = TextEditingController();
+  final _controlFeatures = ConnectionManager();
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
@@ -107,7 +109,8 @@ class _ChatServiceState extends State<ChatService> {
               color: Colors.white,
               decoration: const BoxDecoration(
                 border: Border(
-                  top: BorderSide(color: Color.fromARGB(255, 139, 139, 139), width: 2.0),
+                  top: BorderSide(
+                      color: Color.fromARGB(255, 139, 139, 139), width: 2.0),
                 ),
               ),
               child: Row(
@@ -128,14 +131,38 @@ class _ChatServiceState extends State<ChatService> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      controllerText.clear();
-                      _firestore.collection("messages").add({
-                        'text': messagetext,
-                        'sender': loggedInUser.email,
-                        'createdAt': FieldValue.serverTimestamp(),
-                        "receiver": widget.receiver,
-                      });
+                    onPressed: () async {
+                      if (!await _controlFeatures.checkInternetConnection()) {
+                        print("Internet is not connected");
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('No Network Connection! '),
+                              backgroundColor: Colors.white,
+                              content: const Text(
+                                  'No hay conexion a internet, por favor revisa tu red e intenta nuevamente.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        return;
+                      } else {
+                        controllerText.clear();
+                        _firestore.collection("messages").add({
+                          'text': messagetext,
+                          'sender': loggedInUser.email,
+                          'createdAt': FieldValue.serverTimestamp(),
+                          "receiver": widget.receiver,
+                        });
+                      }
                     },
                     child: const Text(
                       'Send',
@@ -183,7 +210,9 @@ class MessageBubble extends StatelessWidget {
             bottomRight: const Radius.circular(30.0),
           ),
           elevation: 5.0,
-          color: isMe ? const Color.fromARGB(255, 206, 209, 210) : Color.fromARGB(255, 255, 225, 0),
+          color: isMe
+              ? const Color.fromARGB(255, 206, 209, 210)
+              : Color.fromARGB(255, 255, 225, 0),
           child: Padding(
             padding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
