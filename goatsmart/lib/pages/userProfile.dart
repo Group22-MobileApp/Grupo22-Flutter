@@ -1,8 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/ProfileEdit.dart';
 import 'package:goatsmart/pages/Profile.dart';
@@ -226,7 +226,7 @@ class _UserProfileState extends State<UserProfile> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => const ItemGallery()),
+                        MaterialPageRoute(builder: (context) => const HomePage()),
                         (Route<dynamic> route) => false,
                       );
                     },
