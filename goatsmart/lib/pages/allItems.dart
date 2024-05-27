@@ -45,7 +45,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
     var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
           duration: Duration(seconds: 30),
@@ -107,7 +107,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
         title: const Text('All Items'),
       ),
       body: _materialItemsFuture == null
-      ? Center(child: CircularProgressIndicator())
+      ? const Center(child: CircularProgressIndicator())
       : FutureBuilder<List<MaterialItem>>(
         future: _materialItemsFuture,
         builder: (context, snapshot) {

@@ -95,7 +95,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
       selectedCategories.addAll(likedCategories);
       await userLoggedIn!.addLikedCategories(selectedCategories);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.green,
           content: Text('Categories updated successfully'),
           duration: Duration(seconds: 5),
@@ -105,7 +105,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => LikedItemsGallery(),
+          builder: (context) => const LikedItemsGallery(),
         ),
       );
       _fetchUserLoggedIn();
@@ -164,7 +164,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     if (connectivityResult == ConnectivityResult.none) {
       // Show snackbar with no internet connection
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
           duration: Duration(seconds: 30),
@@ -197,7 +197,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         SnackBar(
           backgroundColor: Colors.red,
           content: Text('No items found for your liked categories: $likedCategories'),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         );
       }
   }
@@ -267,10 +267,10 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   }
 
   Container _selectCategoriesContainer() {
-    return Container(
+    return SizedBox(
       height: 240,
       child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 10.0,
           mainAxisSpacing: 10.0,
@@ -362,7 +362,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
               _auth.signOut();
               Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
             },
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
           ),
         ),
       ],
@@ -584,10 +584,10 @@ class HeartIconButton extends StatelessWidget {
   final bool isLiked;
   final Function(bool) onTap;
 
-  HeartIconButton({
+  const HeartIconButton({Key? key, 
     required this.isLiked,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

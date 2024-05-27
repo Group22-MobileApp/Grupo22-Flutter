@@ -2,13 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:goatsmart/services/control_features.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 
 class ChatService extends StatefulWidget {
   static String id = 'chat_service';
   final String receiver;
-  const ChatService({Key? key, required String this.receiver})
+  const ChatService({Key? key, required this.receiver})
       : super(key: key);
 
   @override
@@ -31,7 +30,7 @@ class _ChatServiceState extends State<ChatService> {
 
   void getCurrentUser() async {
     try {
-      final user = await _auth.currentUser;
+      final user = _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
         print(loggedInUser.email);
@@ -49,7 +48,7 @@ class _ChatServiceState extends State<ChatService> {
         leading: null,
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               onPressed: () {
                 Navigator.push(
                     context,
@@ -72,7 +71,7 @@ class _ChatServiceState extends State<ChatService> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   } else {
@@ -212,14 +211,14 @@ class MessageBubble extends StatelessWidget {
           elevation: 5.0,
           color: isMe
               ? const Color.fromARGB(255, 206, 209, 210)
-              : Color.fromARGB(255, 255, 225, 0),
+              : const Color.fromARGB(255, 255, 225, 0),
           child: Padding(
             padding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
             child: Text(
               text,
               style: TextStyle(
-                color: isMe ? Color.fromARGB(255, 0, 0, 0) : Colors.black54,
+                color: isMe ? const Color.fromARGB(255, 0, 0, 0) : Colors.black54,
                 fontSize: 15.0,
               ),
             ),

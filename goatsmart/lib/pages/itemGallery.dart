@@ -5,7 +5,6 @@ import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
 // import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
-import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/searchPage.dart';
 import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
@@ -16,19 +15,8 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'dart:math';
-import 'package:goatsmart/models/materialItem.dart';
-import 'package:goatsmart/models/user.dart';
-import 'package:goatsmart/pages/allItems.dart';
 // import 'package:goatsmart/pages/home.dart';
-import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/likedItems.dart';
-import 'package:goatsmart/pages/searchPage.dart';
-import 'package:goatsmart/pages/userProfile.dart';
-import 'package:goatsmart/services/firebase_auth_service.dart';
-import 'package:goatsmart/services/firebase_service.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:goatsmart/pages/homeChat.dart';
@@ -99,7 +87,7 @@ class _ItemGallery extends State<ItemGallery> {
           return;
         } else {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => HomeChat()));
+              context, MaterialPageRoute(builder: (context) => const HomeChat()));
         }
       } else if (index == 4) {
         Navigator.push(
@@ -160,7 +148,7 @@ class _ItemGallery extends State<ItemGallery> {
     if (connectivityResult == ConnectivityResult.none) {
       // Show snackbar with no internet connection
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
           duration: Duration(seconds: 30),
@@ -223,7 +211,7 @@ class _ItemGallery extends State<ItemGallery> {
     if (connectivityResult == ConnectivityResult.none) {
       // Show snackbar with no internet connection
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.red,
           content: Text('No internet connection'),
           duration: Duration(seconds: 30),
@@ -790,10 +778,10 @@ class HeartIconButton extends StatelessWidget {
   final bool isLiked;
   final Function(bool) onTap;
 
-  HeartIconButton({
+  const HeartIconButton({Key? key, 
     required this.isLiked,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

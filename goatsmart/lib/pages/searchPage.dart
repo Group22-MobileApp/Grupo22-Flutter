@@ -118,7 +118,7 @@ class _SearchPageState extends State<SearchPage> {
       if (items.isEmpty) {
         // Show a snackbar if the product is not found
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Product not found'),
           ),
         );

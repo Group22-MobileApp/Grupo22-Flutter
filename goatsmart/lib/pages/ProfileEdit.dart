@@ -25,7 +25,7 @@ class _ProfileEditState extends State<ProfileEdit> {
     _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.none) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             backgroundColor: Colors.red,
             content: Text('No internet connection'),
             duration: Duration(seconds: 10),
@@ -54,18 +54,18 @@ class _ProfileEditState extends State<ProfileEdit> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Edit Profile',
           style: TextStyle(color: Colors.black),
         ),
       ),
       body: Container(
         color: Colors.white,
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(left: 20.0),
               child: Text(
                 'Settings',
@@ -75,7 +75,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                 ),
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(left: 20.0),
               child: Text(
                 'Edit your profile',
@@ -85,9 +85,9 @@ class _ProfileEditState extends State<ProfileEdit> {
                 ),
               ),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ProfilePhoto(imageFile: _imageFile, imageUrl: widget.user.imageUrl, onImagePicked: _pickImage),
-            SizedBox(height: 40.0),
+            const SizedBox(height: 40.0),
             ProfileForm(user: widget.user, imageFile: _imageFile),
           ],
         ),
@@ -109,21 +109,21 @@ class ProfilePhoto extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: Text('Change profile photo'),
+          title: const Text('Change profile photo'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 GestureDetector(
-                  child: Text('Take photo'),
+                  child: const Text('Take photo'),
                   onTap: () async {
                     Navigator.of(context).pop();
                     await onImagePicked(ImageSource.camera);
                   },
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: GestureDetector(
-                    child: Text('Select from gallery'),
+                    child: const Text('Select from gallery'),
                     onTap: () async {
                       Navigator.of(context).pop();
                       await onImagePicked(ImageSource.gallery);
@@ -170,16 +170,16 @@ class ProfilePhoto extends StatelessWidget {
                 child: IconButton(
                   onPressed: () => _showImagePickerDialog(context),
                   iconSize: 23.0,
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.camera_alt,
-                    color: const Color.fromARGB(255, 255, 255, 255),
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
               ),
             ),
           ],
         ),
-        SizedBox(width: 20.0),
+        const SizedBox(width: 20.0),
       ],
     );
   }
@@ -189,7 +189,7 @@ class ProfileForm extends StatefulWidget {
   final User user;
   final File? imageFile;
 
-  ProfileForm({Key? key, required this.user, required this.imageFile}) : super(key: key);
+  const ProfileForm({Key? key, required this.user, required this.imageFile}) : super(key: key);
 
   @override
   _ProfileFormState createState() => _ProfileFormState();
@@ -218,13 +218,13 @@ class _ProfileFormState extends State<ProfileForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildTextField('Username', _username),
-        SizedBox(height: 20.0),
+        const SizedBox(height: 20.0),
         _buildTextField('Email', _email),
-        SizedBox(height: 20.0),
+        const SizedBox(height: 20.0),
         _buildTextField('Password', '********', isPassword: true),
-        SizedBox(height: 20.0),
+        const SizedBox(height: 20.0),
         _buildTextField('Career', _career),
-        SizedBox(height: 20.0),
+        const SizedBox(height: 20.0),
         SizedBox(
           width: double.infinity,
           height: 50.0,
@@ -236,7 +236,7 @@ class _ProfileFormState extends State<ProfileForm> {
               backgroundColor: const Color.fromARGB(255, 255, 180, 68), // Cambia el color de fondo del botón
               textStyle: const TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255)), // Ajusta el tamaño del texto del botón
             ),
-            child: Text('Save Changes', style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255))), // Ajusta el tamaño del texto del botón
+            child: const Text('Save Changes', style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255))), // Ajusta el tamaño del texto del botón
           ),
         ),
       ],
@@ -248,7 +248,7 @@ class _ProfileFormState extends State<ProfileForm> {
       initialValue: initialValue,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       onChanged: (value) {
         if (label == 'Username') {
@@ -302,7 +302,7 @@ class _ProfileFormState extends State<ProfileForm> {
 
         // Muestra un mensaje de éxito
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             backgroundColor: Colors.green,
             content: Text('Profile updated successfully'),
             duration: Duration(seconds: 5),
@@ -312,7 +312,7 @@ class _ProfileFormState extends State<ProfileForm> {
     } catch (e) {
       // Muestra un mensaje de error en caso de que falle la actualización
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.red,
           content: Text('Failed to update profile'),
           duration: Duration(seconds: 5),

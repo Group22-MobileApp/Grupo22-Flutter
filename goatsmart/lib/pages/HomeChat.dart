@@ -32,7 +32,7 @@ class _HomeChatState extends State<HomeChat> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('Messages'),
+        title: const Text('Messages'),
       ),
       body: ListView.builder(
         itemCount: users.length,

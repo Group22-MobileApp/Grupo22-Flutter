@@ -32,7 +32,7 @@ class _UserProfileState extends State<UserProfile> {
     _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.none) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             backgroundColor: Colors.red,
             content: Text('No internet connection'),
             duration: Duration(seconds: 10),
@@ -226,7 +226,7 @@ class _UserProfileState extends State<UserProfile> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => ItemGallery()),
+                        MaterialPageRoute(builder: (context) => const ItemGallery()),
                         (Route<dynamic> route) => false,
                       );
                     },

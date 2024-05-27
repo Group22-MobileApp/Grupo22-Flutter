@@ -560,13 +560,13 @@ class FirebaseService {
         .where('title', isEqualTo: title)
         .get()
         .then((querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         int views = doc['views'] ?? 0;
         _firestore
             .collection('material_items')
             .doc(doc.id)
             .update({'views': views + 1});
-      });
+      }
     });
   }
 

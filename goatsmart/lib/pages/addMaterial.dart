@@ -212,8 +212,8 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                   ),
                 ),                
               ),   
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
                 child: Row(
                   children: [
                     Text(
@@ -224,7 +224,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                       ),
                     ),
                     // left padding little
-                    const SizedBox(width: 20),                                                                
+                    SizedBox(width: 20),                                                                
                     Icon(
                       // Tap icon)
                       Icons.auto_awesome_motion_outlined,
@@ -234,10 +234,10 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
                   ],
                 ),
               ),
-              Container(
+              SizedBox(
                 height: 200,
                 child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 10.0,
                     mainAxisSpacing: 10.0,
@@ -469,17 +469,17 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: Colors.white,
-            title: Text(
+            title: const Text(
               'No Internet Connection',
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
-            content: Text('Please check your internet connection and try again.'),
+            content: const Text('Please check your internet connection and try again.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -527,7 +527,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         // Navigate to ItemGallery
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ItemGallery()),
+          MaterialPageRoute(builder: (context) => const ItemGallery()),
         );
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(

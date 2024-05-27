@@ -30,7 +30,7 @@ class _ProfileState extends State<Profile> {
     _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.none) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             backgroundColor: Colors.red,
             content: Text('No internet connection'),
             duration: Duration(seconds: 10),
@@ -173,7 +173,7 @@ class _ProfileState extends State<Profile> {
               ],
             ),
             const SizedBox(height: 20),
-            Divider(
+            const Divider(
               thickness: 2,
               color: Colors.grey,
             ),
