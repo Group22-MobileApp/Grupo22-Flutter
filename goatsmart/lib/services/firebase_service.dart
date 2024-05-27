@@ -37,8 +37,9 @@ class FirebaseService {
   }
 
   Future<List<MaterialItem>> getMaterialItems() async {
-      try {
-      QuerySnapshot querySnapshot = await _firestore.collection('material_items').get();
+    try {
+      QuerySnapshot querySnapshot =
+          await _firestore.collection('material_items').get();
       return querySnapshot.docs.map((doc) {
         final title = doc['title'] ?? '';
         final description = doc['description'] ?? '';
@@ -48,7 +49,7 @@ class FirebaseService {
           description: description,
           price: doc['price'] ?? 0.0,
           images: List<String>.from(doc['images'] ?? []),
-          owner: doc['owner'] ?? '',    
+          owner: doc['owner'] ?? '',
           condition: doc['condition'] ?? 'New',
           interchangeable: doc['interchangeable'] ?? 'No',
           views: doc['views'] ?? 0,
@@ -64,7 +65,8 @@ class FirebaseService {
 
   Future<String> uploadImage(File imageFile) async {
     try {
-      String fileName = 'uploads/${DateTime.now().millisecondsSinceEpoch}_${imageFile.path.split('/').last}';
+      String fileName =
+          'uploads/${DateTime.now().millisecondsSinceEpoch}_${imageFile.path.split('/').last}';
       Reference ref = FirebaseStorage.instance.ref().child(fileName);
       UploadTask task = ref.putFile(imageFile);
       TaskSnapshot snapshot = await task;
@@ -77,7 +79,11 @@ class FirebaseService {
 
   Future<List<MaterialItem>> fetchLastItems() async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('material_items').orderBy('created_at', descending: true).limit(10).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('material_items')
+          .orderBy('created_at', descending: true)
+          .limit(10)
+          .get();
       return querySnapshot.docs.map((doc) {
         final title = doc['title'] ?? '';
         final description = doc['description'] ?? '';
@@ -101,10 +107,13 @@ class FirebaseService {
     }
   }
 
-   
   Future<List> fetchLastItemsImages() async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('material_items').orderBy('created_at', descending: true).limit(10).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('material_items')
+          .orderBy('created_at', descending: true)
+          .limit(10)
+          .get();
       return querySnapshot.docs.map((doc) {
         return doc['images'];
       }).toList();
@@ -112,11 +121,15 @@ class FirebaseService {
       print('Error getting material items: $e');
       return [];
     }
-  }  
+  }
 
-    Future<List> fetchLastItemsTittle() async {
+  Future<List> fetchLastItemsTittle() async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('material_items').orderBy('created_at', descending: true).limit(5).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('material_items')
+          .orderBy('created_at', descending: true)
+          .limit(5)
+          .get();
       return querySnapshot.docs.map((doc) {
         return doc['title'];
       }).toList();
@@ -124,14 +137,15 @@ class FirebaseService {
       print('Error getting material items: $e');
       return [];
     }
-  }  
-  
+  }
+
   Future<List<dynamic>> getPosts() async {
     try {
       List<dynamic> posts = [];
-      CollectionReference collectionPosts = _firestore.collection("material_items");
+      CollectionReference collectionPosts =
+          _firestore.collection("material_items");
       QuerySnapshot querySnapshot = await collectionPosts.get();
-      
+
       for (var element in querySnapshot.docs) {
         posts.add(element.data());
       }
@@ -144,7 +158,10 @@ class FirebaseService {
 
   Future<List> fetchItemsByLikedCategories(List<String> likedCategories) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('categories', arrayContainsAny: likedCategories).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('material_items')
+          .where('categories', arrayContainsAny: likedCategories)
+          .get();
       return querySnapshot.docs.map((doc) {
         final title = doc['title'] ?? '';
         final description = doc['description'] ?? '';
@@ -171,11 +188,17 @@ class FirebaseService {
   // FetchLikedItems
   Future<List> fetchLikedItems(String userId) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('id', isEqualTo: userId)
+          .get();
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
         List<String> likedItems = List<String>.from(doc['likedItems'] ?? []);
-        QuerySnapshot itemsSnapshot = await _firestore.collection('material_items').where(FieldPath.documentId, whereIn: likedItems).get();
+        QuerySnapshot itemsSnapshot = await _firestore
+            .collection('material_items')
+            .where(FieldPath.documentId, whereIn: likedItems)
+            .get();
         return itemsSnapshot.docs.map((doc) {
           final title = doc['title'] ?? '';
           final description = doc['description'] ?? '';
@@ -203,8 +226,11 @@ class FirebaseService {
 
   Future<List> fetchItemsByUserCareer(String career) async {
     try {
-      List usersId = await fetchUsersIdCareer(career);      
-      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('owner', whereIn: usersId).get();
+      List usersId = await fetchUsersIdCareer(career);
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('material_items')
+          .where('owner', whereIn: usersId)
+          .get();
       return querySnapshot.docs.map((doc) {
         final title = doc['title'] ?? '';
         final description = doc['description'] ?? '';
@@ -230,7 +256,8 @@ class FirebaseService {
 
   Future<void> increaseLikes(String id, bool increment) async {
     try {
-      DocumentReference itemRef = _firestore.collection('material_items').doc(id);
+      DocumentReference itemRef =
+          _firestore.collection('material_items').doc(id);
       DocumentSnapshot itemSnapshot = await itemRef.get();
       int likes = itemSnapshot['likes'] ?? 0;
       if (increment) {
@@ -243,7 +270,6 @@ class FirebaseService {
       rethrow;
     }
   }
-
 
   Future<void> addUser(User user) async {
     try {
@@ -265,27 +291,27 @@ class FirebaseService {
     }
   }
 
-
   Future<void> editUser(User user) async {
-  try {
-    DocumentReference userRef = _firestore.collection('Users').doc(user.id);
-    await userRef.update({
-      'carrer': user.carrer,
-      'email': user.email,
-      'username': user.username,
-      'password': user.password,
-      'number': user.number,
-      'imageUrl': user.imageUrl,
-      'name': user.name,
-      'likedCategories': user.likedCategories,  
-      'likedItems': user.likedItems,
-    });
-  } catch (error) {
-    rethrow;
+    try {
+      DocumentReference userRef = _firestore.collection('Users').doc(user.id);
+      await userRef.update({
+        'carrer': user.carrer,
+        'email': user.email,
+        'username': user.username,
+        'password': user.password,
+        'number': user.number,
+        'imageUrl': user.imageUrl,
+        'name': user.name,
+        'likedCategories': user.likedCategories,
+        'likedItems': user.likedItems,
+      });
+    } catch (error) {
+      rethrow;
+    }
   }
-}
 
-  Future<void> addPost(String category, String description, PickedFile image, String title) async {
+  Future<void> addPost(String category, String description, PickedFile image,
+      String title) async {
     try {
       CollectionReference collectionPosts = _firestore.collection("Posts");
       await collectionPosts.add({
@@ -302,13 +328,17 @@ class FirebaseService {
   Future<User?> getUser(String userId) async {
     try {
       // Look for 'id' parameter in the Users collection. Not id of firestore document
-      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('id', isEqualTo: userId)
+          .get();
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
         final data = doc.data();
         List<String>? likedCategories;
         if (data != null && (data as Map).containsKey('likedCategories')) {
-          likedCategories = List<String>.from(data['likedCategories'] as List<dynamic>);
+          likedCategories =
+              List<String>.from(data['likedCategories'] as List<dynamic>);
         }
         List<String>? likedItems;
         if (data != null && (data as Map).containsKey('likedItems')) {
@@ -336,7 +366,10 @@ class FirebaseService {
 
   Future<List> fetchUsersIdCareer(String career) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('carrer', isEqualTo: career).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('carrer', isEqualTo: career)
+          .get();
       return querySnapshot.docs.map((doc) {
         return doc['id'];
       }).toList();
@@ -344,18 +377,22 @@ class FirebaseService {
       print('Error getting users: $error');
       return [];
     }
-  }    
-  
+  }
+
   Future<User?> getUserByEmail(String email) async {
     try {
       // Look for 'email' parameter in the Users collection. Not id of firestore document
-      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('email', isEqualTo: email).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('email', isEqualTo: email)
+          .get();
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
         final data = doc.data();
         List<String>? likedCategories;
         if (data != null && (data as Map).containsKey('likedCategories')) {
-          likedCategories = List<String>.from(data['likedCategories'] as List<dynamic>);
+          likedCategories =
+              List<String>.from(data['likedCategories'] as List<dynamic>);
         }
         List<String>? likedItems;
         if (data != null && (data as Map).containsKey('likedItems')) {
@@ -380,17 +417,23 @@ class FirebaseService {
       return null;
     }
   }
-  
+
   Future<void> likeItem(String userId, String itemId) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('id', isEqualTo: userId)
+          .get();
       if (querySnapshot.docs.isNotEmpty) {
         print("User found!");
         final doc = querySnapshot.docs.first;
         List<String> likedItems = List<String>.from(doc['likedItems'] ?? []);
         likedItems.add(itemId);
         print("Liked items: $likedItems");
-        await _firestore.collection('Users').doc(doc.id).update({'likedItems': likedItems});
+        await _firestore
+            .collection('Users')
+            .doc(doc.id)
+            .update({'likedItems': likedItems});
         print("Item liked!");
       }
     } catch (error) {
@@ -400,18 +443,24 @@ class FirebaseService {
 
   Future<void> unlikeItem(String userId, String itemId) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('id', isEqualTo: userId)
+          .get();
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
         List<String> likedItems = List<String>.from(doc['likedItems'] ?? []);
         likedItems.remove(itemId);
-        await _firestore.collection('Users').doc(doc.id).update({'likedItems': likedItems});
+        await _firestore
+            .collection('Users')
+            .doc(doc.id)
+            .update({'likedItems': likedItems});
       }
     } catch (error) {
       rethrow;
     }
   }
-   
+
   // method to get the most popular carrer of the users profile
   Future<String> getMostPopularCarrer() async {
     try {
@@ -441,19 +490,30 @@ class FirebaseService {
   }
 
   // method to add liked categories to the user profile
-  Future<void> addLikedCategories(String userId, List<String> categories) async {
+  Future<void> addLikedCategories(
+      String userId, List<String> categories) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('id', isEqualTo: userId)
+          .get();
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
-        List<String> likedCategories = List<String>.from(doc['likedCategories'] ?? []);
+        List<String> likedCategories =
+            List<String>.from(doc['likedCategories'] ?? []);
         if (likedCategories.isEmpty) {
           likedCategories.addAll(categories);
-          await _firestore.collection('Users').doc(doc.id).update({'likedCategories': likedCategories});
+          await _firestore
+              .collection('Users')
+              .doc(doc.id)
+              .update({'likedCategories': likedCategories});
         }
-        likedCategories.clear(); 
+        likedCategories.clear();
         likedCategories.addAll(categories);
-        await _firestore.collection('Users').doc(doc.id).update({'likedCategories': likedCategories});
+        await _firestore
+            .collection('Users')
+            .doc(doc.id)
+            .update({'likedCategories': likedCategories});
       }
     } catch (error) {
       rethrow;
@@ -463,7 +523,10 @@ class FirebaseService {
   // method to retrieve the liked categories of the user profile
   Future<List<String>> getLikedCategories(String userId) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('Users').where('id', isEqualTo: userId).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('id', isEqualTo: userId)
+          .get();
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
         return List<String>.from(doc['likedCategories'] ?? []);
@@ -478,7 +541,10 @@ class FirebaseService {
   //method to get the posts with the same title
   Future<List> getPostByTitle(String title) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('material_items').where('title', isEqualTo: title).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('material_items')
+          .where('title', isEqualTo: title)
+          .get();
       return querySnapshot.docs.map((doc) {
         return doc.data();
       }).toList();
@@ -489,11 +555,34 @@ class FirebaseService {
   }
 
   void addView(String title) {
-    _firestore.collection('material_items').where('title', isEqualTo: title).get().then((querySnapshot) {
+    _firestore
+        .collection('material_items')
+        .where('title', isEqualTo: title)
+        .get()
+        .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         int views = doc['views'] ?? 0;
-        _firestore.collection('material_items').doc(doc.id).update({'views': views + 1});
+        _firestore
+            .collection('material_items')
+            .doc(doc.id)
+            .update({'views': views + 1});
       });
     });
+  }
+
+//CHAT
+  Future <List<String>> getAllUserEmails() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('Users').get();
+      List<String> emails = [];
+      for (var doc in querySnapshot.docs) {
+        String email = doc['email'];
+        emails.add(email);
+      }
+      return emails;
+    } catch (error) {
+      print('Error getting user emails: $error');
+      return [];
+    }
   }
 }

@@ -16,6 +16,7 @@ import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:goatsmart/pages/homeChat.dart';
 
 
 class ItemGallery extends StatefulWidget {
@@ -56,7 +57,7 @@ class _ItemGallery extends State<ItemGallery> {
             MaterialPageRoute(
                 builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));                            
       } else if (index == 3) {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeChat()));
       } else if (index == 4) {
         Navigator.push(
             context,

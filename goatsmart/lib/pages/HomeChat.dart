@@ -1,58 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:goatsmart/services/chat_Service.dart';
+import 'package:goatsmart/services/firebase_service.dart';
 
-class ChatComponent extends StatefulWidget {
-  final String firebaseUserId;
-
-  const ChatComponent({Key? key, required this.firebaseUserId}) : super(key: key);
+class HomeChat extends StatefulWidget {
+  static String id = 'home_chat';
+  const HomeChat({Key? key}) : super(key: key);
 
   @override
-  _ChatComponentState createState() => _ChatComponentState();
+  _HomeChatState createState() => _HomeChatState();
 }
 
-class _ChatComponentState extends State<ChatComponent> {
-  final _client = StreamChatClient(
-    'YOUR_STREAM_API_KEY',
-    logLevel: Level.INFO,
-  );
+class _HomeChatState extends State<HomeChat> {
+
+  final FirebaseService _firebaseService = FirebaseService();
+  List<String> users = [];
 
   @override
   void initState() {
     super.initState();
-    _connectToChat();
+    _firebaseService.getAllUserEmails().then((emails) {
+      setState(() {
+        users = emails;
+      });
+    });
   }
 
-  Future<void> _connectToChat() async {
-    await _client.connectUser(
-      User(
-        id: widget.firebaseUserId,
-      ),
-      widget.firebaseUserId,
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
-    return StreamChat(
-      client: _client,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Chats'),
-        ),
-        body: Container(
-          child: const Text('Chat'),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: Text('Messages'),
+      ),
+      body: ListView.builder(
+        itemCount: users.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(users[index]),
+            tileColor: Colors.white,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatService(receiver: users[index]),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
-}
-
-class ChannelListView {
-}
-
-class ChannelPage {
-}
-
-class ChannelListHeader {
-
 }
