@@ -5,15 +5,14 @@ import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
-import 'package:goatsmart/services/firebase_service.dart';
-import 'package:goatsmart/services/control_features.dart';
+import 'package:goatsmart/services/firebase_service.dart'; 
 import 'package:image_picker/image_picker.dart';
 
 class CreatePage extends StatefulWidget {
   const CreatePage({Key? key}) : super(key: key);
 
   @override
-  State<CreatePage> createState() => CreatePageState();
+  State<CreatePage> createState() => CreatePageState();  
 
   static List<String> careers = [
     'ESTUDIOS DIRIGIDOS',
@@ -69,9 +68,8 @@ class CreatePageState extends State<CreatePage> {
   String? selectedCareer = 'INGENIERÍA DE SISTEMAS Y COMPUTACIÓN';
 
   final AuthService _auth = AuthService();
-  final FirebaseService _firebaseService = FirebaseService();
-  final ConnectionManager _controlFeatures = ConnectionManager();
-  final ImagePicker _imagePicker = ImagePicker();
+  final FirebaseService _firebaseService = FirebaseService(); 
+  final ImagePicker _imagePicker = ImagePicker(); 
 
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -80,7 +78,7 @@ class CreatePageState extends State<CreatePage> {
   TextEditingController carrerController = TextEditingController();
   TextEditingController numberPhone = TextEditingController();
   TextEditingController usernameController = TextEditingController();
-  File? _userImage;
+  File? _userImage; 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
@@ -116,7 +114,6 @@ class CreatePageState extends State<CreatePage> {
                   ),
                 ),
                 TextField(
-                  maxLength: 20,
                   controller: nameController,
                   decoration: InputDecoration(
                     filled: true,
@@ -143,8 +140,7 @@ class CreatePageState extends State<CreatePage> {
                   ),
                 ),
                 TextField(
-                  maxLength: 10,
-                  controller: usernameController,
+                  controller: usernameController, 
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color.fromARGB(255, 242, 242, 242),
@@ -153,12 +149,11 @@ class CreatePageState extends State<CreatePage> {
                       borderSide: BorderSide.none,
                     ),
                     prefixIcon: const Icon(Icons.person),
-                    hintText: 'Username',
+                    hintText: 'Username', 
                   ),
                 ),
                 const SizedBox(height: 10),
                 TextField(
-                  maxLength: 15,
                   controller: passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
@@ -171,9 +166,7 @@ class CreatePageState extends State<CreatePage> {
                     prefixIcon: const Icon(Icons.password),
                     hintText: 'Password',
                     suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword
-                          ? Icons.visibility
-                          : Icons.visibility_off),
+                      icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
                       onPressed: () {
                         setState(() {
                           _obscurePassword = !_obscurePassword;
@@ -183,7 +176,6 @@ class CreatePageState extends State<CreatePage> {
                   ),
                 ),
                 TextField(
-                  maxLength: 15,
                   controller: confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
@@ -196,9 +188,7 @@ class CreatePageState extends State<CreatePage> {
                     prefixIcon: const Icon(Icons.password),
                     hintText: 'Confirm password',
                     suffixIcon: IconButton(
-                      icon: Icon(_obscureConfirmPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off),
+                      icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
                       onPressed: () {
                         setState(() {
                           _obscureConfirmPassword = !_obscureConfirmPassword;
@@ -229,8 +219,7 @@ class CreatePageState extends State<CreatePage> {
                       selectedCareer = newValue!;
                     });
                   },
-                  items: CreatePage.careers
-                      .map<DropdownMenuItem<String>>((String value) {
+                  items: CreatePage.careers.map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -245,8 +234,7 @@ class CreatePageState extends State<CreatePage> {
                 const SizedBox(height: 10),
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage:
-                      _userImage != null ? FileImage(_userImage!) : null,
+                  backgroundImage: _userImage != null ? FileImage(_userImage!) : null,
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
@@ -258,8 +246,7 @@ class CreatePageState extends State<CreatePage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
                   child: const Text('Save'),
                 ),
@@ -288,47 +275,42 @@ class CreatePageState extends State<CreatePage> {
     String name = nameController.text;
     String phoneNumber = numberPhone.text;
     String username = usernameController.text;
-
+    
     if (selectedCareer == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a career')),
       );
       return;
     }
-
+      
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Passwords do not match')),
       );
       return;
     }
-
-    if (email.isEmpty ||
-        password.isEmpty ||
-        name.isEmpty ||
-        username.isEmpty ||
-        phoneNumber.isEmpty ||
-        confirmPassword.isEmpty) {
+    
+    if (email.isEmpty || password.isEmpty || name.isEmpty || username.isEmpty || phoneNumber.isEmpty || confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all required fields')),
       );
       return;
     }
-
+      
     if (!email.contains('@uniandes.edu.co')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please use a Uniandes email')),
       );
       return;
     }
-
+    
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password must be at least 6 characters')),
       );
       return;
     }
-
+    
     if (phoneNumber.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid phone number')),
@@ -341,71 +323,39 @@ class CreatePageState extends State<CreatePage> {
         const SnackBar(content: Text('Please pick an image')),
       );
       return;
-    }
-
-    bool conec = await _controlFeatures.checkInternetConnection();
-    if(conec == false){
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('No Network Connection! '),
-              backgroundColor: Colors.white,
-              content: const Text('No hay conexion a internet, pero no te preocupes. Se continuara con el proceso cuando se restablezca la conexion.'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-
-      while (true) {
-        bool conec = await _controlFeatures.checkInternetConnection();
-        if (conec) {
-          break;
-        }
-        await Future.delayed(const Duration(seconds: 1));
-      }
-
-    }
-
+    }    
+    
     String? userId = await _auth.signUpWithEmailAndPassword(email, password);
 
     if (userId != null) {
       print("User created successfully");
-
+      
       String? imageUrl;
       if (_userImage != null) {
         imageUrl = await _firebaseService.uploadImage(_userImage!);
       }
       
       await _firebaseService.addUser(User(
-        carrer: selectedCareer!,
+        carrer: selectedCareer!, 
         email: email,
-        username: username,
+        username: username, 
         password: password,
         id: userId,
         number: phoneNumber,
-        imageUrl: imageUrl ?? '',
+        imageUrl: imageUrl ?? '', 
         name: name,
         likedCategories: [],
         likedItems: [],
       ));
-
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.green, 
           content: Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white),
               SizedBox(width: 10),
-              Text('Registration Successful',
-                  style: TextStyle(color: Colors.white)),
+              Text('Registration Successful', style: TextStyle(color: Colors.white)), 
             ],
           ),
         ),
@@ -420,13 +370,12 @@ class CreatePageState extends State<CreatePage> {
     }
   }
 
-
   void _pickImage() async {
     final imageSource = await showDialog<ImageSource>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.white, 
           title: const Text('Select Image Source'),
           actions: <Widget>[
             TextButton(
@@ -448,7 +397,7 @@ class CreatePageState extends State<CreatePage> {
         setState(() {
           _userImage = File(pickedImage.path);
         });
-
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Image picked successfully')),
         );

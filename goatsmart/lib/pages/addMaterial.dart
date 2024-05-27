@@ -1,14 +1,15 @@
 import 'dart:io';
-import 'package:dotted_border/dotted_border.dart';
+
 import 'package:flutter/material.dart';
-import 'package:goatsmart/models/user.dart';
-import 'package:goatsmart/pages/itemGallery.dart';
-import 'package:goatsmart/pages/likedItems.dart';
-import 'package:goatsmart/pages/userProfile.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/services/firebase_service.dart';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:goatsmart/models/user.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/likedItems.dart';
+import 'package:goatsmart/pages/userProfile.dart';
 import 'package:connectivity/connectivity.dart';
 
 class AddMaterialItemView extends StatefulWidget {
