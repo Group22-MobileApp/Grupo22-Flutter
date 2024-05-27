@@ -11,6 +11,7 @@ import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/likedItems.dart';
 import 'package:goatsmart/pages/searchPage.dart';
 import 'package:goatsmart/pages/userProfile.dart';
+import 'package:goatsmart/services/dialogService.dart';
 import 'package:goatsmart/services/firebase_auth_service.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart';
@@ -34,6 +35,7 @@ class _ItemGallery extends State<ItemGallery> {
   final FirebaseService _firebaseService = FirebaseService();
   final _controlFeatures = ConnectionManager();
   final AuthService _auth = AuthService();
+  final _dialogService = DialogService();
   List<MaterialItem> lastItems = [];
   List<dynamic> lastItemsImages = [];
   String? userImageUrl;
@@ -385,7 +387,7 @@ class _ItemGallery extends State<ItemGallery> {
                   itemBuilder: (context, index) {
                     var item = lastItems[index];
                     return GestureDetector(
-                      onTap: () => _showItemDialog(context, item),
+                      onTap: () => _dialogService.showItemDialog(context, item, rand),
                       child: Padding(
                         padding: const EdgeInsets.all(1),
                         child: CachedNetworkImage(
@@ -416,7 +418,7 @@ class _ItemGallery extends State<ItemGallery> {
         children: List.generate(
           itemsForYou.length,
           (index) => GestureDetector(
-            onTap: () => _showItemDialog(context, itemsForYou[index]),
+            onTap: () => _dialogService.showItemDialog(context, itemsForYou[index], rand),
             child: Container(
               height: double.infinity,
               decoration: BoxDecoration(
@@ -468,7 +470,7 @@ class _ItemGallery extends State<ItemGallery> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      '\$${_formatPrice(itemsForYou[index].price)}',
+                      '\$${_formatPrice(itemsForYou[index].price)}',                      
                       style: TextStyle(
                         fontSize: screenWidth * 0.05,
                         color: const Color.fromARGB(255, 138, 136, 136),
@@ -681,126 +683,11 @@ class _ItemGallery extends State<ItemGallery> {
           ),
         ));
   }
-
   String _formatPrice(double price) {
     String formattedPrice = price.toStringAsFixed(2);
     return NumberFormat.currency(locale: 'en_US', symbol: '')
         .format(double.parse(formattedPrice));
   }
-
-Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {
-  User? user = await _firebaseService.getUser(item.owner);
-
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        backgroundColor: Colors.white,
-        title: Text(item.title),
-        content: SingleChildScrollView(
-          child: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Card(
-                  elevation: 4.0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (item.images.isNotEmpty && item.images.first.startsWith('http'))
-                          CachedNetworkImage(
-                            imageUrl: item.images.first,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            memCacheHeight: 800,
-                            memCacheWidth: 600,
-                            errorWidget: (context, error, stackTrace) {
-                              return Image.asset('assets/images/$rand.jpg');
-                            },
-                          )
-                        else
-                          Image.asset(
-                            item.images.first,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                        const SizedBox(height: 8.0),
-                        Text('Description: ${item.description}'),
-                        Text('Categories: ${item.categories.join(', ')}'),                
-                        Text('Condition: ${item.condition}'),
-                        Text('Interchangeable: ${item.interchangeable}'),
-                        Text('Views: ${item.views}'),
-                        Text('Likes: ${item.likes}'),                  
-                        Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                ),
-                if (user != null) ...[
-                  const SizedBox(height: 16.0),
-                  Card(
-                    elevation: 4.0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text('Owner Information', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8.0),
-                          CachedNetworkImage(
-                            imageUrl: user.imageUrl,
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                            imageBuilder: (context, imageProvider) => Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            memCacheHeight: 300,
-                            memCacheWidth: 220,
-                            errorWidget: (context, error, stackTrace) {
-                              return const Icon(Icons.person, size: 120);
-                            },
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text('Username: ${user.username}'),
-                          Text('Name: ${user.name}'),
-                          Text('Email: ${user.email}'),
-                          Text('Career: ${user.carrer}'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context). pop();
-            },
-            child: const Text('Close'),
-          ),
-        ],
-      );
-    },
-  );
-}
 }
 
 

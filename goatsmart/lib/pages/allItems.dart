@@ -10,6 +10,7 @@ import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/likedItems.dart';
 import 'package:goatsmart/pages/userProfile.dart';
+import 'package:goatsmart/services/dialogService.dart';
 import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart'; 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,6 +25,7 @@ class SeeAllItemsView extends StatefulWidget {
 
 class _SeeAllItemsViewState extends State<SeeAllItemsView> {
   final FirebaseService _firebaseService = FirebaseService();
+  final DialogService _dialogService = DialogService();
   late SharedPreferences _prefs;
   late Future<List<MaterialItem>> _materialItemsFuture;  
 
@@ -133,7 +135,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                 children: List.generate(
                   materialItems.length,
                   (index) => GestureDetector(
-                    onTap: () => _showItemDialog(context, materialItems[index]),
+                    onTap: () => _dialogService.showItemDialog(context, materialItems[index], rand),
                     child: Container(
                       height: double.infinity,                      
                       decoration: BoxDecoration(
@@ -236,64 +238,5 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
   String _formatPrice(double price) {
     String formattedPrice = price.toStringAsFixed(2);
     return NumberFormat.currency(locale: 'en_US', symbol: '').format(double.parse(formattedPrice));
-  }
-
-  Future<void> _showItemDialog(BuildContext context, MaterialItem item) async {            
-    User? user = await _firebaseService.getUser(item.owner);
-
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Text(item.title),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: SingleChildScrollView( 
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (item.images.isNotEmpty)
-                    CachedNetworkImage(
-                      imageUrl: item.images.first,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      memCacheHeight: 1000,
-                      memCacheWidth: 600,
-                      errorWidget: (context, error, stackTrace) {
-                        return Image.asset('assets/images/$rand.jpg');
-                      },                                      
-                    ),
-                  const SizedBox(height: 8.0),
-                  Text('Description: ${item.description}'),
-                  Text('Categories: ${item.categories.join(', ')}'),                
-                  Text('Condition: ${item.condition}'),
-                  Text('Interchangeable: ${item.interchangeable}'),
-                  Text('Views: ${item.views}'),
-                  Text('Likes: ${item.likes}'),                  
-                  Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  if (user != null) ...[
-                    const SizedBox(height: 8.0),                  
-                    Text('Owner username: ${user.username}'),
-                    Text('Owner name: ${user.name}'),
-                    Text('Email: ${user.email}'),                  
-                    Text('Career: ${user.carrer}'),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  }  
 }
