@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:goatsmart/models/user.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:goatsmart/models/user.dart' as LocalUser;
+import 'package:goatsmart/models/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ProfileEdit extends StatefulWidget {
-  final LocalUser.User user;
+  final User user;
 
   const ProfileEdit({Key? key, required this.user}) : super(key: key);
 
@@ -56,18 +54,18 @@ class _ProfileEditState extends State<ProfileEdit> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Edit Profile',
           style: TextStyle(color: Colors.black),
         ),
       ),
       body: Container(
         color: Colors.white,
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: 20.0),
               child: Text(
                 'Settings',
@@ -77,7 +75,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                 ),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: 20.0),
               child: Text(
                 'Edit your profile',
@@ -111,21 +109,21 @@ class ProfilePhoto extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: const Text('Cambiar foto de perfil'),
+          title: Text('Change profile photo'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 GestureDetector(
-                  child: const Text('Tomar foto'),
+                  child: Text('Take photo'),
                   onTap: () async {
                     Navigator.of(context).pop();
                     await onImagePicked(ImageSource.camera);
                   },
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: GestureDetector(
-                    child: const Text('Seleccionar de la galería'),
+                    child: Text('Select from gallery'),
                     onTap: () async {
                       Navigator.of(context).pop();
                       await onImagePicked(ImageSource.gallery);
@@ -172,38 +170,37 @@ class ProfilePhoto extends StatelessWidget {
                 child: IconButton(
                   onPressed: () => _showImagePickerDialog(context),
                   iconSize: 23.0,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.camera_alt,
-                    color: Color.fromARGB(255, 255, 255, 255),
+                    color: const Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(width: 20.0),
+        SizedBox(width: 20.0),
       ],
     );
   }
 }
 
 class ProfileForm extends StatefulWidget {
-  final LocalUser.User user;
+  final User user;
   final File? imageFile;
 
   ProfileForm({Key? key, required this.user, required this.imageFile}) : super(key: key);
-
 
   @override
   _ProfileFormState createState() => _ProfileFormState();
 }
 
 class _ProfileFormState extends State<ProfileForm> {
-  String _username = '';
-  String _email = '';
-  String _password = '';
-  String _career = '';
-  String _imageUrl = '';
+  late String _username;
+  late String _email;
+  late String _password;
+  late String _career;
+  late String _imageUrl;
 
   @override
   void initState() {
@@ -221,92 +218,106 @@ class _ProfileFormState extends State<ProfileForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildTextField('Username', _username),
-        const SizedBox(height: 20.0),
+        SizedBox(height: 20.0),
         _buildTextField('Email', _email),
-        const SizedBox(height: 20.0),
+        SizedBox(height: 20.0),
         _buildTextField('Password', '********', isPassword: true),
-        const SizedBox(height: 20.0),
+        SizedBox(height: 20.0),
         _buildTextField('Career', _career),
-        const SizedBox(height: 20.0),
+        SizedBox(height: 20.0),
         SizedBox(
           width: double.infinity,
           height: 50.0,
           child: ElevatedButton(
             onPressed: () {
-              _saveChanges(widget.user, widget.imageFile);
+              _saveChanges(widget.user); // Llama a la función para guardar los cambios
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 255, 180, 68), // Cambia el color de fondo del botón
               textStyle: const TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255)), // Ajusta el tamaño del texto del botón
             ),
-            child: const Text('Save Changes', style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255))), // Ajusta el tamaño del texto del botón
+            child: Text('Save Changes', style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 255, 255, 255))), // Ajusta el tamaño del texto del botón
           ),
         ),
       ],
     );
   }
-  
+
   Widget _buildTextField(String label, String initialValue, {bool isPassword = false}) {
     return TextFormField(
       initialValue: initialValue,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(),
       ),
       onChanged: (value) {
-        setState(() {
-          if (label == 'Username') {
+        if (label == 'Username') {
+          setState(() {
             _username = value;
-          } else if (label == 'Email') {
+          });
+        } else if (label == 'Email') {
+          setState(() {
             _email = value;
-          } else if (label == 'Password') {
+          });
+        } else if (label == 'Password') {
+          setState(() {
             _password = value;
-          } else if (label == 'Career') {
+          });
+        } else if (label == 'Career') {
+          setState(() {
             _career = value;
-          }
-        });
+          });
+        }
       },
       obscureText: isPassword,
     );
   }
 
-  void _saveChanges(LocalUser.User user, File? imageFile) async {
+  void _saveChanges(User user) async {
     try {
-      String imageUrl = await user.updateImageUrl(imageFile);
-      
+      // Realiza una consulta para obtener el ID del documento asociado al usuario
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: user.id).get();
+
+      // Verifica si se encontró algún documento
       if (querySnapshot.docs.isNotEmpty) {
-        String documentId = querySnapshot.docs.first.id;
-        LocalUser.User updatedUser = LocalUser.User(
-          id: user.id,
-          username: _username,
-          email: _email,
-          password: _password,
-          carrer: _career,
-          imageUrl: imageUrl,
-          name: user.name,
-          number: user.number,
-          likedCategories: user.likedCategories,
-          likedItems: user.likedItems,
+        String docId = querySnapshot.docs.first.id;
+
+        // Crea un mapa con los datos actualizados del usuario
+        Map<String, dynamic> updatedData = {
+          'username': _username,
+          'email': _email,
+          'password': _password,
+          'career': _career,
+        };
+
+        // Si hay una imagen seleccionada, súbela a Firebase Storage y agrega la URL al mapa
+        if (widget.imageFile != null) {
+          // Aquí puedes agregar el código para subir la imagen a Firebase Storage y obtener la URL
+          // String imageUrl = await uploadImageToFirebase(widget.imageFile!);
+          // updatedData['imageUrl'] = imageUrl;
+        }
+
+        // Actualiza el documento en Firestore con los datos actualizados
+        await FirebaseFirestore.instance.collection('Users').doc(docId).update(updatedData);
+
+        // Muestra un mensaje de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Profile updated successfully'),
+            duration: Duration(seconds: 5),
+          ),
         );
-
-        await FirebaseFirestore.instance.collection('Users').doc(documentId).update(updatedUser.toMap());
-
-        if (_email != user.email) {
-          await FirebaseAuth.instance.currentUser?.updateEmail(_email);
-        }
-
-        if (_password != user.password) {
-          await FirebaseAuth.instance.currentUser?.updatePassword(_password);
-        }
-
-        Navigator.pop(context, updatedUser);
-        print('Changes saved successfully!');
-      } else {
-        print('User document not found.');
       }
-    } catch (error) {
-      print('Failed to save changes: $error');
+    } catch (e) {
+      // Muestra un mensaje de error en caso de que falle la actualización
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Failed to update profile'),
+          duration: Duration(seconds: 5),
+        ),
+      );
     }
   }
-} 
+}
