@@ -31,6 +31,8 @@ import 'package:goatsmart/services/firebase_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:goatsmart/pages/homeChat.dart';
+import 'package:goatsmart/services/control_features.dart';
 
 class ItemGallery extends StatefulWidget {
   static const String routeName = 'ItemGallery';
@@ -43,8 +45,9 @@ class ItemGallery extends StatefulWidget {
 class _ItemGallery extends State<ItemGallery> {
   late SharedPreferences _prefs;
   bool _dataLoaded = false;
-  
+
   final FirebaseService _firebaseService = FirebaseService();
+  final _controlFeatures = ConnectionManager();
   final AuthService _auth = AuthService();
   List<MaterialItem> lastItems = [];
   List<dynamic> lastItemsImages = [];
@@ -57,20 +60,47 @@ class _ItemGallery extends State<ItemGallery> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
-    setState(() {
+    setState(() async {
       _selectedIndex = index;
       if (index == 0) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
       } else if (index == 2) {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));                            
+                builder: (context) =>
+                    AddMaterialItemView(userLoggedIn: userLoggedIn!)));
       } else if (index == 3) {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+        if (!await _controlFeatures.checkInternetConnection()) {
+          print("Internet is not connected");
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('No Network Connection! '),
+                backgroundColor: Colors.white,
+                content: const Text(
+                    'No hay conexion a internet, por favor revisa tu red e intenta nuevamente.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+          return;
+        } else {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => HomeChat()));
+        }
       } else if (index == 4) {
         Navigator.push(
             context,
@@ -88,32 +118,33 @@ class _ItemGallery extends State<ItemGallery> {
     _fetchUserImageUrl();
     _fetchUserLoggedIn();
     _initPrefs();
-  }  
+  }
 
   Future<void> _welcomeMessage() async {
     int cont = await _auth.getNumberOfUsersLoggedInLast30Days();
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Bienvenido! '),
-              backgroundColor: Colors.white,
-              content: Text('Estamos felices de tenerte en nuestra plataforma! Ya somos $cont usuarios activos!'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Bienvenido! '),
+          backgroundColor: Colors.white,
+          content: Text(
+              'Estamos felices de tenerte en nuestra plataforma! Ya somos $cont usuarios activos!'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
+      },
+    );
   }
 
   Future<void> _initPrefs() async {
-    _prefs = await SharedPreferences.getInstance();    
+    _prefs = await SharedPreferences.getInstance();
     if (!_dataLoaded) {
       _fetchItemsForYou();
       _fetchLastItems();
@@ -139,16 +170,21 @@ class _ItemGallery extends State<ItemGallery> {
       final cachedData = _prefs.getStringList('itemsForYou');
       if (cachedData != null) {
         setState(() {
-          itemsForYou = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
-          itemsForYouImages = itemsForYou.map((item) => item.images.first).toList();
+          itemsForYou = cachedData
+              .map(
+                  (jsonString) => MaterialItem.fromJson(jsonDecode(jsonString)))
+              .toList();
+          itemsForYouImages =
+              itemsForYou.map((item) => item.images.first).toList();
         });
       }
       return;
     }
     // Fetch from server
-    
+
     List<MaterialItem> items =
-        (await _firebaseService.fetchLikedItems(userLoggedIn!.id)).cast<MaterialItem>();            
+        (await _firebaseService.fetchLikedItems(userLoggedIn!.id))
+            .cast<MaterialItem>();
     if (items.isNotEmpty) {
       setState(() {
         itemsForYou = items;
@@ -159,7 +195,7 @@ class _ItemGallery extends State<ItemGallery> {
       await _prefs.setStringList('itemsForYou', jsonList);
     } else {
       _fetchLastItems();
-      setState(() {        
+      setState(() {
         itemsForYouImages =
             List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
         itemsForYou = List.generate(
@@ -197,7 +233,10 @@ class _ItemGallery extends State<ItemGallery> {
       final cachedData = _prefs.getStringList('lastItems');
       if (cachedData != null) {
         setState(() {
-          lastItems = cachedData.map((jsonString) => MaterialItem.fromJson(jsonDecode(jsonString))).toList();
+          lastItems = cachedData
+              .map(
+                  (jsonString) => MaterialItem.fromJson(jsonDecode(jsonString)))
+              .toList();
           lastItemsImages = lastItems.map((item) => item.images.first).toList();
         });
       }
@@ -205,7 +244,7 @@ class _ItemGallery extends State<ItemGallery> {
     }
 
     // Fetch from server
-    
+
     List<MaterialItem> items =
         (await _firebaseService.fetchLastItems()).cast<MaterialItem>();
     if (items.isNotEmpty) {
@@ -217,7 +256,7 @@ class _ItemGallery extends State<ItemGallery> {
       final jsonList = items.map((item) => jsonEncode(item.toMap())).toList();
       await _prefs.setStringList('lastItems', jsonList);
     } else {
-      setState(() {        
+      setState(() {
         lastItemsImages =
             List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
         lastItems = List.generate(
@@ -262,7 +301,6 @@ class _ItemGallery extends State<ItemGallery> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -271,7 +309,6 @@ class _ItemGallery extends State<ItemGallery> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _appBar(screenHeight, screenWidth, context),
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -296,24 +333,24 @@ class _ItemGallery extends State<ItemGallery> {
 
   Padding _newItemsTitleAndRefresh(double screenWidth) {
     return Padding(
-                padding: EdgeInsets.all(screenWidth * 0.02),
-                child: Row(
-                  children: [
-                    Text(
-                      'New Items',
-                      style: TextStyle(fontSize: screenWidth * 0.06),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () {
-                        _fetchLastItems();
-                        _fetchItemsForYou();
-                      },
-                      icon: const Icon(Icons.refresh),
-                    ),
-                  ],
-                ),
-              );
+      padding: EdgeInsets.all(screenWidth * 0.02),
+      child: Row(
+        children: [
+          Text(
+            'New Items',
+            style: TextStyle(fontSize: screenWidth * 0.06),
+          ),
+          const Spacer(),
+          IconButton(
+            onPressed: () {
+              _fetchLastItems();
+              _fetchItemsForYou();
+            },
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+    );
   }
 
   FloatingActionButton _addMaterialButton(BuildContext context) {
@@ -322,18 +359,18 @@ class _ItemGallery extends State<ItemGallery> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));    
+                builder: (context) =>
+                    AddMaterialItemView(userLoggedIn: userLoggedIn!)));
       },
       child: const Icon(Icons.add),
     );
   }
 
   BottomNavigationBar _bottomNavBar() {
-    return BottomNavigationBar(        
+    return BottomNavigationBar(
       backgroundColor: Colors.white,
       selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
       unselectedItemColor: const Color.fromARGB(255, 138, 136, 136),
-
       type: BottomNavigationBarType.fixed,
       currentIndex: _selectedIndex,
       onTap: _onItemTapped,
@@ -364,34 +401,35 @@ class _ItemGallery extends State<ItemGallery> {
 
   SizedBox _newItemsContainer(double screenHeight) {
     return SizedBox(
-                height: screenHeight * 0.15,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: lastItems.length,
-                  itemBuilder: (context, index) {
-                    var item = lastItems[index];
-                    return GestureDetector(
-                      onTap: () => _showItemDialog(context, item),
-                      child: Padding(
-                        padding: const EdgeInsets.all(1),
-                        child: CachedNetworkImage(
-                          imageUrl: lastItemsImages[index],
-                          errorWidget: (context, error, stackTrace) {                            
-                            int rand = Random().nextInt(14) + 1;
-                            return Image.asset('assets/images/$rand.jpg');
-                          },
-                          fit: BoxFit.cover,
-                          memCacheHeight: 300,
-                          memCacheWidth: 220,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
+      height: screenHeight * 0.15,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: lastItems.length,
+        itemBuilder: (context, index) {
+          var item = lastItems[index];
+          return GestureDetector(
+            onTap: () => _showItemDialog(context, item),
+            child: Padding(
+              padding: const EdgeInsets.all(1),
+              child: CachedNetworkImage(
+                imageUrl: lastItemsImages[index],
+                errorWidget: (context, error, stackTrace) {
+                  int rand = Random().nextInt(14) + 1;
+                  return Image.asset('assets/images/$rand.jpg');
+                },
+                fit: BoxFit.cover,
+                memCacheHeight: 300,
+                memCacheWidth: 220,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
-  SizedBox _justForYouContainer(double screenHeight, double screenWidth, BuildContext context) {
+  SizedBox _justForYouContainer(
+      double screenHeight, double screenWidth, BuildContext context) {
     return SizedBox(
       height: screenHeight * 0.35,
       child: GridView.count(
@@ -421,7 +459,8 @@ class _ItemGallery extends State<ItemGallery> {
                       padding: const EdgeInsets.all(5),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: (itemsForYouImages[index] as String).startsWith('http')
+                        child: (itemsForYouImages[index] as String)
+                                .startsWith('http')
                             ? CachedNetworkImage(
                                 imageUrl: itemsForYouImages[index] as String,
                                 fit: BoxFit.cover,
@@ -459,7 +498,7 @@ class _ItemGallery extends State<ItemGallery> {
                       ),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.02),                  
+                  SizedBox(height: screenHeight * 0.02),
                   HeartIconButton(
                     isLiked: itemsForYou[index].likes > 0,
                     onTap: (bool isLiked) async {
@@ -476,7 +515,7 @@ class _ItemGallery extends State<ItemGallery> {
                         // Handle error
                         print('Error updating item likes: $error');
                       }
-                      try {    
+                      try {
                         if (isLiked) {
                           await userLoggedIn!.likeItem(itemsForYou[index].id);
                         } else {
@@ -499,86 +538,88 @@ class _ItemGallery extends State<ItemGallery> {
 
   Row _topNavBar(double screenWidth, BuildContext context) {
     return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.02),
-              child: Row(
-                children: [
-                  Text(
-                    'Just For You',
-                    style: TextStyle(fontSize: screenWidth * 0.06),
-                  ),
-                  SizedBox(
-                      width: screenWidth *
-                          0.02), // Add spacing between text and star
-                  const Icon(
-                    Icons.star,
-                    color: Color.fromARGB(230, 255, 168, 6),
-                  ),
-                ],
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: screenWidth * 0.02),
+          child: Row(
+            children: [
+              Text(
+                'Just For You',
+                style: TextStyle(fontSize: screenWidth * 0.06),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.02),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'See All',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.05,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ),
-                  SizedBox(width: screenWidth * 0.03),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: ClipOval(
-                      child: Material(
-                        color: const Color.fromARGB(230, 255, 168, 6),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SeeAllItemsView(userLoggedIn: userLoggedIn!)));
-                          },
-                          child: const SizedBox(
-                            width: 46,
-                            height: 46,
-                            child: Icon(Icons.arrow_forward_outlined,
-                                color: Colors.white),
-                          ),
-                        ),
+              SizedBox(
+                  width:
+                      screenWidth * 0.02), // Add spacing between text and star
+              const Icon(
+                Icons.star,
+                color: Color.fromARGB(230, 255, 168, 6),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(screenWidth * 0.02),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'See All',
+                style: TextStyle(
+                  fontSize: screenWidth * 0.05,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                ),
+              ),
+              SizedBox(width: screenWidth * 0.03),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: ClipOval(
+                  child: Material(
+                    color: const Color.fromARGB(230, 255, 168, 6),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SeeAllItemsView(
+                                    userLoggedIn: userLoggedIn!)));
+                      },
+                      child: const SizedBox(
+                        width: 46,
+                        height: 46,
+                        child: Icon(Icons.arrow_forward_outlined,
+                            color: Colors.white),
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
-        );
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Padding _welcome(double screenWidth) {
     return Padding(
-          padding: EdgeInsets.all(screenWidth * 0.02),
-          child: Text(
-            username != null ? 'Hello $username!' : 'Loading...',
-            style: userImageUrl != null
-                ? TextStyle(
-                    fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold)
-                : TextStyle(
-                    fontSize: screenWidth * 0.1,
-                    color: const Color.fromARGB(230, 255, 168, 6),
-                    fontWeight: FontWeight.bold),
-          ),
-        );
+      padding: EdgeInsets.all(screenWidth * 0.02),
+      child: Text(
+        username != null ? 'Hello $username!' : 'Loading...',
+        style: userImageUrl != null
+            ? TextStyle(
+                fontSize: screenWidth * 0.08, fontWeight: FontWeight.bold)
+            : TextStyle(
+                fontSize: screenWidth * 0.1,
+                color: const Color.fromARGB(230, 255, 168, 6),
+                fontWeight: FontWeight.bold),
+      ),
+    );
   }
 
-  AppBar _appBar(double screenHeight, double screenWidth, BuildContext context) {
+  AppBar _appBar(
+      double screenHeight, double screenWidth, BuildContext context) {
     return AppBar(
         toolbarHeight: screenHeight * 0.15,
         leadingWidth: screenWidth * 0.3,
@@ -613,21 +654,22 @@ class _ItemGallery extends State<ItemGallery> {
             }
           },
           child: userImageUrl != null
-          ? Padding(
-              padding: EdgeInsets.all(screenWidth * 0.03),
-              child: CircleAvatar(
-                radius: screenWidth * 0.06,
-                backgroundImage: CachedNetworkImageProvider(userImageUrl!),                  
-              ),
-            )
-          : const CircleAvatar(
-              radius: 30,
-              child: Icon(Icons.person),
-            ),
+              ? Padding(
+                  padding: EdgeInsets.all(screenWidth * 0.03),
+                  child: CircleAvatar(
+                    radius: screenWidth * 0.06,
+                    backgroundImage: CachedNetworkImageProvider(userImageUrl!),
+                  ),
+                )
+              : const CircleAvatar(
+                  radius: 30,
+                  child: Icon(Icons.person),
+                ),
         ),
         title: InkWell(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const SearchPage()));
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8.0),
@@ -643,23 +685,30 @@ class _ItemGallery extends State<ItemGallery> {
                       hintText: "Search",
                       prefixIcon: GestureDetector(
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SearchPage()));
                         },
                         child: const Icon(Icons.search),
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(screenWidth * 0.04)),
-                      ),                       
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(screenWidth * 0.04)),
+                      ),
                     ),
                     onChanged: (value) {
-                      // Handle text change                        
+                      // Handle text change
                     },
                     onSubmitted: (value) {
                       // Handle submission
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SearchPage()));
                     },
                   ),
-                ),                  
+                ),
               ],
             ),
           ),
@@ -688,28 +737,30 @@ class _ItemGallery extends State<ItemGallery> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (item.images.isNotEmpty && item.images.first.startsWith('http'))
-                  CachedNetworkImage(
-                    imageUrl: item.images.first,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    memCacheHeight: 800,
-                    memCacheWidth: 600,
-                  )
+                  if (item.images.isNotEmpty &&
+                      item.images.first.startsWith('http'))
+                    CachedNetworkImage(
+                      imageUrl: item.images.first,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      memCacheHeight: 800,
+                      memCacheWidth: 600,
+                    )
                   else
-                  Image.asset(
-                    item.images.first,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                    Image.asset(
+                      item.images.first,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   const SizedBox(height: 8.0),
                   Text('Description: ${item.description}'),
-                  Text('Categories: ${item.categories.join(', ')}'),                
+                  Text('Categories: ${item.categories.join(', ')}'),
                   Text('Condition: ${item.condition}'),
                   Text('Interchangeable: ${item.interchangeable}'),
                   Text('Views: ${item.views}'),
-                  Text('Likes: ${item.likes}'),                  
-                  Text('Price: \$${_formatPrice(item.price)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Likes: ${item.likes}'),
+                  Text('Price: \$${_formatPrice(item.price)}',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   if (user != null) ...[
                     const SizedBox(height: 8.0),
                     Text('Owner username: ${user.username}'),
@@ -734,6 +785,7 @@ class _ItemGallery extends State<ItemGallery> {
     );
   }
 }
+
 class HeartIconButton extends StatelessWidget {
   final bool isLiked;
   final Function(bool) onTap;

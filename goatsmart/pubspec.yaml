@@ -35,13 +35,11 @@ dependencies:
   intl_phone_number_input: ^0.7.4
   image_picker: ^1.0.8
   geolocator: ^11.0.0
-  stream_chat_flutter: ^7.2.0
   dotted_border: ^2.0.0+1
   connectivity: ^3.0.6
   connectivity_plus: ^4.0.0
   shared_preferences: ^2.0.8
   cached_network_image: ^3.0.0
-
 
 dev_dependencies:
   flutter_test:
