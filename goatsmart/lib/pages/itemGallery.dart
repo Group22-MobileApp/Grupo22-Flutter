@@ -105,13 +105,17 @@ class _ItemGallery extends State<ItemGallery> {
 
   Future<void> _welcomeMessage() async {
     int cont = await _auth.getNumberOfUsersLoggedInLast30Days();
-          content: Text(
-              'Estamos felices de tenerte en nuestra plataforma! Ya somos $cont usuarios activos!'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Bienvenido! '),
+              backgroundColor: Colors.white,
+              content: Text('Estamos felices de tenerte en nuestra plataforma! Ya somos $cont usuarios activos!'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
