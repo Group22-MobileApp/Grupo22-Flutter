@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
-import 'package:goatsmart/pages/addMaterial.dart';
-import 'package:goatsmart/pages/itemGallery.dart';
+import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/ProfileEdit.dart';
 import 'package:goatsmart/pages/Profile.dart';
 import 'package:goatsmart/pages/geolocalization.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:goatsmart/pages/addMaterial.dart';
+import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/likedItems.dart';
 
 // Stateful widget
@@ -14,12 +19,27 @@ class  UserProfile extends StatefulWidget {
   const UserProfile({Key? key, required this.user}) : super(key: key);
 
   @override
-  _UserProfileState createState() => _UserProfileState(user);
+  _UserProfileState createState() => _UserProfileState();
 }
 
-class _UserProfileState extends State<UserProfile> {  
-  final User user;
+class _UserProfileState extends State<UserProfile> {
+  late User _user;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
+  @override
+  void initState() {
+    super.initState();
+    _user = widget.user;
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('No internet connection'),
+            duration: Duration(seconds: 10),
+          ),
+        );}
+      
   _UserProfileState(this.user);
 
 
@@ -46,6 +66,12 @@ class _UserProfileState extends State<UserProfile> {
                 builder: (context) => UserProfile(user: widget.user)));
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -84,7 +110,7 @@ class _UserProfileState extends State<UserProfile> {
                       ),
                       child: CircleAvatar(
                         radius: 50,
-                        backgroundImage: NetworkImage(user.imageUrl),
+                        backgroundImage: NetworkImage(_user.imageUrl),
                       ),
                     ),
                     Positioned(
@@ -101,13 +127,18 @@ class _UserProfileState extends State<UserProfile> {
                           icon: const Icon(Icons.edit),
                           iconSize: 23,
                           color: Colors.white,
-                          onPressed: () {
-                            Navigator.push(
+                          onPressed: () async {
+                            final updatedUser = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ProfileEdit(user: user),
+                                builder: (context) => ProfileEdit(user: _user),
                               ),
                             );
+                            if (updatedUser != null) {
+                              setState(() {
+                                _user = updatedUser as User;
+                              });
+                            }
                           },
                         ),
                       ),
@@ -142,7 +173,7 @@ class _UserProfileState extends State<UserProfile> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Profile(user: user),
+                    builder: (context) => Profile(user: _user),
                   ),
                 );
               },

@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/likedItems.dart';
@@ -11,6 +14,64 @@ class Profile extends StatefulWidget {
   const Profile({Key? key, required this.user}) : super(key: key);
 
   @override
+  _ProfileState createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  late User _user;
+  final double _averageRating = 4.2;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
+  @override
+  @override
+void initState() {
+  super.initState();
+  _user = widget.user;
+  _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    if (result == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('No internet connection'),
+          duration: Duration(seconds: 10),
+        ),
+      );
+    }
+  });
+  _fetchUserData(); // Llama al método para obtener la información actualizada del usuario
+}
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchUserData();
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _fetchUserData() async {
+  try {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('Users').where('id', isEqualTo: _user.id).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot userData = querySnapshot.docs.first;
+      User updatedUser = User.fromMap(userData.data() as Map<String, dynamic>);
+      setState(() {
+        _user = updatedUser;
+      });
+    } else {
+      print('No user data found in Firestore.');
+    }
+  } catch (error) {
+    print('Error fetching user data: $error');
+  }
+}
   _ProfileState createState() => _ProfileState(user);
 }
 
@@ -57,15 +118,18 @@ class _ProfileState extends State<Profile> {
     // Valor estático para la cantidad de estrellas
     int starCount = 4;
 
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Cambiar el color de fondo a blanco
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('User Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Alinear elementos hacia arriba a la izquierda
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20), // Espacio antes de la palabra "Profile"
             Text(
@@ -73,43 +137,47 @@ class _ProfileState extends State<Profile> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat', // Cambiar el tipo de letra a Montserrat
-                color: Colors.blue[900], // Cambiar el color a azul oscuro
+                fontFamily: 'Montserrat',
+                color: Colors.blue[900],
               ),
             ),
+            SizedBox(height: 20),
             Row(
               children: [
+                Container(
+                  width: 120,
+                  height: 120,
                 // Contenedor para la imagen del usuario
                 SizedBox(
                   width: 120, // Ajustar el tamaño del contenedor
                   height: 120, // Ajustar el tamaño del contenedor
                   child: CircleAvatar(
                     radius: 60,
-                    backgroundImage: NetworkImage(user.imageUrl),
+                    backgroundImage: NetworkImage(_user.imageUrl),
                   ),
                 ),
+                SizedBox(width: 50),
                 const Spacer(), // Espaciador para ocupar el espacio restante
                 // Columna para la calificación y sistema de estrellas
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Calificación
                     Text(
+                      _averageRating.toStringAsFixed(1),
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                       rating.toString(),
                       style: const TextStyle(
                         fontSize: 32, // Aumentar el tamaño de la fuente
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    // Sistema de estrellas con tamaño ajustado
+                    SizedBox(height: 5),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
                         5,
                         (index) => Icon(
                           Icons.star,
-                          size: 36, // Ajustar el tamaño de la estrella
-                          color: index < starCount ? Colors.yellow : Colors.grey,
+                          size: 35,
+                          color: index < 4 ? Colors.yellow : Colors.grey,
                         ),
                       ),
                     ),
@@ -117,6 +185,28 @@ class _ProfileState extends State<Profile> {
                 ),
               ],
             ),
+            SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${_user.username}',
+                  style: TextStyle(fontSize: 20),
+                ),
+                Text(
+                  '${_user.email}',
+                  style: TextStyle(fontSize: 20),
+                ),
+                Text(
+                  '${_user.carrer}',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Divider(
+              thickness: 2,
+              color: Colors.grey,
             const SizedBox(height: 20),
             Text(
               user.username,
@@ -130,28 +220,30 @@ class _ProfileState extends State<Profile> {
               user.carrer,
               style: const TextStyle(fontSize: 20),
             ),
+            SizedBox(height: 20),
             Text(
               'Reviews about me:',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat', // Cambiar el tipo de letra a Montserrat
-                color: Colors.blue[900], // Cambiar el color a azul oscuro
+                fontFamily: 'Montserrat',
+                color: Colors.blue[900],
               ),
             ),
+            SizedBox(height: 10),
             const SizedBox(height: 10), // Espacio entre el título y las reviews
             // Ejemplo estático de una review
             _buildReview(
-              'https://via.placeholder.com/150', // URL de la imagen del revisor (ficticio)
-              'John Doe', // Nombre del revisor (ficticio)
-              4, // Cantidad de estrellas (ficticio)
-              'Great user!', // Comentario (ficticio)
+              'https://via.placeholder.com/150',
+              'John Doe',
+              4,
+              'Great user!',
             ),
             _buildReview(
-              'https://via.placeholder.com/150', // URL de la imagen del revisor (ficticio)
-              'Jane Smith', // Nombre del revisor (ficticio)
-              5, // Cantidad de estrellas (ficticio)
-              'Excellent user!', // Comentario (ficticio)
+              'https://via.placeholder.com/150',
+              'Jane Smith',
+              5,
+              'Excellent user!',
             ),
           ],
         ),
@@ -198,17 +290,16 @@ class _ProfileState extends State<Profile> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Imagen del revisor
           CircleAvatar(
             radius: 50,
             backgroundImage: NetworkImage(imageUrl),
           ),
+          SizedBox(width: 10),
           const SizedBox(width: 10), // Espacio entre la imagen y el nombre
           // Columna para el nombre del revisor y la cantidad de estrellas
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Nombre del revisor
               Text(
                 reviewerName,
                 style: const TextStyle(
@@ -216,7 +307,6 @@ class _ProfileState extends State<Profile> {
                   fontSize: 18,
                 ),
               ),
-              // Cantidad de estrellas
               Row(
                 children: List.generate(
                   5,
@@ -227,6 +317,7 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
+              SizedBox(height: 5),
               // Comentario
               const SizedBox(height: 5), // Espacio entre las estrellas y el comentario
               Text(
@@ -238,5 +329,5 @@ class _ProfileState extends State<Profile> {
         ],
       ),
     );
-  }   
+  }
 }
