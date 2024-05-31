@@ -33,37 +33,12 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
   bool _isInterchangeable = false ;
   bool _isNonInterchangeable = true;
   bool _isPosting = false;
-  List<String> selectedCategories = [];
-  StreamSubscription? _connectivitySubscription;
+  List<String> selectedCategories = [];  
 
   @override
   void initState() {
     super.initState();
-    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((event) {
-      if (event == ConnectivityResult.none) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text('No Internet Connection'),
-          ),
-        );
-      }
-      else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.green,
-            content: Text('Connected to the Internet'),
-          ),
-        );
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _connectivitySubscription?.cancel();
-    super.dispose();
-  }
+  }  
 
   List<String> categories = [
     'Textbooks',
@@ -112,29 +87,58 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
       }
     });
   }
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 0) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
-      } else if (index == 1) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
-      } else if (index == 2) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn)));
-      } else if (index == 3) {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
-      } else if (index == 4) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => UserProfile(user: userLoggedIn)));
-      }
-    });
+
+Future<bool> _checkConnectivity() async {
+  var connectivityResult = await Connectivity().checkConnectivity();
+  if (connectivityResult == ConnectivityResult.none) {
+    return false;
   }
+  return true;
+}
+
+void _onItemTapped(int index) async {
+  bool isConnected = await _checkConnectivity();
+  if (!isConnected) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text(
+            'No Internet Connection',
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          ),
+          content: const Text('Please check your internet connection and try again.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  setState(() {
+    _selectedIndex = index;    
+    if (index == 0) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+    } else if (index == 1) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
+    } else if (index == 2) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn)));
+    } else if (index == 3) {
+      // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+    } else if (index == 4) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(user: userLoggedIn)));
+    }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
