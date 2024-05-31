@@ -12,6 +12,7 @@ class MaterialItem {
   int views;
   final List<String> categories;
   int likes;
+  final List<String> likedBy;
 
   MaterialItem({
     required this.id,
@@ -25,6 +26,7 @@ class MaterialItem {
     required this.views,
     required this.categories,
     required this.likes,
+    required this.likedBy,
   });
 
   Map<String, dynamic> toMap() {
@@ -40,6 +42,7 @@ class MaterialItem {
       'views': views,
       'categories': categories,
       'likes': likes,
+      'likedBy': likedBy,
     };
   }
 
@@ -55,7 +58,8 @@ class MaterialItem {
       interchangeable: map['interchangeable'],
       views: map['views'],
       categories: List<String>.from(map['categories']),
-      likes: map['likes'],
+      likes: map['likes'], 
+      likedBy: ['likedBy'],
     );
   }
 
@@ -71,18 +75,22 @@ class MaterialItem {
       interchangeable: json['interchangeable'],
       views: json['views'],
       categories: List<String>.from(json['categories']),
-      likes: json['likes'],
+      likes: json['likes'], 
+      likedBy: ['likedBy'],
     );
   }
 
-  Future<void> increaseLikes(bool increment) async {
+  Future<void> likeItem(bool isLiked, String userId) async {
     try {
       final FirebaseService firebaseService = FirebaseService(); 
-      await firebaseService.increaseLikes(id, increment);
-      if (increment) {
-        likes++;
+      if (isLiked) {
+        await firebaseService.likeItem(id, userId);
+        likedBy.add(userId);
+        likes = likedBy.length;
       } else {
-        likes--;
+        await firebaseService.unlikeItem(id, userId);
+        likedBy.remove(userId);
+        likes = likedBy.length;
       }
     } catch (error) {      
       print("Error updating likes: $error");

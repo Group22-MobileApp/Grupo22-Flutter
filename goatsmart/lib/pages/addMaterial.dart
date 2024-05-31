@@ -537,6 +537,7 @@ class _AddMaterialItemViewState extends State<AddMaterialItemView> {
         views: 0,
         categories: selectedCategories,
         likes: 0,
+        likedBy: [],
       );
 
       print("Categories: ${newItem.categories}");

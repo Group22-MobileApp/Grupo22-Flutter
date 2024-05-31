@@ -135,7 +135,7 @@ class _SeeAllItemsViewState extends State<SeeAllItemsView> {
                 children: List.generate(
                   materialItems.length,
                   (index) => GestureDetector(
-                    onTap: () => _dialogService.showItemDialog(context, materialItems[index], rand),
+                    onTap: () => _dialogService.showItemDialog(context, materialItems[index], rand, userLoggedIn),
                     child: Container(
                       height: double.infinity,                      
                       decoration: BoxDecoration(

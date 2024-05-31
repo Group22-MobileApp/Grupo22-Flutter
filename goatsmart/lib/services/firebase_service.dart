@@ -30,6 +30,41 @@ class FirebaseService {
         'views': item.views,
         'categories': item.categories,
         'likes': item.likes,
+        'likedBy': item.likedBy,
+      });
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteMaterialItem(String itemId) async {
+    try {
+      await _firestore.collection('material_items').doc(itemId).delete();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateMaterialItem(MaterialItem item) async {
+    try {
+      List<String> imageUrls = [];
+      for (var image in item.images) {        
+        if (!image.startsWith('http')) {
+          String url = await uploadImage(File(image));
+          imageUrls.add(url);
+        } else {
+          imageUrls.add(image);
+        }
+      }
+
+      await _firestore.collection('material_items').doc(item.id).update({
+        'title': item.title,
+        'description': item.description,
+        'price': item.price,
+        'images': imageUrls,
+        'condition': item.condition,
+        'interchangeable': item.interchangeable,
+        'categories': item.categories,
       });
     } catch (error) {
       rethrow;
@@ -55,6 +90,7 @@ class FirebaseService {
           views: doc['views'] ?? 0,
           categories: List<String>.from(doc['categories'] ?? []),
           likes: doc['likes'] ?? 0,
+          likedBy: List<String>.from(doc['likedBy'] ?? []),
         );
       }).toList();
     } catch (e) {
@@ -99,7 +135,8 @@ class FirebaseService {
           views: doc['views'] ?? 0,
           categories: List<String>.from(doc['categories'] ?? []),
           likes: doc['likes'] ?? 0,
-        );
+          likedBy: List<String>.from(doc['likedBy'] ?? []),
+        );        
       }).toList();
     } catch (error) {
       print('Error getting last 10 material items: $error');
@@ -177,6 +214,7 @@ class FirebaseService {
           views: doc['views'] ?? 0,
           categories: List<String>.from(doc['categories'] ?? []),
           likes: doc['likes'] ?? 0,
+          likedBy: List<String>.from(doc['likedBy'] ?? []),
         );
       }).toList();
     } catch (error) {
@@ -185,9 +223,9 @@ class FirebaseService {
     }
   }
 
-  // FetchLikedItems
-  Future<List> fetchLikedItems(String userId) async {
+  Future<List<MaterialItem>> fetchLikedItems(String userId) async {
     try {
+      print("FETCHING LIKED ITEMS");
       QuerySnapshot querySnapshot = await _firestore
           .collection('Users')
           .where('id', isEqualTo: userId)
@@ -200,20 +238,20 @@ class FirebaseService {
             .where(FieldPath.documentId, whereIn: likedItems)
             .get();
         return itemsSnapshot.docs.map((doc) {
-          final title = doc['title'] ?? '';
-          final description = doc['description'] ?? '';
+          final data = doc.data() as Map<String, dynamic>;
           return MaterialItem(
             id: doc.id,
-            title: title,
-            description: description,
-            price: doc['price'] ?? 0.0,
-            images: List<String>.from(doc['images'] ?? []),
-            owner: doc['owner'] ?? '',
-            condition: doc['condition'] ?? 'New',
-            interchangeable: doc['interchangeable'] ?? 'No',
-            views: doc['views'] ?? 0,
-            categories: List<String>.from(doc['categories'] ?? []),
-            likes: doc['likes'] ?? 0,
+            title: data['title'] ?? '',
+            description: data['description'] ?? '',
+            price: data['price']?.toDouble() ?? 0.0,
+            images: List<String>.from(data['images'] ?? []),
+            owner: data['owner'] ?? '',
+            condition: data['condition'] ?? 'New',
+            interchangeable: data['interchangeable'] ?? 'No',
+            views: data['views'] ?? 0,
+            categories: List<String>.from(data['categories'] ?? []),
+            likes: data['likes'] ?? 0,
+            likedBy: List<String>.from(data['likedBy'] ?? []), 
           );
         }).toList();
       }
@@ -221,6 +259,80 @@ class FirebaseService {
     } catch (error) {
       print('Error getting liked items: $error');
       return [];
+    }
+  }
+
+  Future<void> likeItem(String itemId, String userId) async {
+    try {
+      DocumentReference itemRef = _firestore.collection('material_items').doc(itemId);
+      await itemRef.update({
+        'likedBy': FieldValue.arrayUnion([userId]),
+        'likes': FieldValue.increment(1),
+      });
+
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('id', isEqualTo: userId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        print("User found!");
+        final doc = querySnapshot.docs.first;
+        List<String> likedItems = List<String>.from(doc['likedItems'] ?? []);
+        likedItems.add(itemId);
+        print("Liked items: $likedItems");
+        await _firestore
+            .collection('Users')
+            .doc(doc.id)
+            .update({'likedItems': likedItems});
+        print("Item liked!");
+      }
+
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> unlikeItem(String itemId, String userId) async {
+    try {
+      DocumentReference itemRef = _firestore.collection('material_items').doc(itemId);
+      await itemRef.update({
+        'likedBy': FieldValue.arrayRemove([userId]),
+        'likes': FieldValue.increment(-1),      
+      });
+
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('id', isEqualTo: userId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        List<String> likedItems = List<String>.from(doc['likedItems'] ?? []);
+        likedItems.remove(itemId);
+        await _firestore
+            .collection('Users')
+            .doc(doc.id)
+            .update({'likedItems': likedItems});
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<bool> isItemLiked(String itemId, String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Users')
+          .where('id', isEqualTo: userId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        List<String> likedItems = List<String>.from(doc['likedItems'] ?? []);
+        return likedItems.contains(itemId);
+      }
+      return false;
+    } catch (error) {
+      print('Error getting liked items: $error');
+      return false;
     }
   }
 
@@ -246,28 +358,12 @@ class FirebaseService {
           views: doc['views'] ?? 0,
           categories: List<String>.from(doc['categories'] ?? []),
           likes: doc['likes'] ?? 0,
+          likedBy: List<String>.from(doc['likedBy'] ?? []),
         );
       }).toList();
     } catch (error) {
       print('Error getting material items: $error');
       return [];
-    }
-  }
-
-  Future<void> increaseLikes(String id, bool increment) async {
-    try {
-      DocumentReference itemRef =
-          _firestore.collection('material_items').doc(id);
-      DocumentSnapshot itemSnapshot = await itemRef.get();
-      int likes = itemSnapshot['likes'] ?? 0;
-      if (increment) {
-        likes++;
-      } else {
-        likes--;
-      }
-      await itemRef.update({'likes': likes});
-    } catch (error) {
-      rethrow;
     }
   }
 
@@ -418,50 +514,6 @@ class FirebaseService {
     }
   }
 
-  Future<void> likeItem(String userId, String itemId) async {
-    try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('Users')
-          .where('id', isEqualTo: userId)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        print("User found!");
-        final doc = querySnapshot.docs.first;
-        List<String> likedItems = List<String>.from(doc['likedItems'] ?? []);
-        likedItems.add(itemId);
-        print("Liked items: $likedItems");
-        await _firestore
-            .collection('Users')
-            .doc(doc.id)
-            .update({'likedItems': likedItems});
-        print("Item liked!");
-      }
-    } catch (error) {
-      rethrow;
-    }
-  }
-
-  Future<void> unlikeItem(String userId, String itemId) async {
-    try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('Users')
-          .where('id', isEqualTo: userId)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        final doc = querySnapshot.docs.first;
-        List<String> likedItems = List<String>.from(doc['likedItems'] ?? []);
-        likedItems.remove(itemId);
-        await _firestore
-            .collection('Users')
-            .doc(doc.id)
-            .update({'likedItems': likedItems});
-      }
-    } catch (error) {
-      rethrow;
-    }
-  }
-
-  // method to get the most popular carrer of the users profile
   Future<String> getMostPopularCarrer() async {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('Users').get();
@@ -489,7 +541,6 @@ class FirebaseService {
     }
   }
 
-  // method to add liked categories to the user profile
   Future<void> addLikedCategories(
       String userId, List<String> categories) async {
     try {
@@ -519,8 +570,7 @@ class FirebaseService {
       rethrow;
     }
   }
-
-  // method to retrieve the liked categories of the user profile
+  
   Future<List<String>> getLikedCategories(String userId) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -537,8 +587,7 @@ class FirebaseService {
       return [];
     }
   }
-
-  //method to get the posts with the same title
+  
   Future<List> getPostByTitle(String title) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
