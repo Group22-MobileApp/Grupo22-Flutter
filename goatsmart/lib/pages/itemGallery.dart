@@ -28,8 +28,7 @@ class ItemGallery extends StatefulWidget {
 
 class _ItemGallery extends State<ItemGallery> {
   late SharedPreferences _prefs;
-  bool _dataLoaded = false;
-  
+  bool _dataLoaded = false;  
   final FirebaseService _firebaseService = FirebaseService();
   final _controlFeatures = ConnectionManager();
   final AuthService _auth = AuthService();
@@ -47,54 +46,51 @@ class _ItemGallery extends State<ItemGallery> {
   bool using_random_items_just_for_you = false;
   bool using_random_items_new_items = false;
 
-  void _onItemTapped(int index) {
-    setState(() async {
-      _selectedIndex = index;
-      if (index == 0) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
-      } else if (index == 1) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
-      } else if (index == 2) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));                            
-      } else if (index == 3) {
-        if (!await _controlFeatures.checkInternetConnection()) {
-          print("Internet is not connected");
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('No Network Connection! '),
-                backgroundColor: Colors.white,
-                content: const Text(
-                    'No hay conexion a internet, por favor revisa tu red e intenta nuevamente.'),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
+  void _onItemTapped(int index) async {
+    bool isConnected = await _controlFeatures.checkInternetConnection();
+    if (!isConnected && index == 3) {
+      print("Internet is not connected");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text(
+              'No Internet Connection',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+            content: const Text('Please check your internet connection and try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
           );
-          return;
-        } else {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => const HomeChat()));
-        }
-      } else if (index == 4) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => UserProfile(user: userLoggedIn!)));
-      }
+        },
+      );
+      return;
+    }
+
+    setState(() {
+      _selectedIndex = index;
     });
+    
+    if (index == 0) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+    } else if (index == 1) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
+    } else if (index == 2) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));
+    } else if (index == 3) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeChat()));
+    } else if (index == 4) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(user: userLoggedIn!)));
+    }
   }
+
 
   @override
   void initState() {

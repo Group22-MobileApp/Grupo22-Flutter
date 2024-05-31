@@ -116,26 +116,54 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     }
   }
 
-  void _onItemTapped(int index) {
+  Future<bool> _checkConnectivity() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      return false;
+    }
+    return true;
+  }
+
+  void _onItemTapped(int index) async {
+    bool isConnected = await _checkConnectivity();
+    if (!isConnected) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text(
+              'No Internet Connection',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+            content: const Text('Please check your internet connection and try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     setState(() {
       _selectedIndex = index;
+      // Navegación basada en el índice seleccionado
       if (index == 0) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemGallery()));
       } else if (index == 1) {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
       } else if (index == 2) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AddMaterialItemView(userLoggedIn: userLoggedIn!)));
       } else if (index == 3) {
         // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
       } else if (index == 4) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => UserProfile(user: userLoggedIn!)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(user: userLoggedIn!)));
       }
     });
   }
@@ -228,6 +256,35 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
     }
   }
 
+  void _checkConnectivityAndAddCategories(BuildContext context) async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text(
+              'No Internet Connection',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+            content: const Text('Please check your internet connection and try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      _addCategoriesToUser();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -311,35 +368,36 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
 
   Padding _refreshButton() {
     return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          width: double.infinity,
-          height: 40,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),                                        
-            color: const Color(0xFFF7DC6F),
-          ),
-          child: ElevatedButton(
-            onPressed: () => _addCategoriesToUser(),
-            style: ElevatedButton.styleFrom(                      
-              backgroundColor: const Color(0xFFF7DC6F),
-              padding: const EdgeInsets.all(10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: double.infinity,
+        height: 40,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: const Color(0xFFF7DC6F),
+        ),
+        child: ElevatedButton(
+          onPressed: () => _checkConnectivityAndAddCategories(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFF7DC6F),
+            padding: const EdgeInsets.all(10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text('Refresh categories'
-            , style: TextStyle(
+          ),
+          child: const Text(
+            'Refresh categories',
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
               fontFamily: 'Montserrat',
               color: Color(0xFF2E4053),
-            ),),
+            ),
           ),
         ),
-      );
+      ),
+    );
   }
-
 
   AppBar _appBar(double screenWidth, BuildContext context) {
     return AppBar(

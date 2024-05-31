@@ -73,22 +73,57 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 0) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemGallery()));
-      } else if (index == 1) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
-      } else if (index == 2) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AddMaterialItemView(userLoggedIn: _user)));
-      } else if (index == 3) {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
-      } else if (index == 4) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(user: _user)));
-      }
-    });
+Future<bool> _checkConnectivity() async {
+  var connectivityResult = await Connectivity().checkConnectivity();
+  if (connectivityResult == ConnectivityResult.none) {
+    return false;
   }
+  return true;
+}
+
+void _onItemTapped(int index) async {
+  bool isConnected = await _checkConnectivity();
+  if (!isConnected) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text(
+            'No Internet Connection',
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          ),
+          content: const Text('Please check your internet connection and try again.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  setState(() {
+    _selectedIndex = index;
+    // Navegación basada en el índice seleccionado
+    if (index == 0) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const ItemGallery()));
+    } else if (index == 1) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const LikedItemsGallery()));
+    } else if (index == 2) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => AddMaterialItemView(userLoggedIn: _user)));
+    } else if (index == 3) {
+      // Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatView()));
+    } else if (index == 4) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(user: _user)));
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {
