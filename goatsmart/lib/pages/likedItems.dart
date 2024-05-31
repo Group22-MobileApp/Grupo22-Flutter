@@ -481,15 +481,16 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                   ),
                   SizedBox(height: screenHeight * 0.02),                  
                   HeartIconButton(
-                    isLiked: likedItemsForYou[index].likes > 0,
+                    isLiked: likedItemsForYou[index].likedBy.contains(userLoggedIn!.id),
                     onTap: (bool isLiked) async {
                       try {
-                        await likedItemsForYou[index].increaseLikes(isLiked);
+                        print("LIKING ITEM: ${likedItemsForYou[index].title}");
+                        await likedItemsForYou[index].likeItem(isLiked, userLoggedIn!.id);
                         setState(() {
-                          if (isLiked) {
-                            likedItemsForYou[index].likes++;
-                          } else {
-                            likedItemsForYou[index].likes--;
+                          if (isLiked) {                            
+                            likedItemsForYou[index].likedBy.add(userLoggedIn!.id);
+                          } else {                            
+                            likedItemsForYou[index].likedBy.removeWhere((id) => id == userLoggedIn!.id);
                           }
                         });
                       } catch (error) {

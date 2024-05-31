@@ -42,7 +42,7 @@ class _ItemGallery extends State<ItemGallery> {
   User? userLoggedIn;
   String? username;
   List<MaterialItem> itemsForYou = [];
-  List<dynamic> itemsForYouImages = [];
+  List<dynamic> itemsForYouImages = [];  
 
   int _selectedIndex = 0;
   int rand = Random().nextInt(14) + 1;
@@ -101,7 +101,7 @@ class _ItemGallery extends State<ItemGallery> {
   super.initState();
   _fetchUserImageUrl();
   _fetchUserLoggedIn().then((_) {
-    _fetchItemsForYou();
+    _fetchItemsForYou();    
     _fetchLastItems();
   });
   _initPrefs();
@@ -133,12 +133,13 @@ class _ItemGallery extends State<ItemGallery> {
     _prefs = await SharedPreferences.getInstance();    
     if (!_dataLoaded) {
       _fetchItemsForYou();
-      _fetchLastItems();
+      _fetchLastItems();      
       setState(() {
         _dataLoaded = true;
       });
     }
   }
+
 
   Future<void> _fetchItemsForYou() async {
     // Check cache first
@@ -194,6 +195,7 @@ class _ItemGallery extends State<ItemGallery> {
                   views: Random().nextInt(1000),
                   categories: ['Example Category $index'],
                   likes: Random().nextInt(100),
+                  likedBy: [userLoggedIn!.id],
                 ));
       });
     }
@@ -251,6 +253,7 @@ class _ItemGallery extends State<ItemGallery> {
                   views: Random().nextInt(1000),
                   categories: ['Example Category $index'],
                   likes: Random().nextInt(100),
+                  likedBy: [userLoggedIn!.id],
                 ));
       });
     }
@@ -275,6 +278,7 @@ class _ItemGallery extends State<ItemGallery> {
         username = user.username;
       });
       _fetchItemsForYou();
+      _fetchLastItems();     
     }
   }
 
@@ -323,7 +327,7 @@ class _ItemGallery extends State<ItemGallery> {
                     IconButton(
                       onPressed: () {
                         _fetchLastItems();
-                        _fetchItemsForYou();
+                        _fetchItemsForYou();                                 
                       },
                       icon: const Icon(Icons.refresh),
                     ),
@@ -479,15 +483,15 @@ class _ItemGallery extends State<ItemGallery> {
                   ),
                   SizedBox(height: screenHeight * 0.02),                  
                   HeartIconButton(
-                    isLiked: itemsForYou[index].likes > 0,
+                    isLiked: itemsForYou[index].likedBy.contains(userLoggedIn!.id),
                     onTap: (bool isLiked) async {
                       try {
-                        await itemsForYou[index].increaseLikes(isLiked);
+                        await itemsForYou[index].likeItem(isLiked, userLoggedIn!.id);
                         setState(() {
-                          if (isLiked) {
-                            itemsForYou[index].likes++;
-                          } else {
-                            itemsForYou[index].likes--;
+                          if (isLiked) {                            
+                            itemsForYou[index].likedBy.add(userLoggedIn!.id);
+                          } else {                            
+                            itemsForYou[index].likedBy.removeWhere((id) => id == userLoggedIn!.id);
                           }
                         });
                       } catch (error) {
