@@ -1,12 +1,10 @@
 import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/models/user.dart';
 import 'package:goatsmart/pages/allItems.dart';
-// import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/likedItems.dart';
 import 'package:goatsmart/pages/searchPage.dart';
@@ -46,6 +44,8 @@ class _ItemGallery extends State<ItemGallery> {
 
   int _selectedIndex = 0;
   int rand = Random().nextInt(14) + 1;
+  bool using_random_items_just_for_you = false;
+  bool using_random_items_new_items = false;
 
   void _onItemTapped(int index) {
     setState(() async {
@@ -169,6 +169,7 @@ class _ItemGallery extends State<ItemGallery> {
         (await _firebaseService.fetchLikedItems(userLoggedIn!.id)).cast<MaterialItem>();            
     if (items.isNotEmpty) {
       setState(() {
+        using_random_items_just_for_you = false;
         itemsForYou = items;
         itemsForYouImages = items.map((item) => item.images.first).toList();
       });
@@ -178,6 +179,7 @@ class _ItemGallery extends State<ItemGallery> {
     } else {
       _fetchLastItems();
       setState(() {        
+        using_random_items_just_for_you = true;
         itemsForYouImages =
             List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
         itemsForYou = List.generate(
@@ -228,6 +230,7 @@ class _ItemGallery extends State<ItemGallery> {
         (await _firebaseService.fetchLastItems()).cast<MaterialItem>();
     if (items.isNotEmpty) {
       setState(() {
+        using_random_items_new_items = false;
         lastItems = items;
         lastItemsImages = items.map((item) => item.images.first).toList();
       });
@@ -235,7 +238,8 @@ class _ItemGallery extends State<ItemGallery> {
       final jsonList = items.map((item) => jsonEncode(item.toMap())).toList();
       await _prefs.setStringList('lastItems', jsonList);
     } else {
-      setState(() {        
+      setState(() {      
+        using_random_items_new_items = true;
         lastItemsImages =
             List.generate(10, (index) => 'assets/images/${index + 1}.jpg');
         lastItems = List.generate(
@@ -390,13 +394,30 @@ class _ItemGallery extends State<ItemGallery> {
                   itemCount: lastItems.length,
                   itemBuilder: (context, index) {
                     var item = lastItems[index];
+                    // If using random items don't allow to tap on them
+                    if (using_random_items_new_items) {
+                      return Padding(
+                        padding: const EdgeInsets.all(1),
+                        child: CachedNetworkImage(
+                          imageUrl: lastItemsImages[index],
+                          errorWidget: (context, error, stackTrace) {   
+                            using_random_items_new_items = true;                                                     
+                            return Image.asset('assets/images/$rand.jpg');
+                          },
+                          fit: BoxFit.cover,
+                          memCacheHeight: 300,
+                          memCacheWidth: 220,
+                        ),
+                      );                      
+                    }
                     return GestureDetector(
                       onTap: () => _dialogService.showItemDialog(context, item, rand, userLoggedIn!),
                       child: Padding(
                         padding: const EdgeInsets.all(1),
                         child: CachedNetworkImage(
                           imageUrl: lastItemsImages[index],
-                          errorWidget: (context, error, stackTrace) {                                                        
+                          errorWidget: (context, error, stackTrace) {         
+                            using_random_items_new_items = true;                                               
                             return Image.asset('assets/images/$rand.jpg');
                           },
                           fit: BoxFit.cover,
@@ -421,8 +442,18 @@ class _ItemGallery extends State<ItemGallery> {
         childAspectRatio: 0.65,
         children: List.generate(
           itemsForYou.length,
-          (index) => GestureDetector(
-            onTap: () => _dialogService.showItemDialog(context, itemsForYou[index], rand, userLoggedIn!),
+          (index) => _justForYouGesture(context, index, screenHeight, screenWidth),
+        ),
+      ),
+    );
+  }
+
+  GestureDetector _justForYouGesture(BuildContext context, int index, double screenHeight, double screenWidth) {
+    if (using_random_items_just_for_you) {
+          return GestureDetector(
+            onTap: () {
+              // Do nothing
+            },
             child: Container(
               height: double.infinity,
               decoration: BoxDecoration(
@@ -440,22 +471,7 @@ class _ItemGallery extends State<ItemGallery> {
                       padding: const EdgeInsets.all(5),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: (itemsForYouImages[index] as String).startsWith('http')
-                            ? CachedNetworkImage(
-                                imageUrl: itemsForYouImages[index] as String,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                memCacheHeight: 300,
-                                memCacheWidth: 220,
-                                errorWidget: (context, error, stackTrace) {
-                                  return Image.asset('assets/images/$rand.jpg');
-                                },
-                              )
-                            : Image.asset(
-                                itemsForYouImages[index] as String,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                              ),
+                        child: Image.asset('assets/images/${index + 1}.jpg'),
                       ),
                     ),
                   ),
@@ -463,7 +479,7 @@ class _ItemGallery extends State<ItemGallery> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      itemsForYou[index].title,
+                      'Example Item $index',
                       style: TextStyle(
                         fontSize: screenWidth * 0.04,
                         fontWeight: FontWeight.bold,
@@ -474,46 +490,116 @@ class _ItemGallery extends State<ItemGallery> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      '\$${_formatPrice(itemsForYou[index].price)}',                      
+                      '\$${_formatPrice(Random().nextDouble() * 100000)}',
                       style: TextStyle(
                         fontSize: screenWidth * 0.05,
                         color: const Color.fromARGB(255, 138, 136, 136),
                       ),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.02),                  
+                  SizedBox(height: screenHeight * 0.02),
                   HeartIconButton(
-                    isLiked: itemsForYou[index].likedBy.contains(userLoggedIn!.id),
-                    onTap: (bool isLiked) async {
-                      try {
-                        await itemsForYou[index].likeItem(isLiked, userLoggedIn!.id);
-                        setState(() {
-                          if (isLiked) {                            
-                            itemsForYou[index].likedBy.add(userLoggedIn!.id);
-                          } else {                            
-                            itemsForYou[index].likedBy.removeWhere((id) => id == userLoggedIn!.id);
-                          }
-                        });
-                      } catch (error) {
-                        // Handle error
-                        print('Error updating item likes: $error');
-                      }
-                      try {    
-                        if (isLiked) {
-                          await userLoggedIn!.likeItem(itemsForYou[index].id);
-                        } else {
-                          await userLoggedIn!.unlikeItem(itemsForYou[index].id);
-                        }
-                      } catch (error) {
-                        // Handle error updating user liked items
-                        print('Error updating user liked items: $error');
-                      }
+                    isLiked: false,
+                    onTap: (bool isLiked) {
+                      // Do nothing
                     },
                   ),
                 ],
               ),
             ),
+          );
+        }        
+  return GestureDetector(            
+      onTap: () => _dialogService.showItemDialog(context, itemsForYou[index], rand, userLoggedIn!),
+      child: Container(
+        height: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: const Color.fromARGB(60, 46, 64, 83),
+            width: 1,
           ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: (itemsForYouImages[index] as String).startsWith('http')
+                      ? CachedNetworkImage(
+                          imageUrl: itemsForYouImages[index] as String,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          memCacheHeight: 300,
+                          memCacheWidth: 220,
+                          errorWidget: (context, error, stackTrace) {
+                            using_random_items_just_for_you = true;
+                            return Image.asset('assets/images/$rand.jpg');
+                          },
+                        )
+                      : Image.asset(
+                          itemsForYouImages[index] as String,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                ),
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.0001),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                itemsForYou[index].title,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.04,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                '\$${_formatPrice(itemsForYou[index].price)}',                      
+                style: TextStyle(
+                  fontSize: screenWidth * 0.05,
+                  color: const Color.fromARGB(255, 138, 136, 136),
+                ),
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.02),                  
+            HeartIconButton(
+              isLiked: itemsForYou[index].likedBy.contains(userLoggedIn!.id),
+              onTap: (bool isLiked) async {
+                try {
+                  await itemsForYou[index].likeItem(isLiked, userLoggedIn!.id);
+                  setState(() {
+                    if (isLiked) {                            
+                      itemsForYou[index].likedBy.add(userLoggedIn!.id);
+                    } else {                            
+                      itemsForYou[index].likedBy.removeWhere((id) => id == userLoggedIn!.id);
+                    }
+                  });
+                } catch (error) {
+                  // Handle error
+                  print('Error updating item likes: $error');
+                }
+                try {    
+                  if (isLiked) {
+                    await userLoggedIn!.likeItem(itemsForYou[index].id);
+                  } else {
+                    await userLoggedIn!.unlikeItem(itemsForYou[index].id);
+                  }
+                } catch (error) {
+                  // Handle error updating user liked items
+                  print('Error updating user liked items: $error');
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
