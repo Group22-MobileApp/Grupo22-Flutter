@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:goatsmart/models/materialItem.dart';
 import 'package:goatsmart/models/user.dart';
-// import 'package:goatsmart/pages/home.dart';
 import 'package:goatsmart/pages/addMaterial.dart';
 import 'package:goatsmart/pages/itemGallery.dart';
 import 'package:goatsmart/pages/userProfile.dart';
@@ -78,8 +77,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
   List<String> likedCategories = [];
 
   void selectCategory(String category) {    
-    setState(() {
-      //Check if category is already selected and or liked
+    setState(() {      
       if (likedCategories.contains(category)) {        
         likedCategories.remove(category);
         print("Liked category removed: $category");
@@ -105,8 +103,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
           content: Text('Categories updated successfully'),
           duration: Duration(seconds: 5),
         ),
-      );
-      // Refresh page      
+      );       
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -114,8 +111,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         ),
       );
       _fetchUserLoggedIn();
-    } catch (error) {
-      // Handle error
+    } catch (error) {      
       print('Error adding categories to user: $error');
     }
   }
@@ -293,9 +289,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
               height: 50,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(10),
-                // color: isSelected ? const Color(0xFF2E4053) : (isLikedCategory ? Colors.green : Colors.white),                
-                // Is selected or liked category, green color, else white
+                borderRadius: BorderRadius.circular(10),                
                 color: isSelected || isLikedCategory ? Colors.green : Colors.white,
               ),
               alignment: Alignment.center,
@@ -303,9 +297,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   category,
-                  style: TextStyle(
-                    // color: isSelected ? Colors.white : (isLikedCategory ? Colors.white : Colors.black),                    
-                    // Is selected or liked category, white color, else red
+                  style: TextStyle(                    
                     color: isSelected || isLikedCategory ? Colors.white : Colors.black,
                   ),
                 ),
@@ -420,7 +412,7 @@ class _LikedItemsGallery extends State<LikedItemsGallery> {
         children: List.generate(
           likedItemsForYou.length,
           (index) => GestureDetector(
-            onTap: () => _dialogService.showItemDialog(context, likedItemsForYou[index], rand),
+            onTap: () => _dialogService.showItemDialog(context, likedItemsForYou[index], rand, userLoggedIn!),
             child: Container(
               height: double.infinity,
               decoration: BoxDecoration(

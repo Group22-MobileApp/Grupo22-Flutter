@@ -391,7 +391,7 @@ class _ItemGallery extends State<ItemGallery> {
                   itemBuilder: (context, index) {
                     var item = lastItems[index];
                     return GestureDetector(
-                      onTap: () => _dialogService.showItemDialog(context, item, rand),
+                      onTap: () => _dialogService.showItemDialog(context, item, rand, userLoggedIn!),
                       child: Padding(
                         padding: const EdgeInsets.all(1),
                         child: CachedNetworkImage(
@@ -422,7 +422,7 @@ class _ItemGallery extends State<ItemGallery> {
         children: List.generate(
           itemsForYou.length,
           (index) => GestureDetector(
-            onTap: () => _dialogService.showItemDialog(context, itemsForYou[index], rand),
+            onTap: () => _dialogService.showItemDialog(context, itemsForYou[index], rand, userLoggedIn!),
             child: Container(
               height: double.infinity,
               decoration: BoxDecoration(

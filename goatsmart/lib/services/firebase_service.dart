@@ -37,6 +37,40 @@ class FirebaseService {
     }
   }
 
+  Future<void> deleteMaterialItem(String itemId) async {
+    try {
+      await _firestore.collection('material_items').doc(itemId).delete();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateMaterialItem(MaterialItem item) async {
+    try {
+      List<String> imageUrls = [];
+      for (var image in item.images) {        
+        if (!image.startsWith('http')) {
+          String url = await uploadImage(File(image));
+          imageUrls.add(url);
+        } else {
+          imageUrls.add(image);
+        }
+      }
+
+      await _firestore.collection('material_items').doc(item.id).update({
+        'title': item.title,
+        'description': item.description,
+        'price': item.price,
+        'images': imageUrls,
+        'condition': item.condition,
+        'interchangeable': item.interchangeable,
+        'categories': item.categories,
+      });
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   Future<List<MaterialItem>> getMaterialItems() async {
     try {
       QuerySnapshot querySnapshot =
