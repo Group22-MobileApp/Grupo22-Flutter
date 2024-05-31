@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:goatsmart/models/user.dart' as LocalUser;
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+
 
 class ProfileEdit extends StatefulWidget {
   final LocalUser.User user;
@@ -300,6 +302,24 @@ class _ProfileFormState extends State<ProfileForm> {
         if (_password != user.password) {
           await FirebaseAuth.instance.currentUser?.updatePassword(_password);
         }
+
+        await FirebaseFirestore.instance.collection('Users').doc(documentId).update(updatedUser.toMap());
+
+      if (_email != user.email) {
+        await FirebaseAuth.instance.currentUser?.updateEmail(_email);
+      }
+
+      if (_password != user.password) {
+        await FirebaseAuth.instance.currentUser?.updatePassword(_password);
+      }
+
+      // Registrar el evento de edición de perfil en Firebase Analytics
+      await FirebaseAnalytics.instance.logEvent(
+        name: 'profile_edit',
+        parameters: {
+          'user_id': user.id,
+        },
+      );
 
         Navigator.pop(context, updatedUser);
         print('Changes saved successfully!');
