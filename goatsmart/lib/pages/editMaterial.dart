@@ -501,10 +501,24 @@ void _onItemTapped(int index) async {
   
 
   
-    Future<void> _postMaterial() async {
+  Future<void> _postMaterial() async {
     setState(() {
       _isPosting = true;
     });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _isPosting = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('No Internet Connection. Please check your internet connection and try again.'),
+        ),
+      );
+      return;
+    }
 
     final user = await _auth.getCurrentUserId();
 
@@ -541,7 +555,9 @@ void _onItemTapped(int index) async {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Item updated successfully')),
+      const SnackBar(
+        backgroundColor: Colors.green,          
+        content: Text('Item updated successfully')),      
     );
 
     Navigator.pushReplacement(
